@@ -55,8 +55,8 @@ let printTestInfo = (testData) => {
     });
     
     configTable.push([{ colSpan: 2,hAlign: 'center', content: colors.blueBright.bold('CONFIGURATION TABLE')}])
-    configTable.push([ {hAlign: 'right', content:colors.blue('Test Name:' )}, colors.green(testData.testDefinations.test_name) ])
-    configTable.push([ {hAlign: 'right', content:colors.blue('\nStart Date:')}, colors.green(now())])
+    configTable.push([ {hAlign: 'right', content:colors.blue('Test Name:' )}, colors.whiteBright.bold(testData.testDefinations.test_name) ])
+    configTable.push([ {hAlign: 'right', content:colors.blue('\nStart Date:')}, colors.whiteBright(now('YYYY/MM/DD  HH:mm:ss'))])
     configTable.push([colors.blue('Configs'),colors.blue('Values')])
    
     global.config = {...testData.testDefinations, ...global.config}

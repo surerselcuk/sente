@@ -28,8 +28,8 @@ isObject = function(a) {
     return (!!a) && (a.constructor === Object);
 };
 
-logger.now = () => {
-    return `[${moment().format('YYYY-MM-DD HH:mm:ss:SSS').trim()}] `;
+logger.now = (format = 'YYYY-MM-DD HH:mm:ss:SSS') => {
+    return moment().format(format).trim();
 }
 
 logger.log = (logValue,opt={boxen:false}) => {
@@ -40,8 +40,8 @@ logger.log = (logValue,opt={boxen:false}) => {
         else logValue=logValue.toString();
     }
 
-    if(opt.boxen) console.log(boxen(logger.now() + logValue))
-        else console.log(logger.now() + logValue)
+    if(opt.boxen) console.log(boxen('[' + logger.now() + '] ' + logValue))
+        else console.log('[' + logger.now() + '] ' + logValue)
 
 }
 
@@ -52,8 +52,8 @@ logger.log.error = (logValue,opt={boxen:false}) => {
         if(isObject(logValue))logValue=JSON.stringify(logValue);
         else logValue=logValue.toString();
     }
-    if(opt.boxen) console.log(boxen(colors.white(logger.now()) + colors.red.bold(figures.cross + ' [ERROR] ') + logValue,{borderColor:'red'}))
-    else console.log(logger.now() + colors.red.bold(figures.cross + ' [ERROR] ') + logValue)
+    if(opt.boxen) console.log(boxen(colors.white('[' + logger.now() + '] ') + colors.red.bold(figures.cross + ' [ERROR] ') + logValue,{borderColor:'red'}))
+    else console.log('[' + logger.now() + '] ' + colors.red.bold(figures.cross + ' [ERROR] ') + logValue)
 
 }
 
