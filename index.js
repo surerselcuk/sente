@@ -32,7 +32,15 @@ module.exports = {
 
 
 // Sente Services to Global 
+
+// logger service
 global.log = require('./services/logger').log;
-global.wait = require('./services/core').wait;
 global.now = require('./services/logger').now;
+global.wait = require('./services/logger').wait;
+
+
+
+
+// core service
 global.translate = require('./services/core').translate;
+global.overrideRepo = require('./services/core').overrideRepo;

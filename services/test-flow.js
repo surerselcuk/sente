@@ -6,6 +6,7 @@ const table = require('cli-table3');
 const colors = require('chalk');
 
 
+
 let setEnvironment = (testData) => {
 
             // Set Environments     
@@ -43,6 +44,10 @@ let setEnvironment = (testData) => {
             // set configs
             if(!global.environments[environment_parent][environment_child]) throw new Error (`Test Environment [${argvForEnvironment}] Undefined!`)
             else global.config = global.environments[environment_parent][environment_child];
+
+            // set current language
+            if(!global.senteConfig.languages.keywords) global.senteConfig.languages.keywords = global.senteConfig.defaultLanguageKeywords
+            if(!global.config.current_language) global.config.current_language = global.senteConfig.defaultLanguage;
 
             }
 let printTestInfo = (testData) => {

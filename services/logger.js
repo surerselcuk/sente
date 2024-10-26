@@ -1,5 +1,6 @@
 
 const moment = require('moment');
+const isObject = require('isobject');
 const boxen = require('boxen');
 const colors = require('chalk');
 const figures = require('figures');
@@ -24,9 +25,17 @@ const styles = {
 let logger={};
 
 
-isObject = function(a) {
-    return (!!a) && (a.constructor === Object);
-};
+
+logger.wait= (seconds=1,visible=true)=> {
+    return new Promise(resolve => {
+
+        if(visible) log(colors.yellow(`[Wait ${seconds}s]`));
+        setTimeout(resolve, Number(seconds)*1000);
+
+    })
+
+}
+
 
 logger.now = (format = 'YYYY-MM-DD HH:mm:ss:SSS') => {
     return moment().format(format).trim();

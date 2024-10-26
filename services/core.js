@@ -10,10 +10,6 @@ core.dirSeparator=()=>{
     return (/^win/.test(process.platform)) ? '\\' : '/';
 }
 
-core.wait= (seconds)=> {
-    return new Promise(resolve => setTimeout(resolve, seconds*1000))
-}
-
 
 core.translate =  (code) => {
     
@@ -21,23 +17,18 @@ core.translate =  (code) => {
         
 
         let res;
-        let codeArray=   code.split('.');
-
-    
-        if(!global.senteConfig.languages.keywords) global.senteConfig.languages.keywords = global.senteConfig.defaultLanguageKeywords
-        if(!global.config.currentLanguage) global.config.currentLanguage = global.senteConfig.defaultLanguage;
-    
+        let codeArray = code.split('.');  
         
 
-        if(global.senteConfig.languages.keywords.indexOf(global.config.currentLanguage)<0) {
+        if(global.senteConfig.languages.keywords.indexOf(global.config.current_language)<0) {
     
-            log(global.config.currentLanguage + ' language packet not found! ')
-            return '[' + global.config.currentLanguage + ' language packet not found!]' 
+            log(global.config.current_language + ' language packet not found! ')
+            return '[' + global.config.current_language + ' language packet not found!]' 
     
         }
         else {
             
-            res = global.senteConfig.languages[global.config.currentLanguage]
+            res = global.senteConfig.languages[global.config.current_language]
     
             for (let i of codeArray){
                 
@@ -107,6 +98,56 @@ core.startTest = async (file,options) => {
 
 }
 
+core.overrideRepo = (ObjectRepoField,InsertItems,keyWord='XXXX') => {
+    try {
+        if(!ObjectRepoField) throw new Error('[overrideRepo] Repo field undefined!')
+        if(!InsertItems || InsertItems==='') throw new Error('[overrideRepo] InsertItems  undefined!')
+
+
+        // multi items insert
+        if(Array.isArray(InsertItems)){
+
+            
+            if(InsertItems.length === 1) {
+                
+                return ObjectRepoField.toString().replace(new RegExp(keyWord, 'g'),InsertItems); 
+            }
+            else {
+
+                for(let i=0; i<InsertItems.length; i++) {
+     
+                    ObjectRepoField = ObjectRepoField.replace( keyWord,InsertItems[i])
+                    if(i+1 === InsertItems.length ) return ObjectRepoField;
+   
+                 }   
+
+
+            }
+
+
+
+
+        }
+        // single item insert
+        else {
+
+            return ObjectRepoField.toString().replace(new RegExp(keyWord, 'g'),InsertItems);
+
+        }
+
+
+
+        
+    } catch (e) {
+
+        log.error(e);
+        return ObjectRepoField
+        
+    }
+
+   
+
+};
 
 
 
