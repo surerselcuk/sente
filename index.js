@@ -37,6 +37,7 @@ module.exports = {
 global.log = require('./services/logger').log;
 global.now = require('./services/logger').now;
 global.wait = require('./services/logger').wait;
+global.wait_ = require('./services/logger').wait_;
 
 
 

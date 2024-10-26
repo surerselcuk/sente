@@ -26,10 +26,19 @@ let logger={};
 
 
 
-logger.wait= (seconds=1,visible=true)=> {
+logger.wait = (seconds=1)=> {
     return new Promise(resolve => {
 
-        if(visible) log(colors.yellow(`[Wait ${seconds}s]`));
+        log(colors.yellow(`[Wait ${seconds}s]`));
+        setTimeout(resolve, Number(seconds)*1000);
+
+    })
+
+}
+// slient wait
+logger.wait_ = (seconds=1)=> {
+    return new Promise(resolve => {
+
         setTimeout(resolve, Number(seconds)*1000);
 
     })

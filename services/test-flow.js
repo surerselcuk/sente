@@ -141,7 +141,6 @@ module.exports = {
 
             console.log('\n');
             log('Test started.');
-            console.log('\n');
             await testData.callback();
           
         }
