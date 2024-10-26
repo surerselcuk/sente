@@ -54,7 +54,7 @@ let printTestInfo = (testData) => {
         wordWrap: true
     });
     
-    configTable.push([{ colSpan: 2,hAlign: 'center', content: colors.red('CONFIGURATION TABLE')}])
+    configTable.push([{ colSpan: 2,hAlign: 'center', content: colors.blueBright.bold('CONFIGURATION TABLE')}])
     configTable.push([ {hAlign: 'right', content:colors.blue('Test Name:' )}, colors.green(testData.testDefinations.test_name) ])
     configTable.push([ {hAlign: 'right', content:colors.blue('\nStart Date:')}, colors.green(now())])
     configTable.push([colors.blue('Configs'),colors.blue('Values')])
