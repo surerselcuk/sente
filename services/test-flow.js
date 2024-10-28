@@ -125,6 +125,7 @@ module.exports = {
             if (!testData.callback) throw new Error('Callback Test Undefined!')
             if (!testData.testDefinations) throw new Error('Test Definations Undefined!')
             if (!testData.testDefinations.test_name || !testData.testDefinations.test_type) throw new Error('Test Name or Test Type Undefined!')
+            if (!testData.buildDriver) throw new Error('Build Driver class Undefined!')
             
 
             await setEnvironment(testData);
@@ -141,13 +142,16 @@ module.exports = {
 
             console.log('\n');
             log('Test started.');
+
+            if(config.test_type === 'web-gui') await testData.buildDriver();
             await testData.callback();
           
         }
         catch (e) {
     
-            
+
             log.error(e,{boxen:true});
+
         }
         finally { 
             

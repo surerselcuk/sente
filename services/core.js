@@ -1,10 +1,12 @@
-const log = require('./logger').log;
-const { existsSync} = require('fs');
-
-
-
-
 let core={};
+module.exports = {};
+
+const { existsSync, mkdirSync, chmodSync, readdirSync, statSync, rmdirSync} = require('fs');
+const path = require('path');
+core.random = require('random');
+const log = require('./logger').log;
+
+
 
 core.dirSeparator=()=>{
     return (/^win/.test(process.platform)) ? '\\' : '/';
@@ -149,8 +151,60 @@ core.overrideRepo = (ObjectRepoField,InsertItems,keyWord='XXXX') => {
 
 };
 
+core.generateRandomNamedDirectory = async(path) => {
+
+    if (!existsSync(path))   await mkdirSync(path);
+
+    let directoryName = core.random.int(100000, 999999) + '' + core.random.int(100000, 999999) + '' + core.random.int(100000, 999999);
+    let fullPath = path + core.dirSeparator() + directoryName
+
+    if (!existsSync(fullPath)) {
+       
+        try { 
+            await mkdirSync(fullPath);
+            await chmodSync(fullPath, '0777');
+        } catch (e) {
+            log.warn(`Could not set directory permissions [${fullPath}]`)
+        }
+    }
+    else { log.warn( fullPath + ' is exist!')}
+   
+    return fullPath;
+
+}
+
+core.cleanEmptyFoldersRecursively = async(folder) => {
+
+    try {
+        let isDir = await statSync(folder).isDirectory();
+        if (!isDir) {
+          return;
+        }
+        let files = await readdirSync(folder);
+        if (files.length > 0) {
+          await files.forEach(async function (file) {
+            var fullPath = path.join(folder, file);
+            await core.cleanEmptyFoldersRecursively(fullPath);
+          });
+    
+          // re-evaluate files; after deleting subfolder
+          // we may have parent folder empty now
+          files = await readdirSync(folder);
+        }
+    
+        if (files.length == 0) {
+          await rmdirSync(folder);
+          return;
+        }
+    }
+    catch (e) {
+        log.warn('[cleanEmptyFoldersRecursively] Error')
+        console.log(e)
+    }
 
 
+
+}
 
 
 

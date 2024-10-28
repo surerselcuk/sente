@@ -26,7 +26,7 @@ let logger={};
 
 
 
-logger.wait = (seconds=1)=> {
+logger.wait = (seconds=3)=> {
     return new Promise(resolve => {
 
         log(colors.yellow(`[Wait ${seconds}s]`));
@@ -36,7 +36,7 @@ logger.wait = (seconds=1)=> {
 
 }
 // slient wait
-logger.wait_ = (seconds=1)=> {
+logger.wait_ = (seconds=3)=> {
     return new Promise(resolve => {
 
         setTimeout(resolve, Number(seconds)*1000);
@@ -63,15 +63,27 @@ logger.log = (logValue,opt={boxen:false}) => {
 
 }
 
-logger.log.error = (logValue,opt={boxen:false}) => {
+logger.log.error = (logValue_,opt={boxen:false}) => {
+    
+    try {logValue = logValue_.toString() } catch (e) {}
+    if(opt.boxen) console.log(boxen(colors.white('[' + logger.now() + '] ') + colors.red.bold(figures.cross + ' [ERROR] ') + logValue,{borderColor:'red'}))
+    else console.log('[' + logger.now() + '] ' + colors.red.bold(figures.cross + ' [ERROR] ') + logValue)
+
+    console.log(logValue)
+
+
+    
+
+}
+logger.log.warn = (logValue,opt={boxen:false}) => {
     
 
     if(logValue){
         if(isObject(logValue))logValue=JSON.stringify(logValue);
         else logValue=logValue.toString();
     }
-    if(opt.boxen) console.log(boxen(colors.white('[' + logger.now() + '] ') + colors.red.bold(figures.cross + ' [ERROR] ') + logValue,{borderColor:'red'}))
-    else console.log('[' + logger.now() + '] ' + colors.red.bold(figures.cross + ' [ERROR] ') + logValue)
+    if(opt.boxen) console.log(boxen(colors.yellow('[' + logger.now() + '] ') + colors.yellow.bold(figures.warning + ' [WARN] ') + logValue,{borderColor:'red'}))
+    else console.log('[' + logger.now() + '] ' + colors.yellow.bold(figures.warning + ' [WARN] ') + logValue)
 
 }
 
