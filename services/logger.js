@@ -97,6 +97,17 @@ logger.log.success = (logValue) => {
 
 };
 
+logger.log.uiCommand = (commandName, logValue) => {
+
+    text = '[' + logger.now() + '] '
+    text += styles.command(`[${commandName}]${figures.play}  `);
+    text += logValue.toString()
+    console.log(text);
+
+}
+
+
+
 logger.log.boxen = (logValue,options={}) => {
     if(logValue){
         if(isObject(logValue))logValue=JSON.stringify(logValue);

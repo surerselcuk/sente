@@ -65,6 +65,8 @@ let printTestInfo = (testData) => {
     configTable.push([colors.blue('Configs'),colors.blue('Values')])
    
     global.config = {...testData.testDefinations, ...global.config}
+    config.file_path = (config.file_full_path).replace(config.project_path,'')
+
     let tableData = global.config;
     delete tableData.test_name;
 
@@ -99,6 +101,7 @@ let overrideConfigs = (testData) => {
 
             if(isObject(config_)){
                 config = {...config,...config_};
+                config.project_path = senteConfig.testRunProjectPath; // set project main directory
             } else {
                 throw new Error ( '--config paremeter error' )
             }
@@ -125,6 +128,7 @@ module.exports = {
             if (!testData.callback) throw new Error('Callback Test Undefined!')
             if (!testData.testDefinations) throw new Error('Test Definations Undefined!')
             if (!testData.testDefinations.test_name || !testData.testDefinations.test_type) throw new Error('Test Name or Test Type Undefined!')
+            if ( senteConfig.testTypes.indexOf(testData.testDefinations.test_type) === -1) throw new Error('Test Type Undefined!')
             if (!testData.buildDriver) throw new Error('Build Driver class Undefined!')
             
 

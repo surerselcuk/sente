@@ -79,8 +79,8 @@ program
     .option('--env <value>',`[Environment] Usage: --env=dev-env1` )
     .option('--config <value>',`[Override Config] Usage: --config=' "parameter1":"value1", "parameter2":["valueX","valueY"], "parameter3":{"parameter4":"valueZ"} '`)
     .option('-a, --attach','Connect to active web-ui session')
+    .option('-t, --take_screenshoot','Take screenshot on every step')
     // .option('-d, --debug','Test run debug mode' ,false)
-    // .option('-t, --take_screenshoot','Take screenshot on every step',false)
     // .option('-r, --repetition_on_error <number>','Repetition on error',0)
     // .option('-p, --parameters <value>',`Test parameters. Usage:  '{"parameter1":"value1","paremeter2":"value2"}'  `,'{}')
     .action(async file=>{

@@ -70,9 +70,22 @@ core.startTest = async (file,options) => {
             if(options.env) run_parameters += ' --env=' + options.env.toLowerCase();
 
             let defaultConfig =` --config='{`
-            defaultConfig += `"file_name":"${file.fileName}", "file_path":"${file.filePath}"`            
+
+            // set default config
+            let fileFullPath = require('path').resolve(file.fileName)
+            let fileName = require('path').basename(file.fileName)           
+            defaultConfig += `"file_name":"${fileName}", "file_full_path":"${fileFullPath}" `   
+
+            // set configs that come with cli 
             if(options.config) defaultConfig += ' , ' + options.config
+
+            // set attach_to_active_web_gui_session
             if(options.attach) defaultConfig += ' , "attach_to_active_web_gui_session":"true" '
+
+            // set take-screenshoot
+            if(options.take_screenshoot) defaultConfig += ' , "take_screenshoot":"true" '
+
+            // end configs
             defaultConfig += `}'`
             
             run_parameters += defaultConfig

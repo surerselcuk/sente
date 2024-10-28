@@ -1,6 +1,7 @@
 
 const { WebDriver } = require('selenium-webdriver');
 const log = require('../logger').log;
+const core = require('./driver');
 
 
 
@@ -11,18 +12,18 @@ let go = async (url) => {
     return new Promise (async (resolve,reject)=>{
         try {
 
-            log(`GO ${url}`)
+            log.uiCommand('GO', url)
             await driver.get(url); await wait_(1);
-            // await senteDriver.takeScreenshot('Go To => ' +url);
+            await core.takeScreenshot(`GO: ${url}`)
             resolve(true);
 
 
         }
         catch (e) {
 
+            core.takeScreenshot('[Failed] Go: ' +url);
             log.error(`Error go url  on [Url: ${url}]`)
             log.error(e);
-            // senteDriver.takeScreenshot('[Failed] Go To => ' +url).then(_=>reject(e));
             reject(e);
         }
     })

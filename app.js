@@ -10,7 +10,7 @@ global.senteConfig = config;
 global.environments = {};
 global.testDataTransfer = {};
 global.config = {}; // For Test Run Config
-
+global.senteConfig.project_path = require('path').resolve(__dirname, '.') ;  // project directory
 
 
 // error handler

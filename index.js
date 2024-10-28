@@ -16,6 +16,7 @@ module.exports.killAllSessionsOnGrid                   = require('./services/ui_
 module.exports.getDriver                               = require('./services/ui_services/driver').getDriver,
 module.exports.getFirstSessionOnGrid                   = require('./services/ui_services/driver').getFirstSessionOnGrid,
 module.exports.go                                      = require('./services/ui_services/go').go,
+module.exports.takeScreenshot                                  = require('./services/ui_services/driver').takeScreenshot,
 module.exports.click                                   = require('./services/ui_services/click').click,
 module.exports.select                                  = require('./services/ui_services/select').select,
 
@@ -48,7 +49,6 @@ global.wait                                             = require('./services/lo
 global.wait_                                            = require('./services/logger').wait_;
 
 
-
 // core service
 global.translate                                        = require('./services/core').translate;
 global.overrideRepo                                     = require('./services/core').overrideRepo;
@@ -57,4 +57,5 @@ global.random                                           = require('./services/co
 
 
 // Ui services
-global.go                                        = require('./services/ui_services/go').go;
+global.go                                               = require('./services/ui_services/go').go;
+global.takeScreenshot                                   = require('./services/ui_services/driver').takeScreenshot;
