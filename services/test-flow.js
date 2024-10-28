@@ -55,7 +55,7 @@ let printTestInfo = (testData) => {
 
     // Test Info Table
     let configTable = new table({
-        colWidths: [25,75],
+        colWidths: [35,100],
         wordWrap: true
     });
     
@@ -143,7 +143,7 @@ module.exports = {
             console.log('\n');
             log('Test started.');
 
-            if(config.test_type === 'web-gui') await testData.buildDriver();
+            if(config.test_type === 'web-gui') await testData.buildDriver();            
             await testData.callback();
           
         }

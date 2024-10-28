@@ -12,8 +12,13 @@ module.exports.argv                                    = require('minimist')(pro
 
 
 // UI Services
+module.exports.killAllSessionsOnGrid                   = require('./services/ui_services/driver').killAllSessionsOnGrid,
+module.exports.getDriver                               = require('./services/ui_services/driver').getDriver,
+module.exports.getFirstSessionOnGrid                   = require('./services/ui_services/driver').getFirstSessionOnGrid,
+module.exports.go                                      = require('./services/ui_services/go').go,
 module.exports.click                                   = require('./services/ui_services/click').click,
 module.exports.select                                  = require('./services/ui_services/select').select,
+
 
 
 
@@ -49,3 +54,7 @@ global.translate                                        = require('./services/co
 global.overrideRepo                                     = require('./services/core').overrideRepo;
 global.dirSeparator                                     = require('./services/core').dirSeparator;
 global.random                                           = require('./services/core').random;
+
+
+// Ui services
+global.go                                        = require('./services/ui_services/go').go;

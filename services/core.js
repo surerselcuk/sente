@@ -4,6 +4,7 @@ module.exports = {};
 const { existsSync, mkdirSync, chmodSync, readdirSync, statSync, rmdirSync} = require('fs');
 const path = require('path');
 core.random = require('random');
+const axios = require('axios');
 const log = require('./logger').log;
 
 
@@ -69,8 +70,9 @@ core.startTest = async (file,options) => {
             if(options.env) run_parameters += ' --env=' + options.env.toLowerCase();
 
             let defaultConfig =` --config='{`
-            defaultConfig += `"file_name":"${file.fileName}", "file_path":"${file.filePath}"`
+            defaultConfig += `"file_name":"${file.fileName}", "file_path":"${file.filePath}"`            
             if(options.config) defaultConfig += ' , ' + options.config
+            if(options.attach) defaultConfig += ' , "attach_to_active_web_gui_session":"true" '
             defaultConfig += `}'`
             
             run_parameters += defaultConfig
@@ -205,15 +207,6 @@ core.cleanEmptyFoldersRecursively = async(folder) => {
 
 
 }
-
-
-
-
-
-
-
-
-
 
 
 
