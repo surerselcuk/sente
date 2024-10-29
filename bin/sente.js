@@ -7,8 +7,8 @@ const { Command } = require('commander');
 const program = new Command();
 
 
-if (process.versions.node && process.versions.node.split('.') && process.versions.node.split('.')[0] < 22) {
-    console.log('NodeJS >= 22 is required to run.');
+if (process.versions.node && process.versions.node.split('.') && process.versions.node.split('.')[0] !== '20') {
+    console.log('NodeJS = 20 is required to run.'); 
     console.log();
     console.log('Please upgrade your NodeJS engine');
     console.log(`Current NodeJS version: ${process.version}`);
