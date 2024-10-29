@@ -6,54 +6,63 @@ const _http = require('selenium-webdriver/http');
 const log = require('../logger').log;
 const jimp = require('jimp');
 const { existsSync, mkdirSync, chmodSync, readdirSync, statSync, rmdirSync} = require('fs');
-const core = require('../core');
+const logger = require('../logger');
 const path = require('path');
-
+const Promise = require('bluebird');
+const  core = require('../core')
 
 
 
 let killAllSessionsOnGrid = async(gridHost) => {
 
     log(`Clearing all sessions on grid [${gridHost}]`)
+ 
+    await clearQueOnGrid(gridHost).catch(e=>{log.warn('[clearQueOnGrid]'); log.warn(e)});
+    await logger.wait_(1);
 
-    await clearQueOnGrid(gridHost);
-    await wait_();
+    return new Promise(async (resolve,reject) => {
 
-    return axios({
-            method: 'get',
-            timeout: 20000,
-            url: `${gridHost}/status`
-        }, {})
-        .then(async(res) => {
+        try {
 
-            if (res.data.value.nodes[0].slots.length > 0) {
-                
-                for (let i of res.data.value.nodes[0].slots) {
+            axios({
+                method: 'get',
+                timeout: senteConfig.defaultTimeout * 1000,
+                url: `${gridHost}/status`
+            }, {})
+            .then(async(res) => {
+    
+                if (res.data.value.nodes[0].slots.length > 0) {
                     
-                    if(i.session !== null) {                        
-                        let currentDriverForSession = await getDriver(i.session.sessionId,gridHost);
-                        await currentDriverForSession.quit();
-                        await wait_(1);
-                        log(`Session killed on grid(${gridHost}), sessionId: ${i.session.sessionId}`)
-                    } else {
-                        log(`No active session on grid (${gridHost})`)
+                    for (let i of res.data.value.nodes[0].slots) {
+                        
+                        if(i.session !== null) {                        
+                            let currentDriverForSession = await getDriver(i.session.sessionId,gridHost);
+                            await currentDriverForSession.quit();
+                            await wait_(1);
+                            log(`Session killed on grid(${gridHost}), sessionId: ${i.session.sessionId}`)
+                        } 
+    
+    
                     }
+                    resolve(true);
+                } else resolve(true)
+    
+    
+            })
+            .catch((error) => { reject(error); });
+        }
+        catch (e) {
+            reject(e);
+        }
 
 
-                }
-                return Promise.resolve(true);
-            } else return Promise.resolve(true)
+    }).timeout(senteConfig.defaultTimeout * 1000,'[killAllSessionsOnGrid] [Timeout] Kill all sessions on grid')
 
 
-        })
-        .catch((error) => {
-            
-            return Promise.resolve(false);
-
-        })
 
 
 }
+
 let getFirstSessionOnGrid = async(gridHost) => {
 
     log(`Connect to active web-ui session on [${gridHost}]`)
@@ -64,7 +73,7 @@ let getFirstSessionOnGrid = async(gridHost) => {
 
             await axios({
                 method: 'get',
-                timeout: 20000,
+                timeout: senteConfig.defaultTimeout * 1000,
                 url: `${gridHost}/status`
             }, {})
             .then(async(res) => {
@@ -83,84 +92,93 @@ let getFirstSessionOnGrid = async(gridHost) => {
     
                     }
                     
-                    resolve(true);
 
                 } else reject(`No active session on grid (${gridHost})`)
     
     
             })
-            .catch((error) => {
-                
-                return Promise.reject(error);
-    
-            })
+            .catch(e =>  reject(e) );
+
         }
         catch (e) {
-
             reject(e);
         }
 
 
-    })
+    }).timeout(senteConfig.defaultTimeout * 1000,'[getFirstSessionOnGrid] [Timeout] Get Driver On Grid for first session')
 
 
 
 
 }
-let clearQueOnGrid = async(gridHost) => {
-
-    log(`Cleaning Que on Grid (${gridHost})`)
-    return axios({
-            method: 'delete',
-            timeout: 20000,
-            url: `${gridHost}/se/grid/newsessionqueue/queue`,
-            headers: {"X-REGISTRATION-SECRET":""}
-        }, {})
-        .then(async(res) => {
-
-            return Promise.resolve(true);
-        })
-        .catch((error) => {
-            log.error(`Queue clean error on Grid (${gridHost})`)
-            log.error(error)
-            return Promise.resolve(false);
-
-        })
 
 
-}
-let getDriver = async(sessionId,gridHost) => {
+let clearQueOnGrid= async(gridHost) => {
+    
+    return new Promise (async (resolve,reject)=> {
 
-    try {
-
-
-        let currentDriverForSession = new WebDriver(
-            sessionId,
-            new _http.Executor(Promise.resolve(gridHost)
-                .then(
-                    url => new _http.HttpClient(url, null, null))
-            )
-        );
-        
-
-        return Promise.resolve(currentDriverForSession);
-    } catch (e) {
-        return Promise.reject(e);
-    }
-
-};
-let takeScreenshot = (text='') => {
-
-    return new Promise(async (resolve,reject)=>{
         try{
 
-            // is take_screenshoot true and 
+            log(`Cleaning Que on Grid (${gridHost})`)
+
+            axios({
+                    method: 'delete',
+                    timeout: senteConfig.defaultTimeout * 1000,
+                    url: `${gridHost}/se/grid/newsessionqueue/queue`,
+                    headers: {"X-REGISTRATION-SECRET":""}
+                }, {})
+                .then(res => resolve(true))
+                .catch(e =>  reject(e) );    
+        }
+        catch (e) {reject(e)}
+    
+
+    }).timeout(senteConfig.defaultTimeout * 1000,'[clearQueOnGrid] [Timeout] Clear Que On Grid')
+    
+
+
+}
+
+let getDriver= async(sessionId,gridHost) => {
+    
+    return new Promise (async (resolve,reject)=> {
+
+        try{
+
+            let currentDriverForSession = new WebDriver(
+                sessionId,
+                new _http.Executor(Promise.resolve(gridHost)
+                    .then(
+                        url => new _http.HttpClient(url, null, null))
+                )
+            );
+            
+    
+            resolve(currentDriverForSession);
+        }
+        catch (e) {reject(e)}
+    
+
+    }).timeout(senteConfig.defaultTimeout * 1000,'[getDriver] [Timeout] Get Driver On Grid')
+    
+
+
+}
+
+
+
+
+let takeScreenshot = (text='') => {
+    return new Promise(async (resolve,reject)=>{
+    
+        try{
+
+            // is take_screenshoot true 
             if( config.take_screenshoot && config.take_screenshoot === 'true' ) {
 
                 // is exist config.screenshot_directory 
                 if(!config.screenshot_directory) {
-                    log.warn(`Config 'config.screenshot_directory' undefined. If config.take_screenshoot === 'true', config.screenshot_directory  must`)
-                    resolve();
+                    throw new Error(`'config.screenshot_directory' undefined. If config.take_screenshoot === 'true', config.screenshot_directory  must`);                    
                 }
 
                 // is exist screenshot_directory 
@@ -183,25 +201,17 @@ let takeScreenshot = (text='') => {
                                 jimp.read(scrShot)
                                     .then(function (image) {
                                         loadedImage = image;
-                                        return jimp.loadFont(jimp.FONT_SANS_32_BLACK);
-        
+                                        return jimp.loadFont(jimp.FONT_SANS_32_BLACK);        
                                     })
                                     .then(function (font) {
                                         loadedImage
                                             .blit(logo, loadedImage.bitmap.width-200, loadedImage.bitmap.height-120)
                                             .print(font, 10, loadedImage.bitmap.height-50, text)
                                             .resize(1400,jimp.AUTO)
-                                            .write(imgFile);
-        
-
-        
+                                            .write(imgFile);        
                                         resolve();
                                     })
-                                    .catch(function (err) {
-                                        log.error(`Error on takeScreenshot`)
-                                        console.log(err);
-                                        resolve();
-                                    });
+                                    .catch(err => reject(err));
                             })
                         })
 
@@ -210,21 +220,13 @@ let takeScreenshot = (text='') => {
 
 
             }
-            else {
-                resolve();
-            }
+            else resolve(true);
                 
 
 
-
         }
-        catch (e) {
-            log.warn(`Error on take Screenshot`)
-            console.log(e);
-            resolve();
-
-        }
-    })
+        catch (e) {reject(e)}
+    }).timeout(senteConfig.defaultTimeout*1000,'[takeScreenshot] [Timeout] Take Screenshot')
 
 
 }
@@ -235,8 +237,6 @@ module.exports.killAllSessionsOnGrid = killAllSessionsOnGrid;
 module.exports.getDriver = getDriver;
 module.exports.getFirstSessionOnGrid = getFirstSessionOnGrid;
 module.exports.takeScreenshot = takeScreenshot;
-
-
 
 
 

@@ -15,13 +15,13 @@ global.senteConfig.project_path = require('path').resolve(__dirname, '.') ;  // 
 
 // error handler
 process
-  .on('unhandledRejection', (reason) => {
-    log.error('Unhandled Rejection at Promise');
-    log.error(reason);
+  .on('unhandledRejection', (reason) => {  
+    log.error(reason,'Unhandled Rejection at Promise');
+    process.exit();
   })
-  .on('uncaughtException', err => {
-    log.error('Uncaught Exception thrown');
-    log.error(err);
+  .on('uncaughtException', err => {    
+    log.error(err,'Uncaught Exception thrown');
+    process.exit();
   });
   
 // clear console  

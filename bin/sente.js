@@ -78,7 +78,7 @@ program
     .arguments('<file> [options]')
     .option('--env <value>',`[Environment] Usage: --env=dev-env1` )
     .option('--config <value>',`[Override Config] Usage: --config=' "parameter1":"value1", "parameter2":["valueX","valueY"], "parameter3":{"parameter4":"valueZ"} '`)
-    .option('-a, --attach','Connect to active web-ui session')
+    .option('-a, --attach','If there is an open Web UI session (driver), connect; otherwise, open a new session (build driver).')
     .option('-t, --take_screenshoot','Take screenshot on every step')
     // .option('-d, --debug','Test run debug mode' ,false)
     // .option('-r, --repetition_on_error <number>','Repetition on error',0)

@@ -21,6 +21,8 @@ ${colors.yellow(figures.play + ' Next Generation Test Automation Framework')}
 `;
 config.senteVersion = packageJson.version;
 config.testTypes = ['web-gui','backend','performance'];
+config.uiClassTimeout = 30; // for ui class default timeout [second]
+config.defaultTimeout = 30; // default timeout for general usage [second]
 
 
 

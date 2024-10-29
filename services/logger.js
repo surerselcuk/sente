@@ -5,7 +5,7 @@ const boxen = require('boxen');
 const colors = require('chalk');
 const figures = require('figures');
 const styles = {
-    error: colors.redBright.bold,
+    error: colors.bgRed.whiteBright.bold,
     failedCase: colors.bgRed.whiteBright.bold,
     passedCase: colors.bgGreen.whiteBright.bold,
     success: colors.green.bold,
@@ -18,7 +18,6 @@ const styles = {
     case: colors.magenta.bold,
     helper: colors.cyan.bold
 };
-
 
 
 
@@ -63,44 +62,55 @@ logger.log = (logValue,opt={boxen:false}) => {
 
 }
 
-logger.log.error = (logValue_,opt={boxen:false}) => {
+logger.log.error = (logValue_,source='') => {
     
-    try {logValue = logValue_.toString() } catch (e) {}
-    if(opt.boxen) console.log(boxen(colors.white('[' + logger.now() + '] ') + colors.red.bold(figures.cross + ' [ERROR] ') + logValue,{borderColor:'red'}))
-    else console.log('[' + logger.now() + '] ' + colors.red.bold(figures.cross + ' [ERROR] ') + logValue)
+    try {logValue = JSON.stringify(logValue_, Object.getOwnPropertyNames(logValue_))  } catch (e) {logValue = logValue_.toString()}
 
-    console.log(logValue)
+    if(source.toString().trim() !=='') source = `[${source}]\n`
+
+    console.log('[' + logger.now() + '] ' + figures.cross + '  ' + styles.error('[ERROR]') + ' ' + colors.red(source) + colors.red(logValue))
+
+  
 
 
     
 
 }
-logger.log.warn = (logValue,opt={boxen:false}) => {
+logger.log.warn = (logValue_,source='') => {
     
+    try {logValue = JSON.stringify(logValue_, Object.getOwnPropertyNames(logValue_))  } catch (e) {logValue = logValue_.toString()}    
+    if(source.toString().trim() !=='') source = `[${source}]\n`
+    // console.log('[' + logger.now() + ']  ' + styles.warn('[WARN]') + ' ' + figures.warning + ' ' + colors.yellow(source) + colors.yellow(logValue))
+    console.log('[' + logger.now() + '] ' + figures.warning + '  ' + styles.warn('[WARN]') + ' ' + colors.yellow(source) + colors.yellow(logValue))
 
-    if(logValue){
-        if(isObject(logValue))logValue=JSON.stringify(logValue);
-        else logValue=logValue.toString();
-    }
-    if(opt.boxen) console.log(boxen(colors.yellow('[' + logger.now() + '] ') + colors.yellow.bold(figures.warning + ' [WARN] ') + logValue,{borderColor:'red'}))
-    else console.log('[' + logger.now() + '] ' + colors.yellow.bold(figures.warning + ' [WARN] ') + logValue)
 
 }
 
-logger.log.success = (logValue) => {
-    if(logValue){
-        if(isObject(logValue))logValue=JSON.stringify(logValue);
-        else logValue=logValue.toString();
-    }
+logger.log.passed = () => {
     
-    console.log(styles.success(` ${figures.tick} ${logValue} `));
+    console.log('\n\n')
+    console.log(styles.success(` ${figures.tick}  [TEST PASSED] `));
+    console.log('\n');
+
+};
+
+
+logger.log.failed = (logValue_) => {
+
+    try {logValue = JSON.stringify(logValue_, Object.getOwnPropertyNames(logValue_))  } catch (e) {logValue = logValue_.toString()}    
+
+    
+    console.log('\n\n' + figures.cross + '  ' + styles.error(`[TEST FAILED]`));
+    console.log(colors.red(logValue))
+    console.log('\n')
+
 
 };
 
 logger.log.uiCommand = (commandName, logValue) => {
 
     text = '[' + logger.now() + '] '
-    text += styles.command(`[${commandName}]${figures.play}  `);
+    text += styles.command(`[${commandName.toString().trim().toUpperCase()}]${figures.play}  `);
     text += logValue.toString()
     console.log(text);
 

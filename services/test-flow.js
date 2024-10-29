@@ -4,6 +4,11 @@ const isObject = require('isobject');
 const argv = require('minimist')(process.argv.slice(2))
 const table = require('cli-table3');
 const colors = require('chalk');
+const { wait } = require('./logger');
+const core = require('./core');
+const driver = require('./ui_services/driver');
+
+
 
 
 
@@ -122,7 +127,10 @@ module.exports = {
 
     testFlow : async(testData = {} ) => {
 
+        let testStartDate = new Date().getTime();
+
         try {
+
 
             // testData validations
             if (!testData.callback) throw new Error('Callback Test Undefined!')
@@ -131,33 +139,59 @@ module.exports = {
             if ( senteConfig.testTypes.indexOf(testData.testDefinations.test_type) === -1) throw new Error('Test Type Undefined!')
             if (!testData.buildDriver) throw new Error('Build Driver class Undefined!')
             
-
+            // set test preparations
             await setEnvironment(testData);
             await overrideConfigs(testData);
             await printTestInfo(testData);
             
 
-              
-
-
-
-
 
 
             console.log('\n');
-            log('Test started.');
+            console.log('[' + now() + '] ' + colors.green('Test started.'))
 
-            if(config.test_type === 'web-gui') await testData.buildDriver();            
+            // generate driver for web-gui tests
+            if(config.test_type === 'web-gui') await testData.buildDriver(); 
+
+            // start test
             await testData.callback();
+
+            // set test duration
+            let testDuration = core.duration({startDate: testStartDate})
+
+            // take screenshot for web-gui tests
+            if(config.test_type === 'web-gui') await driver.takeScreenshot().catch(e => {})
+                
+            // kill drivers for web-gui tests
+            if(config.test_type === 'web-gui' && !config.attach_to_active_web_gui_session ) await driver.killAllSessionsOnGrid(config.grid_host).catch(e=>{ })
+        
+            // test closing information            
+            console.log('[' + now() + '] ' + colors.green(`Test finished success. [Test Duration: ${testDuration}]`))
+            log.passed();
           
         }
         catch (e) {
-    
+            // set test duration
+            let testDuration = core.duration({startDate: testStartDate})
+            
+            // take screenshot for web-gui tests
+            if(config.test_type === 'web-gui') await driver.takeScreenshot().catch(e => {})
 
-            log.error(e,{boxen:true});
+            // kill drivers for web-gui tests
+            if(config.test_type === 'web-gui' && !config.attach_to_active_web_gui_session ) await driver.killAllSessionsOnGrid(config.grid_host).catch(e=>{ })
+
+            // test closing information for Failed test status
+            console.log('[' + now() + '] ' + colors.red(`Test failed! [Test Duration: ${testDuration}]`))
+            log.failed(e);
+
+            // process exit
+            setTimeout(_=>{process.exit();},3000);
 
         }
         finally { 
+
+            // process exit
+            setTimeout(_=>{process.exit();},3000);
             
             
         }

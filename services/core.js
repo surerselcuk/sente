@@ -220,6 +220,39 @@ core.cleanEmptyFoldersRecursively = async(folder) => {
 
 
 }
+core.duration = (opt) => {
+    
+    if(!opt.startDate) throw new Error('startDate must')
+    if(!opt.endDate) opt.endDate = new Date().getTime();
+    if(!opt.unit) opt.unit = 'ms';
+    if (['s','ms'].indexOf(opt.unit) == -1) throw new Error('Unit must ms or s')
+    if(isNaN(opt.startDate) || isNaN(opt.startDate))  throw new Error('Value sent to seconds-converter must be a number.')
+            
+
+    let d, h, m, s 
+    let duration = ''
+
+    s = Math.abs(Math.round(opt.endDate - opt.startDate))
+
+    if (opt.unit === 'ms') s = Math.abs(Math.round(s/1000))
+    if(s<1) s = 1;
+
+  m = Math.floor(s / 60)
+  s = s % 60
+  h = Math.floor(m / 60)
+  m = m % 60
+  d = Math.floor(h / 24)
+  h = h % 24
+
+  if(d !==0) duration += ' ' + d + ' days ';
+  if(h !==0) duration += ' ' + h + ' hours ';
+  if(m !==0) duration += ' ' + m + ' minutes ';
+  if(s !==0) duration += ' ' + s + ' seconds';
+
+//   return {days: d, hours: h, minutes: m, seconds: s}
+    return duration
+
+}
 
 
 
