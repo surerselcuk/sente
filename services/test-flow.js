@@ -136,8 +136,17 @@ module.exports = {
             if (!testData.callback) throw new Error('Callback Test Undefined!')
             if (!testData.testDefinations) throw new Error('Test Definations Undefined!')
             if (!testData.testDefinations.test_name || !testData.testDefinations.test_type) throw new Error('Test Name or Test Type Undefined!')
-            if ( senteConfig.testTypes.indexOf(testData.testDefinations.test_type) === -1) throw new Error('Test Type Undefined!')
             if (!testData.buildDriver) throw new Error('Build Driver class Undefined!')
+
+                // replace sente keywords with space
+                testData.testDefinations.test_name = testData.testDefinations.test_name.replace('<senteTestName>','');                        
+                testData.testDefinations.test_name = testData.testDefinations.test_name.replace('</senteTestName>','');
+                testData.testDefinations.test_type = testData.testDefinations.test_type.replace('<senteTestType>','');
+                testData.testDefinations.test_type = testData.testDefinations.test_type.replace('</senteTestType>','');
+                testData.testDefinations.test_name = testData.testDefinations.test_name.trim();
+                testData.testDefinations.test_type = testData.testDefinations.test_type.trim();
+
+            if ( senteConfig.testTypes.indexOf(testData.testDefinations.test_type) === -1) throw new Error('Test Type Undefined!')
             
             // set test preparations
             await setEnvironment(testData);
