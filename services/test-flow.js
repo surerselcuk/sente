@@ -175,7 +175,7 @@ module.exports = {
             if(config.test_type === 'web-gui' && !config.attach_to_active_web_gui_session ) await driver.killAllSessionsOnGrid(config.grid_host).catch(e=>{ })
         
             // test closing information            
-            console.log('[' + now() + '] ' + colors.green(`Test finished success. [Test Duration: ${testDuration}]`))
+            console.log('[' + now() + '] ' + colors.green(`Test finished success. [Test Duration: ${testDuration}] [<sente>test_success</sente>]`))
             log.passed();
           
         }
