@@ -208,7 +208,9 @@ let takeScreenshot = (text='') => {
                                             .blit(logo, loadedImage.bitmap.width-200, loadedImage.bitmap.height-120)
                                             .print(font, 10, loadedImage.bitmap.height-50, text)
                                             .resize(1400,jimp.AUTO)
-                                            .write(imgFile);        
+                                            .write(imgFile);
+                                            
+                                            if(config.run_on_sente_cloud) console.log('<sente>img</sente>' + imgFile);
                                         resolve();
                                     })
                                     .catch(err => reject(err));

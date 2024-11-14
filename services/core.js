@@ -85,6 +85,9 @@ core.startTest = async (file,options) => {
             // set take-screenshoot
             if(options.take_screenshoot) defaultConfig += ' , "take_screenshoot":"true" '
 
+            // set take-screenshoot
+            if(options.sente) defaultConfig += ' , "run_on_sente_cloud":"true" '
+
             // end configs
             defaultConfig += `}'`
             
