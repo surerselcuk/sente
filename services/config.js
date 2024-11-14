@@ -14,10 +14,16 @@ config.senteLogo = `\n
 ███████╗█████╗  ██╔██╗ ██║   ██║   █████╗  
 ╚════██║██╔══╝  ██║╚██╗██║   ██║   ██╔══╝  
 ███████║███████╗██║ ╚████║   ██║   ███████╗
-╚══════╝╚══════╝╚═╝  ╚═══╝   ╚═╝   ╚══════╝
+╚══════╝╚══════╝╚═╝  ╚═══╝   ╚═╝   ╚══════╝ 
 ${colors.yellow(figures.play + ' Next Generation Test Automation Framework')}
                                      ${'v' + packageJson.version}  
                                                                    
+`;
+config.senteLogoForCloud = `
+SENTE 
+Next Generation Test Automation Framework
+${'v' + packageJson.version}
+
 `;
 config.senteVersion = packageJson.version;
 config.testTypes = ['web-gui','backend','performance'];

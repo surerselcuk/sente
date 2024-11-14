@@ -11,7 +11,6 @@ const driver = require('./ui_services/driver');
 
 
 
-
 let setEnvironment = (testData) => {
 
             // Set Environments     
@@ -63,12 +62,21 @@ let printTestInfo = (testData) => {
         colWidths: [35,100],
         wordWrap: true
     });
+
+    let configTableForSenteCloud = [];    
+   
+
     
     configTable.push([{ colSpan: 2,hAlign: 'center', content: colors.blueBright.bold('CONFIGURATION TABLE')}])
     configTable.push([ {hAlign: 'right', content:colors.blue('Test Name:' )}, colors.whiteBright.bold(testData.testDefinations.test_name) ])
     configTable.push([ {hAlign: 'right', content:colors.blue('\nStart Date:')}, colors.whiteBright(now('YYYY/MM/DD  HH:mm:ss'))])
     configTable.push([colors.blue('Configs'),colors.blue('Values')])
    
+
+    configTableForSenteCloud.push(['Test Name',testData.testDefinations.test_name])
+    configTableForSenteCloud.push(['Start Date',now('YYYY/MM/DD  HH:mm:ss')])
+
+
     global.config = {...testData.testDefinations, ...global.config}
     config.file_path = (config.file_full_path).replace(config.project_path,'')
 
@@ -87,10 +95,25 @@ let printTestInfo = (testData) => {
 
 
         configTable.push([row[0], value.toString()])
+        configTableForSenteCloud.push([row[0], value.toString()])
     }
     
-    console.log(global.senteConfig.senteLogo)
-    console.log(configTable.toString());
+    if(config.run_on_sente_cloud) {
+        console.log(global.senteConfig.senteLogoForCloud);   
+
+        console.log('\n CONFIGURATION TABLE')
+        console.log('---------------------')
+        configTableForSenteCloud.forEach((element,index) => {
+            console.log(element[0] + ' : ' + element[1])
+        });
+
+    }
+    else {
+        console.log(global.senteConfig.senteLogo)
+        console.log(configTable.toString());
+    }
+    
+
 
 }
 let overrideConfigs = (testData) => {
