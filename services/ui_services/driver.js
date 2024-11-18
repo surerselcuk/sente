@@ -210,7 +210,7 @@ let takeScreenshot = (text='') => {
                                             .resize(1400,jimp.AUTO)
                                             .write(imgFile);
                                             
-                                            if(config.run_on_sente_cloud) console.log('<sente>img</sente>' + imgFile);
+                                            if(config.run_on_sente_cloud) console.log(`<senteScreenshot>${imgFile}</senteScreenshot>`);
                                         resolve();
                                     })
                                     .catch(err => reject(err));

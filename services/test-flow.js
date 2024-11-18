@@ -195,7 +195,7 @@ module.exports = {
             if(config.test_type === 'web-gui') await driver.takeScreenshot().catch(e => {})
                 
             // kill drivers for web-gui tests
-            if(config.test_type === 'web-gui' && !config.attach_to_active_web_gui_session ) await driver.killAllSessionsOnGrid(config.grid_host).catch(e=>{ })
+            if(config.test_type === 'web-gui' && !config.attach_to_active_web_gui_session ) await driver.killAllSessionsOnGrid(config.driver_host).catch(e=>{ })
         
             // test closing information            
             console.log('[' + now() + '] ' + colors.green(`Test finished success. [Test Duration: ${testDuration}] `))
@@ -212,7 +212,7 @@ module.exports = {
             if(config.test_type === 'web-gui') await driver.takeScreenshot().catch(e => {})
 
             // kill drivers for web-gui tests
-            if(config.test_type === 'web-gui' && !config.attach_to_active_web_gui_session ) await driver.killAllSessionsOnGrid(config.grid_host).catch(e=>{ })
+            if(config.test_type === 'web-gui' && !config.attach_to_active_web_gui_session ) await driver.killAllSessionsOnGrid(config.driver_host).catch(e=>{ })
 
             // test closing information for Failed test status
             console.log('[' + now() + '] ' + colors.red(`Test failed! [Test Duration: ${testDuration}]`))
