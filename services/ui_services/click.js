@@ -1,97 +1,348 @@
-const log = require ('../logger').log;
 
-let click = {};
+const log = require('../logger').log;
 
-click.click = (element,opt={}) => {
+const Promise = require('bluebird');
+const {locator} = require('./locator')
+const core = require('./driver');
+
+module.exports = {};
+
+
+
+
+
+let click = async (search, opt = {}) => {
+
+    // set default
+    if(!opt.timeout) opt.timeout = senteConfig.uiClassTimeout;
+    if(!opt.type) opt.type = 'xpath'
+    opt.search = search
     
-    core.log('DENEME')
-    // if(!opt.index) opt.index=0; else opt.index = Number(opt.index);
-    // if(!opt.delay) opt.delay=config.defaultDelay;
-    // let webElement;
 
-    // element = element.trim();
-    // return new Promise (async (resolve,reject)=>{
-    //     let elementFullPath = element;
-    //     let elementInfoText = element;
+    return new Promise (async (resolve,reject)=>{        
+        try {
 
-    //     try{
-    //         if(!par.driver) throw new Error('Driver Not Found');
+            log.uiCommand('CLICK', opt.search)
+            
+            let element = await locator(opt)
+            
+            try {
+            
+                
+                await element.click();
+                await core.takeScreenshot(`CLICK: ${opt.search}`).catch(e =>  log.warn(e,'takeScreenshot'))
+            
+            }
+            catch (e) {
+            
+                await driver.actions().click(element).perform(); 
+                await core.takeScreenshot(`CLICK: ${opt.search}`).catch(e =>  log.warn(e,'takeScreenshot'))
+            
+            }
+            
+            
 
-    //         if(element.substr(0,5) === '@css=') {
-    //             elementFullPath = element.substr(5,element.length-5)
-    //             elementInfoText = element.substr(5,element.length-5)
-    //             commandStart('Click',elementInfoText)
-    //             webElement = await par.driver.wait(until.elementLocated(By.css(elementFullPath)),opt.delay*1000);
-    //         }
-    //         else if(element.substr(0,11) === '@className=') {
-    //             elementFullPath = element.substr(11,element.length-5)
-    //             elementInfoText = element.substr(11,element.length-5)
-    //             commandStart('Click',elementInfoText)
-    //             webElement = await par.driver.wait(until.elementLocated(By.className(elementFullPath)),opt.delay*1000);
-    //         }
-    //         else if(element.substr(0,1) === '@') {
-    //             elementFullPath = `//*[${element}]`
-    //             elementInfoText = element.split('=')[1]
-    //         }
-    //         else if(element.substr(0,6) === 'text()') {
-    //             elementFullPath = `//*[${element}]`
-    //             elementInfoText = element.split('=')[1]
-    //         }
-    //         else if(element.substr(0,1) !== '/') {
-    //             elementFullPath = `//*[contains(text(),"${element}")] | //*[contains(@placeholder,"${element}")] `
-    //         }
+              
 
+            resolve(element);
 
+        }
+        catch (e) {
 
-    //         if(webElement) {
-    //             debug(`Try Click (${elementFullPath})`)
-    //             await webElement.click();
-    //         }
-    //         else if(opt.index === 0) {
-    //             commandStart('Click',elementInfoText)
-    //             let timeout = false;
-    //             let timeoutInterval = setTimeout(_=>{timeout=true},opt.delay*1000);
-
-    //             debug('Try Click in loop '+elementFullPath);
-    //             for(let i = 1; i<11; i++){
-    //                 try{
-    //                     let elementFullPath_=`(${elementFullPath})[${i}]`;
-
-    //                     webElement = await par.driver.wait(until.elementLocated(By.xpath(elementFullPath_)),100);
-    //                     await webElement.click();
-    //                     clearTimeout(timeoutInterval);
-    //                     break;
-    //                 }
-    //                 catch (e) {
-    //                     if(timeout) {debug(`Element click error in loop (${elementFullPath})`); debug(e); throw new Error();}
-    //                     if(i===10) { i=0;await wait(1);}
-    //                 }
-    //             }
-    //         }
-    //         else{
-    //             debug(`Try Click (${elementFullPath})[${opt.index}]`)
-    //             commandStart('Click',elementInfoText)
-    //             webElement = await par.driver.wait(until.elementLocated(By.xpath(`(${elementFullPath})[${opt.index}]`)),opt.delay*1000);
-    //             await webElement.click();
-
-    //         }
+            core.takeScreenshot('[Failed] CLICK: ' + opt.search).catch(e =>  log.warn(e,'takeScreenshot'))            
+            log.error(e,`CLICK [${opt.search}]`);
+            reject(e);
+        }
+    }).timeout(opt.timeout*1000,`[Timeout] [CLICK: ${opt.search}]`)
 
 
-    //         await commandSuccess();
-    //         await wait(1);
-    //         await takeScreenshot('Click to ['+elementInfoText+']')
-    //         resolve(webElement);
+}
 
-    //     }
-    //     catch  (e) {
-    //         error(`Error click to ${elementInfoText}  element: ${elementInfoText !== elementFullPath ? elementFullPath : ''}`)
-    //         error(e);
-    //         takeScreenshot('[Failed] Click to ['+elementInfoText+']').then(_=>reject(e));
+click.xpath = async (search, opt = {}) => {
 
-    //     }
-    // })
+    opt.type = 'xpath'
+    const _ = await click(search, opt);    
+    return await Promise.resolve(_);
+
+
+}
+
+click.className = async (search, opt = {}) => {
+
+    opt.type = 'className'
+    const _ = await click(search, opt);
+    return await Promise.resolve(_);
+
 
 }
 
 
-module.exports = click;
+click.css = async (search, opt = {}) => {
+
+    opt.type = 'css'
+    const _ = await click(search, opt);
+    return await Promise.resolve(_);
+
+
+}
+
+click.id = async (search, opt = {}) => {
+
+    opt.type = 'id'
+    const _ = await click(search, opt);
+    return await Promise.resolve(_);
+
+
+}
+
+click.name = async (search, opt = {}) => {
+
+    opt.type = 'name'
+    const _ = await click(search, opt);
+    return await Promise.resolve(_);
+
+
+}
+
+click.linkText = async (search, opt = {}) => {
+
+    opt.type = 'linkText'
+    const _ = await click(search, opt);
+    return await Promise.resolve(_);
+
+
+}
+
+click.partialLinkText = async (search, opt = {}) => {
+
+    opt.type = 'partialLinkText'
+    const _ = await click(search, opt);
+    return await Promise.resolve(_);
+
+
+}
+
+click.tagName = async (search, opt = {}) => {
+
+    opt.type = 'tagName'
+    const _ = await click(search, opt);
+    return await Promise.resolve(_);
+
+
+}
+
+
+let rightClick = async (search, opt = {}) => {
+
+    // set default
+    if(!opt.timeout) opt.timeout = senteConfig.uiClassTimeout;
+    if(!opt.type) opt.type = 'xpath'
+    opt.search = search
+
+    return new Promise (async (resolve,reject)=>{        
+        try {
+
+            log.uiCommand('RIGHT CLICK', opt.search)
+            
+            let element = await locator(opt)
+            await driver.actions().contextClick(element).perform();           
+
+            await core.takeScreenshot(`RIGHT CLICK: ${opt.search}`).catch(e =>  log.warn(e,'takeScreenshot'))
+            resolve(element);
+
+        }
+        catch (e) {
+            core.takeScreenshot('[Failed] RIGHT CLICK: ' + opt.search).catch(e =>  log.warn(e,'takeScreenshot'))            
+            log.error(e,`RIGHT CLICK [${opt.search}]`);
+            reject(e);
+        }
+    }).timeout(opt.timeout*1000,`[Timeout] [RIGHT CLICK: ${opt.search}]`)
+
+
+}
+
+rightClick.xpath = async (search, opt = {}) => {
+
+    opt.type = 'xpath'
+    const _ = await rightClick(search, opt);    
+    return await Promise.resolve(_);
+
+
+}
+
+rightClick.className = async (search, opt = {}) => {
+
+    opt.type = 'className'
+    const _ = await rightClick(search, opt);
+    return await Promise.resolve(_);
+
+
+}
+
+
+rightClick.css = async (search, opt = {}) => {
+
+    opt.type = 'css'
+    const _ = await rightClick(search, opt);
+    return await Promise.resolve(_);
+
+
+}
+
+rightClick.id = async (search, opt = {}) => {
+
+    opt.type = 'id'
+    const _ = await rightClick(search, opt);
+    return await Promise.resolve(_);
+
+
+}
+
+rightClick.name = async (search, opt = {}) => {
+
+    opt.type = 'name'
+    const _ = await rightClick(search, opt);
+    return await Promise.resolve(_);
+
+
+}
+
+rightClick.linkText = async (search, opt = {}) => {
+
+    opt.type = 'linkText'
+    const _ = await rightClick(search, opt);
+    return await Promise.resolve(_);
+
+
+}
+
+rightClick.partialLinkText = async (search, opt = {}) => {
+
+    opt.type = 'partialLinkText'
+    const _ = await rightClick(search, opt);
+    return await Promise.resolve(_);
+
+
+}
+
+rightClick.tagName = async (search, opt = {}) => {
+
+    opt.type = 'tagName'
+    const _ = await rightClick(search, opt);
+    return await Promise.resolve(_);
+
+
+}
+
+
+let doubleClick = async (search, opt = {}) => {
+
+    // set default
+    if(!opt.timeout) opt.timeout = senteConfig.uiClassTimeout;
+    if(!opt.type) opt.type = 'xpath'
+    opt.search = search
+
+    return new Promise (async (resolve,reject)=>{        
+        try {
+
+            log.uiCommand('DOUBLE CLICK', opt.search)
+            
+            let element = await locator(opt)
+            await driver.actions().doubleClick(element).perform();           
+
+            await core.takeScreenshot(`DOUBLE CLICK: ${opt.search}`).catch(e =>  log.warn(e,'takeScreenshot'))
+            resolve(element);
+
+        }
+        catch (e) {
+            core.takeScreenshot('[Failed] DOUBLE CLICK: ' + opt.search).catch(e =>  log.warn(e,'takeScreenshot'))            
+            log.error(e,`DOUBLE CLICK [${opt.search}]`);
+            reject(e);
+        }
+    }).timeout(opt.timeout*1000,`[Timeout] [DOUBLE CLICK: ${opt.search}]`)
+
+
+}
+
+doubleClick.xpath = async (search, opt = {}) => {
+
+    opt.type = 'xpath'
+    const _ = await doubleClick(search, opt);    
+    return await Promise.resolve(_);
+
+
+}
+
+doubleClick.className = async (search, opt = {}) => {
+
+    opt.type = 'className'
+    const _ = await doubleClick(search, opt);
+    return await Promise.resolve(_);
+
+
+}
+
+
+doubleClick.css = async (search, opt = {}) => {
+
+    opt.type = 'css'
+    const _ = await doubleClick(search, opt);
+    return await Promise.resolve(_);
+
+
+}
+
+doubleClick.id = async (search, opt = {}) => {
+
+    opt.type = 'id'
+    const _ = await doubleClick(search, opt);
+    return await Promise.resolve(_);
+
+
+}
+
+doubleClick.name = async (search, opt = {}) => {
+
+    opt.type = 'name'
+    const _ = await doubleClick(search, opt);
+    return await Promise.resolve(_);
+
+
+}
+
+doubleClick.linkText = async (search, opt = {}) => {
+
+    opt.type = 'linkText'
+    const _ = await doubleClick(search, opt);
+    return await Promise.resolve(_);
+
+
+}
+
+doubleClick.partialLinkText = async (search, opt = {}) => {
+
+    opt.type = 'partialLinkText'
+    const _ = await doubleClick(search, opt);
+    return await Promise.resolve(_);
+
+
+}
+
+doubleClick.tagName = async (search, opt = {}) => {
+
+    opt.type = 'tagName'
+    const _ = await doubleClick(search, opt);
+    return await Promise.resolve(_);
+
+
+}
+
+
+
+
+
+module.exports.click = click;
+module.exports.rightClick = rightClick;
+module.exports.doubleClick = doubleClick;
+
+

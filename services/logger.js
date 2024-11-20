@@ -49,6 +49,7 @@ logger.now = (format = 'YYYY-MM-DD HH:mm:ss:SSS') => {
     return moment().format(format).trim();
 }
 
+
 logger.log = (logValue,opt={boxen:false}) => {
     
 
