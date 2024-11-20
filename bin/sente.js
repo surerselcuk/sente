@@ -2,9 +2,12 @@
 
 const config = require ('../services/config');
 const core = require('../services/core')
-
+const { existsSync,cpSync } = require('fs');
+const {dirSeparator,} = require('../services/core');
+const inquirer = require('inquirer');
 const { Command } = require('commander');
 const program = new Command();
+const {spawn} = require("child_process");
 
 
 if (process.versions.node && process.versions.node.split('.') && process.versions.node.split('.')[0] !== '20') {
@@ -34,45 +37,76 @@ program.command('split')
   });
 
 
-// program.command('init')
-// .description('Sente Initialization')
-// // .option('-D, --default','Initlization with default values')
-// .action(async _=>{
+  program.command('init')
+  .description('Sente Initiliazation')
+  .action(async _=>{
 
-//     // Sente exist?
-//     if (existsSync(process.cwd()+dirSeparator()+'config.js') || existsSync(process.cwd()+dirSeparator()+'parameters.js')){
-//         console.log('')
-//         console.log(`Sente is already installed in this directory [${process.cwd()}]`);
-//         console.log(`Existing settings will be lost if you want to re-install`);
-//         console.log('')
+      // Sente exist?
+      if (existsSync(process.cwd()+dirSeparator()+'package.json')){
+          console.log('')
+          console.log(`Found package.json in this directory [${process.cwd()}]`);
+          console.log(`Existing settings will be lost if you want to install`);
+          console.log('')
 
-//         inquirer
-//             .prompt([
+          inquirer
+              .prompt([
 
-//                 {name: "confirmation",
-//                     type: "list",
-//                     message: "Do you want to continue",
-//                     choices: [ "No", "Yes" ]}
+                  {name: "confirmation",
+                      type: "list",
+                      message: "Do you want to continue",
+                      choices: [ "No", "Yes" ]}
 
-//             ])
-//             .then(command_confirm=>{
-//                 if(command_confirm.confirmation !== 'Yes') {
-//                     console.log('')
-//                     console.log('Sente initializing canceled.')
-//                     console.log('')
-//                 }
-//                 else {
-//                     initializerCli(_);
-//                 }
-//             });
+              ])
+              .then(command_confirm=>{
+                  if(command_confirm.confirmation !== 'Yes') {
+                      console.log('')
+                      console.log('Sente initializing canceled.')
+                      console.log('')
+                  }
+                  else {
+                    copySampleProject();
+                  }
+              });
 
-//     }
-//     else {
-//         initializerCli(_);
-//     }
+      }
+      else {
 
-// });
+        copySampleProject();
 
+
+          
+      }
+
+  });
+
+let copySampleProject = async () => {
+
+  console.log(" Sente Initializing\n");
+
+  let sourceFolder =  require('path').resolve(__dirname, '.') + core.dirSeparator() + '..' + core.dirSeparator() + 'assets' + core.dirSeparator() +'sample_project' 
+          
+  await cpSync(sourceFolder,process.cwd(),{recursive: true})
+
+  // npm install command
+  let run = spawn('npm',['install'], {
+    cwd: process.cwd(),
+    // stdio: "inherit",
+    shell: true
+  });
+            
+  run.stdout.on('data', function (stdout) {
+
+      console.log(stdout.toString());      
+                              
+  })
+
+  run.stderr.on('data', function (stderr) {
+
+      console.log(stderr.toString());
+      
+  });
+
+}
 
 program
     .arguments('<file> [options]')
@@ -88,23 +122,7 @@ program
 
         let filePath = `${process.cwd()}${core.dirSeparator()}${file}`;
 
-
         core.startTest({fileName:file, filePath: filePath},program.opts())
-        // // Sente installed?
-        // if (!existsSync(process.cwd()+dirSeparator()+'config.js') || !existsSync(process.cwd()+dirSeparator()+'parameters.js')){
-        //     console.log('')
-        //     console.log(`Sente not installed in this directory [${process.cwd()}]`);
-        //     console.log(`To install Sente, you can run the "sente init" command.`);
-        //     console.log('')
-
-        // }
-        // else {
-        //     await Core.startup();
-
-        //     let file = `${process.cwd()}${Core.dirSeparator()}${_}`;
-
-        //     testRunHandle(file, program.opts());
-        // }
 
     });
 
@@ -112,57 +130,4 @@ program
 
 // program.parse();
 program.parse(process.argv);
-
-
-
-
-
-
-
-// program.usage('<command> [options]');
-// program.usage('<file> [options]');
-// program.version('v' + packageJson.version, '-v, --version', 'current version');
-
-// program.command('init')
-//     .description('Sente Initiliazation')
-//     // .option('-D, --default','Initlization with default values')
-//     .action(async _=>{
-
-//         // Sente exist?
-//         if (existsSync(process.cwd()+dirSeparator()+'config.js') || existsSync(process.cwd()+dirSeparator()+'parameters.js')){
-//             console.log('')
-//             console.log(`Sente is already installed in this directory [${process.cwd()}]`);
-//             console.log(`Existing settings will be lost if you want to re-install`);
-//             console.log('')
-
-//             inquirer
-//                 .prompt([
-
-//                     {name: "confirmation",
-//                         type: "list",
-//                         message: "Do you want to continue",
-//                         choices: [ "No", "Yes" ]}
-
-//                 ])
-//                 .then(command_confirm=>{
-//                     if(command_confirm.confirmation !== 'Yes') {
-//                         console.log('')
-//                         console.log('Sente initializing canceled.')
-//                         console.log('')
-//                     }
-//                     else {
-//                         initializerCli(_);
-//                     }
-//                 });
-
-//         }
-//         else {
-//             initializerCli(_);
-//         }
-
-//     });
-
-
-
-
 

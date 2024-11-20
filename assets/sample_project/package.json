@@ -1,0 +1,22 @@
+{
+  "name": "sentetestproject",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "senteio",
+  "license": "ISC",
+  "imports": {
+    "#helpers": "./helpers/index.js",
+    "#libraries": "./library.index.js",
+    "#files": "./files"
+  },
+  "dependencies": {
+    "bluebird": "^3.7.2",
+    "senteio": "*"
+  }
+}
+
