@@ -27,25 +27,19 @@ let write = async (search,keys, opt = {}) => {
             let element = await locator(opt)
             try { await element.clear(); } catch(e) {}
             
-            // try {
+           
             
                 
-                if(Array.isArray(keys)){
-                    for(let key of keys) {
-                        await element.sendKeys(key);
-                    }
+            if(Array.isArray(keys)){
+                for(let key of keys) {
+                    await element.sendKeys(key);
                 }
-                else {await element.sendKeys(keys);}
-                
-                await core.takeScreenshot(`WRITE: ${keys.toString()}`).catch(e =>  log.warn(e,'takeScreenshot'))
+            }
+            else {await element.sendKeys(keys);}
             
-            // }
-            // catch (e) {
-            
-            //     await driver.actions().click(element).perform(); 
-            //     await core.takeScreenshot(`WRITE: ${keys.toString()}`).catch(e =>  log.warn(e,'takeScreenshot'))
-            
-            // }
+            await core.takeScreenshot(`WRITE: ${keys.toString()}`).catch(e =>  log.warn(e,'takeScreenshot'))
+        
+
             
             
 
