@@ -63,6 +63,9 @@ global.wait_                                            = require('./services/lo
 global.translate                                        = require('./services/core').translate;
 global.overrideRepo                                     = require('./services/core').overrideRepo;
 global.random                                           = require('./services/core').random;
+global.importParameter                                  = require('./services/core').importParameter;
+global.exportParameter                                  = require('./services/core').exportParameter;
+
 
 
 // Ui services

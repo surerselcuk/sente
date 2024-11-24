@@ -1,12 +1,12 @@
 let core={};
 module.exports = {};
 
-const { existsSync, mkdirSync, chmodSync, readdirSync, statSync, rmdirSync} = require('fs');
+const { existsSync, mkdirSync, chmodSync, readdirSync, statSync, rmdirSync, readFileSync, writeFileSync} = require('fs');
 const path = require('path');
 core.random = require('random');
 const axios = require('axios');
 const log = require('./logger').log;
-
+const os = require('os');
 
 
 
@@ -253,6 +253,46 @@ core.duration = (opt) => {
     return duration
 
 }
+
+core.importParameter = async(key) => {
+
+    if(!key) throw new Error('key undefined!')
+
+    let parameterFile = path.join(os.tmpdir(),'sente_parameter_bus.json');
+    if( !existsSync(parameterFile)) throw new Error(`[Import Parameter] ${key} undefined!` )
+    
+    let fileData = await readFileSync(parameterFile);
+
+    let fileJson = JSON.parse(fileData);
+
+    if(!fileJson[key]) throw new Error(`[Import Parameter] ${key} undefined!` )
+        else return fileJson[key]
+
+   
+
+};
+
+core.exportParameter = async(key,value) => {
+
+    if(!key || !value) throw new Error('key or value undefined!')
+
+    let parameterFile = path.join(os.tmpdir(),'sente_parameter_bus.json');
+    let fileJson = {};
+
+    if( existsSync(parameterFile)) {
+        let fileData = await readFileSync(parameterFile);
+        fileJson = JSON.parse(fileData);
+    }
+    
+
+    fileJson[key] = value
+    let writeData = await JSON.stringify(fileJson)
+    await writeFileSync(parameterFile,writeData)
+    return;
+   
+
+};
+
 
 
 
