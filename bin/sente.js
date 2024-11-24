@@ -3,11 +3,12 @@
 const config = require ('../services/config');
 const core = require('../services/core')
 const { existsSync,cpSync } = require('fs');
-const {dirSeparator,} = require('../services/core');
 const inquirer = require('inquirer');
 const { Command } = require('commander');
 const program = new Command();
 const {spawn} = require("child_process");
+const path = require('path');
+
 
 
 if (process.versions.node && process.versions.node.split('.') && process.versions.node.split('.')[0] !== '20') {
@@ -42,7 +43,7 @@ program.command('split')
   .action(async _=>{
 
       // Sente exist?
-      if (existsSync(process.cwd()+dirSeparator()+'package.json')){
+      if (existsSync(path.join(process.cwd(),'package.json'))){
           console.log('')
           console.log(`Found package.json in this directory [${process.cwd()}]`);
           console.log(`Existing settings will be lost if you want to install`);
@@ -83,7 +84,7 @@ let copySampleProject = async () => {
 
   console.log(" Sente Initializing\n");
 
-  let sourceFolder =  require('path').resolve(__dirname, '.') + core.dirSeparator() + '..' + core.dirSeparator() + 'assets' + core.dirSeparator() +'sample_project' 
+  let sourceFolder =  path.join(path.resolve(__dirname, '.'),'assets','sample_project')
           
   await cpSync(sourceFolder,process.cwd(),{recursive: true})
 
@@ -119,8 +120,8 @@ program
     // .option('-r, --repetition_on_error <number>','Repetition on error',0)
     // .option('-p, --parameters <value>',`Test parameters. Usage:  '{"parameter1":"value1","paremeter2":"value2"}'  `,'{}')
     .action(async file=>{
-
-        let filePath = `${process.cwd()}${core.dirSeparator()}${file}`;
+  
+        let filePath = path.join(process.cwd(),file);
 
         core.startTest({fileName:file, filePath: filePath},program.opts())
 

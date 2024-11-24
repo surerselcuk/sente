@@ -9,10 +9,6 @@ const log = require('./logger').log;
 
 
 
-core.dirSeparator=()=>{
-    return (/^win/.test(process.platform)) ? '\\' : '/';
-}
-
 
 core.translate =  (code) => {
     
@@ -169,12 +165,13 @@ core.overrideRepo = (ObjectRepoField,InsertItems,keyWord='XXXX') => {
 
 };
 
-core.generateRandomNamedDirectory = async(path) => {
+core.generateRandomNamedDirectory = async(path_) => {
 
-    if (!existsSync(path))   await mkdirSync(path);
+    if (!existsSync(path_))   await mkdirSync(path_);
+    
 
     let directoryName = core.random.int(100000, 999999) + '' + core.random.int(100000, 999999) + '' + core.random.int(100000, 999999);
-    let fullPath = path + core.dirSeparator() + directoryName
+    let fullPath = path.join(path_,directoryName)
 
     if (!existsSync(fullPath)) {
        

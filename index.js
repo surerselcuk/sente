@@ -38,7 +38,6 @@ module.exports.keyboard                                = require('./services/ui_
 module.exports.log                                     = require('./services/logger').log,
 module.exports.now                                     = require('./services/logger').now,
 module.exports.testFlow                                = require('./services/test-flow').testFlow,
-module.exports.dirSeparator                            = require('./services/core').dirSeparator,
 module.exports.wait                                    = require('./services/core').wait,
 module.exports.wait_                                   = require('./services/core').wait_,
 module.exports.translate                               = require('./services/core').translate,
@@ -63,7 +62,6 @@ global.wait_                                            = require('./services/lo
 // core service
 global.translate                                        = require('./services/core').translate;
 global.overrideRepo                                     = require('./services/core').overrideRepo;
-global.dirSeparator                                     = require('./services/core').dirSeparator;
 global.random                                           = require('./services/core').random;
 
 

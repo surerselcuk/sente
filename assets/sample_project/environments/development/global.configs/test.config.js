@@ -1,3 +1,4 @@
+const path = require('path');
 
 module.exports = {
 
@@ -5,10 +6,10 @@ module.exports = {
     sente_timeout                   : 60*10,
 
     /* download_path, default download directory path*/
-    download_path                   : '/home/surer/ssdisk/dev/sente/sente/senteio_example_project/files/downloads', // download path
+    download_path                   : path.join(process.cwd(),'files','downloads'), // download path
 
     /* screenshot_directory, default screenshot download directory path fro web-gui tests*/
-    screenshot_directory            : '/home/surer/ssdisk/dev/sente/sente/senteio_example_project/files/screen_shots', // Web Gui screenshots directory path
+    screenshot_directory            : path.join(process.cwd(),'files','screen_shots'), // Web Gui screenshots directory path
 
     /* current_language, keyword for translate languge  */
     current_language                : 'en',
@@ -17,7 +18,7 @@ module.exports = {
     browser_type                    : 'firefox',
 
     /* driver_host: current driver url */
-    driver_host                     : 'http://127.0.0.1:4444',
+    driver_host                     : 'http://127.0.0.1:4101',
 
 
 

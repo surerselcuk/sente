@@ -185,12 +185,13 @@ let takeScreenshot = (text='') => {
                 if (!existsSync(config.screenshot_directory))   await mkdirSync(config.screenshot_directory);
 
                 // generate file name
-                let formatFilePath = config.file_path.replace(new RegExp(core.dirSeparator(), 'g'),'_')
+                let formatFilePath = config.file_path.replace(new RegExp(path.sep, 'g'),'_')
                 let imgFileName =  formatFilePath + '_' + Date.now()+'.png';
-                let imgFile=config.screenshot_directory+core.dirSeparator() + imgFileName;
+                let imgFile=path.join(config.screenshot_directory,imgFileName)
 
                 // set sente logo location
-                let logoFile = senteConfig.project_path + core.dirSeparator() + 'assets' + core.dirSeparator() +'img' + core.dirSeparator() + 's.png';
+                let logoFile = path.join(senteConfig.project_path,'assets','img','s.png')
+
 
                 // take screenshot
                 await driver.takeScreenshot()
