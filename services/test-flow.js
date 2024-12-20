@@ -75,6 +75,7 @@ let printTestInfo = (testData) => {
 
     configTableForSenteCloud.push(['Test Name',testData.testDefinations.test_name])
     configTableForSenteCloud.push(['Start Date',now('YYYY/MM/DD  HH:mm:ss')])
+    configTableForSenteCloud.push(['Sente Version',senteConfig.senteVersion])
 
 
     global.config = {...testData.testDefinations, ...global.config}
@@ -99,13 +100,14 @@ let printTestInfo = (testData) => {
     }
     
     if(config.run_on_sente_cloud) {
-        console.log(global.senteConfig.senteLogoForCloud);   
-
-        console.log('\n CONFIGURATION TABLE')
+           
+        console.log('\n\n CONFIGURATION TABLE')
         console.log('---------------------')
-        configTableForSenteCloud.forEach((element,index) => {
+        for ( let element of configTableForSenteCloud ) {
             console.log(element[0] + ' : ' + element[1])
-        });
+        }
+        console.log('------------------------------------------------------------------------------------\n');
+
 
     }
     else {
