@@ -215,7 +215,7 @@ let runSections = async(sections) => {
                         // print section info                        
                         console.log('[' + now() + '] ' + colors.green(figures.play + `  ${value.sectionName} running`) + (value.reRun > 0 ? `[Run Count: ${sectionRunCount}]` : '') )
                         // if any rule and runCount first, print rule info
-                        if(sectionRunCount === 1 ) console.log('[' + now() + '] ' + colors.yellow('Section Rule: ') + ruleInfoString)
+                        if(sectionRunCount === 1 ) console.log('[' + now() + '] ' + colors.white(figures.hamburger + ' Section Rule: ') + ruleInfoString)
 
 
                         
