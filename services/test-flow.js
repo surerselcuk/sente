@@ -7,6 +7,7 @@ const colors = require('chalk');
 const { wait } = require('./logger');
 const core = require('./core');
 const driver = require('./ui_services/driver');
+const figures = require('figures');
 
 testFlow = {};
 
@@ -169,12 +170,13 @@ let runSections = async(sections) => {
 
                 // set current section index
                 currentSectionIndex = sectionProperties.findIndex(section => section.sectionName === sections[index].sectionName);
+                
 
                 let value = sections[index];
 
                 // eğer jumpToSectionIndex -1 den büyükse, bu iterasyonu koşma, sections ları jump indexe göre düzenle ve iterasyonu baştan başlat.
                 if(jumpToSectionIndex > -1){
-
+                     
                     sections = sectionProperties.slice(jumpToSectionIndex);
                     jumpToSectionIndex = -1;
 
@@ -183,11 +185,13 @@ let runSections = async(sections) => {
                 }
 
                 
+
+                
                 // set section rule info
                 let ruleInfoString = 'If this section fails' ;
                 if(value.reRun > 0) ruleInfoString += ', it will retry the run ' + colors.blueBright(value.reRun) +' times';
                 if(value.reRun > 0 ) ruleInfoString += ' and if the error persists'
-                if(value.jumpToSectionIndex > -1) ruleInfoString += `, it will jump to ` + colors.blueBright(sections[value.jumpToSectionIndex].sectionName); 
+                if(value.jumpToSectionIndex > -1) ruleInfoString += `, it will jump to ` + colors.blueBright(sectionProperties[value.jumpToSectionIndex].sectionName); 
 
                 let failOptionsString = '';
                 switch (value.failOptions) {
@@ -209,7 +213,7 @@ let runSections = async(sections) => {
                         sectionRunCount ++;
 
                         // print section info                        
-                        console.log('[' + now() + '] ' + colors.green(`${value.sectionName} started.`) + (value.reRun > 0 ? `[Run Count: ${sectionRunCount}]` : '') )
+                        console.log('[' + now() + '] ' + colors.green(figures.play + `  ${value.sectionName} running`) + (value.reRun > 0 ? `[Run Count: ${sectionRunCount}]` : '') )
                         // if any rule and runCount first, print rule info
                         if(sectionRunCount === 1 ) console.log('[' + now() + '] ' + colors.yellow('Section Rule: ') + ruleInfoString)
 
@@ -252,7 +256,7 @@ let runSections = async(sections) => {
 
                             // eğer jump varsa ilgili sectiona atla
                             if(value.jumpToSectionIndex > -1) {
-                                testFlow.jump(sections[value.jumpToSectionIndex].sectionName)                                                           
+                                testFlow.jump(sectionProperties[value.jumpToSectionIndex].sectionName)                                                           
 
                             }
 
