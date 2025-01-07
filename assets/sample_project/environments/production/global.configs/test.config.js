@@ -5,6 +5,9 @@ module.exports = {
     /* sente_timeout, [seconds] If the test is not completed within this period, the test will be automatically terminated as failed. */
     sente_timeout                   : 60*10,
 
+    /* This parameter determines how many times the test run will be re-run if the test case receives an error. If it is zero, the test will not be re-run in case of an error. */
+    number_of_test_run_repetitions_on_error : 0,
+
     /* download_path, default download directory path*/
     download_path                   : path.join(process.cwd(),'files','downloads'), // download path
 

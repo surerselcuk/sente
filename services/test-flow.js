@@ -14,7 +14,6 @@ testFlow = {};
 let sectionProperties = [];
 let currentSectionIndex = 0;
 let sectionErrors = [];
-let sectionErrorsPropogated = false;
 let jumpToSectionIndex = -1; // if jump command run, set to this index
 
 
@@ -59,6 +58,11 @@ let setEnvironment = (testData) => {
             // set current language
             if(!global.senteConfig.languages.keywords) global.senteConfig.languages.keywords = global.senteConfig.defaultLanguageKeywords
             if(!global.config.current_language) global.config.current_language = global.senteConfig.defaultLanguage;
+            
+            // set default parameters
+            if(!global.config.number_of_test_run_repetitions_on_error) global.config.number_of_test_run_repetitions_on_error = 0;
+            
+
 
 }
 let printTestInfo = (testData) => {
@@ -66,7 +70,7 @@ let printTestInfo = (testData) => {
 
     // Test Info Table
     let configTable = new table({
-        colWidths: [35,100],
+        colWidths: [45,100],
         wordWrap: true
     });
 
@@ -309,122 +313,150 @@ testFlow.testFlow = async(testData = {} ) => {
 
 
 
-            console.log('\n');
-            console.log('[' + now() + '] ' + colors.green('Test started.'))
+
 
             // generate driver for web-gui tests
             if(config.test_type === 'web-gui') await testData.buildDriver(); 
 
-            
-            /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            // start test
+
+            //Handle Test Run Count     
+            for(let testRunCount = 1; testRunCount <= config.number_of_test_run_repetitions_on_error + 1; testRunCount++){
 
 
-            // Have any sectinons?
-            if( Object.keys(section).length === 0){
+                console.log('\n');
+                console.log('[' + now() + '] ' + colors.green('Test started.' + ( Number(config.number_of_test_run_repetitions_on_error) > 0  ? ` [Run Count: ${testRunCount}]`:'') ) )
 
-                await global.test();
+                try {
 
-            }
-            else {               
-
-                    
-                // get section properties
-                for await (let [index, key] of Object.keys(section).entries()) {
-                    if (section.hasOwnProperty(key)) {
-                        
-                        let key_ = key.split('|');
-                        let sectionName = key_[0].trim();
-                        sectionProperties.push({sectionName: sectionName, function: section[key]})
-
-                        // set default
-                        sectionProperties[index]['reRun'] = 0;
-                        sectionProperties[index]['jumpToSectionIndex'] = -1;
-                        sectionProperties[index]['failOptions'] = 'exitAndFailed';
-
-                        // handle runs
-                        if (key_.length > 1) {
-
-                            let sectionRules_ = key_[1].split(',');                            
-
-                            if(sectionRules_.length>0) {
-                                for await ( let value of sectionRules_ ) {
-
-                                    
-                                    
-                                    //get reRun rule
-                                    if(value.toString().toLowerCase().includes('rerun')) {
-                                        let reRunValue = value.split(':')[1];
-                                        if(reRunValue) sectionProperties[index]['reRun'] = (Number(reRunValue) > 3 ? 3 : Number(reRunValue)); 
-                                    }
-
-                                    // get Jump rule
-                                    if(value.toString().toLowerCase().includes('jump')) {
-                                        let jumpValue = value.split(':')[1];
-                                        if(jumpValue) {
-                                            
-                                            // jumpValue değerini içeren sections objesindeki keyin indexini bul 
-                                            let jumpIndex = Object.keys(section).findIndex(secKey => secKey.split('|')[0].trim() === jumpValue.toString().trim());
-                                            sectionProperties[index]['jumpToSectionIndex'] = jumpIndex;
-
-                                        }
-                                    }
-
-                                    // get failOptions rule
-                                    if(value.toString().toLowerCase().includes('failoptions')) {
-                                        let throwError = value.split(':')[1];
-                                        if(throwError && throwError.toString().toLowerCase().includes('exitandfailed')) {
-                                            sectionProperties[index]['failOptions'] = 'exitAndFailed';
-
-                                        }
-                                        if(throwError && throwError.toString().toLowerCase().includes('continueandnofailed')) {
-                                            sectionProperties[index]['failOptions'] = 'continueAndNoFailed';
-
-                                        }
-                                        if(throwError && throwError.toString().toLowerCase().includes('continueandfailed')) {
-                                            sectionProperties[index]['failOptions'] = 'continueAndFailed';
-
-                                        }
-                                    }
-
-
-                                }
-                                
-
-
-                            }
-                            
-                        }
-
-
-                        // if jump rule > -1  and failOptions=exitAndFailed , failOptions default to continueAndFailed
-                        if( sectionProperties[index]['failOptions'] === 'exitAndFailed' &&  sectionProperties[index]['jumpToSectionIndex'] > -1)  sectionProperties[index]['failOptions'] = 'continueAndFailed'
-    
-                        
-                    }
-                }
-
-
-                // run sections
-                await runSections(sectionProperties);
+                     sectionProperties = [];
+                     currentSectionIndex = 0;
+                     sectionErrors = [];
+                     jumpToSectionIndex = -1;
                 
+                    /* Start Test Run
+                    **************************************************************************************/
+                    
+        
+                        // Have any sections?
+                        if( Object.keys(section).length === 0){
+        
+                            await global.test();
+        
+                        }
+                        else {               
+        
+                                
+                            // get section properties
+                            for await (let [index, key] of Object.keys(section).entries()) {
+                                if (section.hasOwnProperty(key)) {
+                                    
+                                    let key_ = key.split('|');
+                                    let sectionName = key_[0].trim();
+                                    sectionProperties.push({sectionName: sectionName, function: section[key]})
+        
+                                    // set default
+                                    sectionProperties[index]['reRun'] = 0;
+                                    sectionProperties[index]['jumpToSectionIndex'] = -1;
+                                    sectionProperties[index]['failOptions'] = 'exitAndFailed';
+        
+                                    // handle runs
+                                    if (key_.length > 1) {
+        
+                                        let sectionRules_ = key_[1].split(',');                            
+        
+                                        if(sectionRules_.length>0) {
+                                            for await ( let value of sectionRules_ ) {
+        
+                                                
+                                                
+                                                //get reRun rule
+                                                if(value.toString().toLowerCase().includes('rerun')) {
+                                                    let reRunValue = value.split(':')[1];
+                                                    if(reRunValue) sectionProperties[index]['reRun'] = (Number(reRunValue) > 3 ? 3 : Number(reRunValue)); 
+                                                }
+        
+                                                // get Jump rule
+                                                if(value.toString().toLowerCase().includes('jump')) {
+                                                    let jumpValue = value.split(':')[1];
+                                                    if(jumpValue) {
+                                                        
+                                                        // jumpValue değerini içeren sections objesindeki keyin indexini bul 
+                                                        let jumpIndex = Object.keys(section).findIndex(secKey => secKey.split('|')[0].trim() === jumpValue.toString().trim());
+                                                        sectionProperties[index]['jumpToSectionIndex'] = jumpIndex;
+        
+                                                    }
+                                                }
+        
+                                                // get failOptions rule
+                                                if(value.toString().toLowerCase().includes('failoptions')) {
+                                                    let throwError = value.split(':')[1];
+                                                    if(throwError && throwError.toString().toLowerCase().includes('exitandfailed')) {
+                                                        sectionProperties[index]['failOptions'] = 'exitAndFailed';
+        
+                                                    }
+                                                    if(throwError && throwError.toString().toLowerCase().includes('continueandnofailed')) {
+                                                        sectionProperties[index]['failOptions'] = 'continueAndNoFailed';
+        
+                                                    }
+                                                    if(throwError && throwError.toString().toLowerCase().includes('continueandfailed')) {
+                                                        sectionProperties[index]['failOptions'] = 'continueAndFailed';
+        
+                                                    }
+                                                }
+        
+        
+                                            }
+                                            
+        
+        
+                                        }
+                                        
+                                    }
+        
+        
+                                    // if jump rule > -1  and failOptions=exitAndFailed , failOptions default to continueAndFailed
+                                    if( sectionProperties[index]['failOptions'] === 'exitAndFailed' &&  sectionProperties[index]['jumpToSectionIndex'] > -1)  sectionProperties[index]['failOptions'] = 'continueAndFailed'
+                
+                                    
+                                }
+                            }
+        
+        
+                            // run sections
+                            await runSections(sectionProperties);
+                            
+        
+                        }
+        
+                    
+                        
+                    /* End Test Run
+                    **************************************************************************************/
+                    
+                    if(sectionErrors.length>0) throw new Error(sectionErrors);
+                    
+                    break;
 
-            }
 
+                
+                }
+                catch (e) {
+
+                    log.error(e);
+                    
+                    if(testRunCount === Number(config.number_of_test_run_repetitions_on_error) + 1){
+
+                        if(sectionErrors.length>0) throw new Error(sectionErrors);
+                        else throw new Error(e);
+
+                    } 
+                
+                }
             
-
-             
-
+                
+            } 
             
-
-
-
-
-
-
-
-
-            /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            
 
             // set test duration
             let testDuration = core.duration({startDate: testStartDate})
@@ -440,11 +472,7 @@ testFlow.testFlow = async(testData = {} ) => {
             if(config.run_on_sente_cloud) console.log('<sente>test_success</sente>');
             
             
-            if(sectionErrors.length>0)  {
-                sectionErrorsPropogated = true;
-                throw new Error(sectionErrors);
-            }
-            else log.passed();
+            log.passed();
           
         }
         catch (e) {
@@ -458,17 +486,9 @@ testFlow.testFlow = async(testData = {} ) => {
             if(config.test_type === 'web-gui' && !config.attach_to_active_web_gui_session ) await driver.killAllSessionsOnGrid(config.driver_host).catch(e=>{ })
 
             // test closing information for Failed test status
-            console.log('[' + now() + '] ' + colors.red(`Test failed! [Test Duration: ${testDuration}]`))
-            
-
-            if(sectionErrors.length>0 && !sectionErrorsPropogated){
-                for ( let error of sectionErrors ) {
-                    log.error(error)
-                }
-            }
+            console.log('[' + now() + '] ' + colors.red(`Test failed! [Test Duration: ${testDuration}]`))            
 
             log.failed(e);
-
 
 
             // process exit
