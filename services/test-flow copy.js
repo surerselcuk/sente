@@ -8,8 +8,7 @@ const { wait } = require('./logger');
 const core = require('./core');
 const driver = require('./ui_services/driver');
 
-testFlow = {};
-
+let testFlow = {};
 
 let sectionProperties = [];
 let currentSectionIndex = 0;
@@ -161,23 +160,11 @@ let runSections = async(sections) => {
     return new Promise( async (resolve,reject)=> {
         try{
     
-            for (let index = 0 ; index < sections.length ; index++) {
+            for await (let [index,value] of sections.entries()) {
 
                 // set current section index
-                currentSectionIndex = sectionProperties.findIndex(section => section.sectionName === sections[index].sectionName);
-
-                let value = sections[index];
-
-                // eğer jumpToSectionIndex -1 den büyükse, bu iterasyonu koşma, sections ları jump indexe göre düzenle ve iterasyonu baştan başlat.
-                if(jumpToSectionIndex > -1){
-
-                    sections = sectionProperties.slice(jumpToSectionIndex);
-                    jumpToSectionIndex = -1;
-
-                    index = -1
-                    continue;
-                }
-
+                currentSectionIndex = index;
+                
                 
                 // set section rule info
                 let ruleInfoString = 'If this section fails' ;
@@ -248,7 +235,7 @@ let runSections = async(sections) => {
 
                             // eğer jump varsa ilgili sectiona atla
                             if(value.jumpToSectionIndex > -1) {
-                                testFlow.jump(sections[value.jumpToSectionIndex].sectionName)                                                           
+                                //jump                                                               
 
                             }
 
@@ -276,9 +263,9 @@ let runSections = async(sections) => {
 
 }
 
+module.exports = {
 
-
-testFlow.testFlow = async(testData = {} ) => {
+    testFlow : async(testData = {} ) => {
 
         let testStartDate = new Date().getTime();
 
@@ -483,9 +470,9 @@ testFlow.testFlow = async(testData = {} ) => {
             
         }
     
-};
+    },
 
-testFlow.jump = (sectionName='') => {
+    jump : (sectionName='') => {
         
         if(sectionProperties.length>0){
 
@@ -517,10 +504,7 @@ testFlow.jump = (sectionName='') => {
 
 
 
-}
+    }
     
 
-
-
-
-module.exports = testFlow;
+}

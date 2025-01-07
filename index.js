@@ -38,6 +38,7 @@ module.exports.keyboard                                = require('./services/ui_
 module.exports.log                                     = require('./services/logger').log,
 module.exports.now                                     = require('./services/logger').now,
 module.exports.testFlow                                = require('./services/test-flow').testFlow,
+module.exports.jump                                = require('./services/test-flow').jump,
 module.exports.wait                                    = require('./services/core').wait,
 module.exports.wait_                                   = require('./services/core').wait_,
 module.exports.translate                               = require('./services/core').translate,
@@ -65,6 +66,7 @@ global.overrideRepo                                     = require('./services/co
 global.random                                           = require('./services/core').random;
 global.importParameter                                  = require('./services/core').importParameter;
 global.exportParameter                                  = require('./services/core').exportParameter;
+global.jump                                             = require('./services/test-flow').jump;
 
 
 
@@ -77,3 +79,5 @@ global.click                                            = require('./services/ui
 global.rightClick                                       = require('./services/ui_services/click').rightClick;
 global.doubleClick                                      = require('./services/ui_services/click').doubleClick;
 global.write                                            = require('./services/ui_services/write').write;
+
+

@@ -12,6 +12,9 @@ global.testDataTransfer = {};
 global.config = {}; // For Test Run Config
 global.senteConfig.project_path = require('path').resolve(__dirname, '.') ;  // project directory
 
+global.test; // This is test flow object
+global.section = {}; // This is test flow object
+global.sectionRules = {}; // This is test flow object
 
 // error handler
 process
