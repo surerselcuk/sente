@@ -262,15 +262,25 @@ core.importParameter = async(key) => {
 
     if(!key) throw new Error('key undefined!')
 
-    let parameterFile = path.join(os.tmpdir(),'sente_parameter_bus.json');
-    if( !existsSync(parameterFile)) throw new Error(`[Import Parameter] ${key} undefined!` )
+    if(config.run_on_sente_cloud) {
+        if(!config['exported_test_parameter_' + key]) throw new Error(`[Import Parameter] ${key} undefined!` )
+            else return config['exported_test_parameter_' + key]
+    }
+    else {
+
+        let parameterFile = path.join(os.tmpdir(),'sente_parameter_bus.json');
+        if( !existsSync(parameterFile)) throw new Error(`[Import Parameter] ${key} undefined!` )
+        
+        let fileData = await readFileSync(parameterFile);
     
-    let fileData = await readFileSync(parameterFile);
+        let fileJson = JSON.parse(fileData);
+    
+        if(!fileJson['exported_test_parameter_' + key]) throw new Error(`[Import Parameter] ${key} undefined!` )
+            else return fileJson['exported_test_parameter_' + key]
+        
 
-    let fileJson = JSON.parse(fileData);
+    }
 
-    if(!fileJson[key]) throw new Error(`[Import Parameter] ${key} undefined!` )
-        else return fileJson[key]
 
    
 
@@ -278,21 +288,33 @@ core.importParameter = async(key) => {
 
 core.exportParameter = async(key,value) => {
 
-    if(!key || !value) throw new Error('key or value undefined!')
+    if(!key || !value) throw new Error('[exportParameter] key or value undefined!')
+    value = value.toString().trim().replace(/\s+/g, '_')
 
-    let parameterFile = path.join(os.tmpdir(),'sente_parameter_bus.json');
-    let fileJson = {};
-
-    if( existsSync(parameterFile)) {
-        let fileData = await readFileSync(parameterFile);
-        fileJson = JSON.parse(fileData);
-    }
     
+    if(config.run_on_sente_cloud) { 
 
-    fileJson[key] = value
-    let writeData = await JSON.stringify(fileJson)
-    await writeFileSync(parameterFile,writeData)
-    return;
+        console.log(`<senteExportTestParameter>exported_test_parameter_${key}<sente>${value}</senteExportTestParameter>`);
+
+    }else {
+
+
+        let parameterFile = path.join(os.tmpdir(),'sente_parameter_bus.json');
+        let fileJson = {};
+    
+        if( existsSync(parameterFile)) {
+            let fileData = await readFileSync(parameterFile);
+            fileJson = JSON.parse(fileData);
+        }
+        
+    
+        fileJson['exported_test_parameter_' + key] = value
+        let writeData = await JSON.stringify(fileJson)
+        await writeFileSync(parameterFile,writeData)
+        return;
+
+    }
+
    
 
 };
