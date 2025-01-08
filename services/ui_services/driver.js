@@ -182,9 +182,10 @@ let takeScreenshot = (text='') => {
                 }
 
                 // is exist screenshot_directory 
-                if (!existsSync(config.screenshot_directory))   await mkdirSync(config.screenshot_directory);
+                if (!existsSync(config.screenshot_directory))   await mkdirSync(config.screenshot_directory, { recursive: true });
 
-                // generate file name
+
+                    // generate file name
                 let formatFilePath = config.file_path.replace(new RegExp(path.sep, 'g'),'_')
                 let imgFileName =  formatFilePath + '_' + Date.now()+'.png';
                 let imgFile=path.join(config.screenshot_directory,imgFileName)

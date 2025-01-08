@@ -167,7 +167,7 @@ core.overrideRepo = (ObjectRepoField,InsertItems,keyWord='XXXX') => {
 
 core.generateRandomNamedDirectory = async(path_) => {
 
-    if (!existsSync(path_))   await mkdirSync(path_);
+    if (!existsSync(path_))   await mkdirSync(path_, { recursive: true });
     
 
     let directoryName = core.random.int(100000, 999999) + '' + core.random.int(100000, 999999) + '' + core.random.int(100000, 999999);
@@ -176,7 +176,7 @@ core.generateRandomNamedDirectory = async(path_) => {
     if (!existsSync(fullPath)) {
        
         try { 
-            await mkdirSync(fullPath);
+            await mkdirSync(fullPath, { recursive: true });
             await chmodSync(fullPath, '0777');
         } catch (e) {
             log.warn(`Could not set directory permissions [${fullPath}]`)
@@ -191,6 +191,10 @@ core.generateRandomNamedDirectory = async(path_) => {
 core.cleanEmptyFoldersRecursively = async(folder) => {
 
     try {
+
+        if (!existsSync(folder)) {
+            return;
+        }
         let isDir = await statSync(folder).isDirectory();
         if (!isDir) {
           return;
