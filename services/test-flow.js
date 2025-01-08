@@ -8,6 +8,7 @@ const { wait } = require('./logger');
 const core = require('./core');
 const driver = require('./ui_services/driver');
 const figures = require('figures');
+const path = require('path');
 
 testFlow = {};
 
@@ -56,13 +57,26 @@ let setEnvironment = (testData) => {
             if(!global.environments[environment_parent][environment_child]) throw new Error (`Test Environment [${argvForEnvironment}] Undefined!`)
             else global.config = global.environments[environment_parent][environment_child];
 
-            // set current language
-            if(!global.senteConfig.languages.keywords) global.senteConfig.languages.keywords = global.senteConfig.defaultLanguageKeywords
-            if(!global.config.current_language) global.config.current_language = global.senteConfig.defaultLanguage;
+
             
-            // set default parameters
-            if(!global.config.number_of_test_run_repetitions_on_error) global.config.number_of_test_run_repetitions_on_error = 0;
+            /*  set default parameters - [Start] */
             
+                /* current_language, keyword for translate languge  */
+                if(!global.senteConfig.languages.keywords) global.senteConfig.languages.keywords = global.senteConfig.defaultLanguageKeywords
+                if(!global.config.current_language) global.config.current_language = global.senteConfig.defaultLanguage;
+
+                /* This parameter determines how many times the test run will be re-run if the test case receives an error. If it is zero, the test will not be re-run in case of an error. */
+                if(!global.config.number_of_test_run_repetitions_on_error) global.config.number_of_test_run_repetitions_on_error = 0;
+
+                /* download_path, default download directory path*/
+                if(!global.config.download_path) global.config.download_path = path.join(process.cwd(),'files','downloads') ;
+
+                /* screenshot_directory, default screenshot download directory path fro web-gui tests*/
+                if(!global.config.screenshot_directory) global.config.screenshot_directory = path.join(process.cwd(),'files','screen_shots') ;
+
+
+            
+            /*  set default parameters - [End]*/
 
 
 }
@@ -94,6 +108,8 @@ let printTestInfo = (testData) => {
     config.file_path = (config.file_full_path).replace(config.project_path,'')
 
     let tableData = global.config;
+
+    // tabloda görünmesini istemediğimiz configleri kaldır
     delete tableData.test_name;
 
 
@@ -104,7 +120,7 @@ let printTestInfo = (testData) => {
             if(Array.isArray(row[1])) value = row[1].toString();
             else if(isObject(row[1])) value = JSON.stringify(row[1]).toString();
             else value = row [1] 
-        } catch (e) {value = color.red('cannot be shown')}
+        } catch (e) {value = colors.red('cannot be shown')}
 
 
         configTable.push([row[0], value.toString()])
