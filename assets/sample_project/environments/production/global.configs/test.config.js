@@ -4,10 +4,10 @@
         number_of_test_run_repetitions_on_error : 0
 
         # download_path, default download directory path
-        download_path                   : path.join(process.cwd(),'files','downloads')
+        download_path                   : path.join(senteConfig.testRunProjectPath,'files','downloads')
 
         # screenshot_directory, default screenshot download directory path fro web-gui tests
-        screenshot_directory            : path.join(process.cwd(),'files','screen_shots')
+        screenshot_directory            : path.join(senteConfig.testRunProjectPath,'files','screen_shots')
 
         # current_language, keyword for translate languge
         current_language                : 'en'
@@ -16,6 +16,7 @@
         sente_timeout                   : 60*10
 
 */
+
 
 
 const path = require('path');

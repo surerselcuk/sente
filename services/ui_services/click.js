@@ -1,5 +1,5 @@
 
-const log = require('../logger').log;
+const {log,wait_,wait} = require('../logger');
 
 const Promise = require('bluebird');
 const {locator} = require('./locator')

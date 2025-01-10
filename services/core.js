@@ -75,9 +75,6 @@ core.startTest = async (file,options) => {
             // set configs that come with cli 
             if(options.config) defaultConfig += ' , ' + options.config
 
-            // set attach_to_active_web_gui_session
-            if(options.attach) defaultConfig += ' , "attach_to_active_web_gui_session":"true" '
-
             // set take-screenshoot
             if(options.take_screenshoot) defaultConfig += ' , "take_screenshoot":"true" '
 

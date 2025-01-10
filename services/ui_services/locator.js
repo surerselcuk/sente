@@ -1,5 +1,5 @@
 
-const log = require('../logger').log;
+const {log,wait_,wait} = require('../logger');
 const { webdriver } = require('../../index');
 const {until,By} = webdriver
 const Promise = require('bluebird');

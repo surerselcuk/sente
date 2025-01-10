@@ -1,18 +1,258 @@
 module.exports = {};
 
 const axios = require('axios');
-const { WebDriver } = require('selenium-webdriver');
 const _http = require('selenium-webdriver/http');
-const log = require('../logger').log;
+const {log,wait_,wait} = require('../logger');
 const jimp = require('jimp');
 const { existsSync, mkdirSync, chmodSync, readdirSync, statSync, rmdirSync} = require('fs');
 const logger = require('../logger');
 const path = require('path');
 const Promise = require('bluebird');
 const  core = require('../core')
+const { webdriver } = require('../../index');
 
 
 
+/**
+ * Asynchronously builds a driver based on the provided options.
+ *
+ * @param {Object} [opt={}] - Options for building the driver.
+ * @param {boolean} [opt.generate_new_session=false] - Flag to determine whether to generate a new session. Default is false.
+ * @returns {Promise<void>} A promise that resolves when the driver is successfully built.
+ * @throws {Error} Throws an error if mandatory configuration is invalid or if the browser type is unsupported.
+ */
+let buildDriver = async (opt = {}) => {
+
+
+    return new Promise( async (resolve,reject)=> {
+
+        try {
+
+            if(!opt.generate_new_session) opt.generate_new_session=false;
+
+            // Mandatory Config Validation
+            if(!config.browser_type) throw new Error('browser_type invalid')
+            if(!config.driver_host) throw new Error('driver_url invalid')
+
+                
+            // Attach to active web gui session
+            if(!opt.generate_new_session) {
+
+                await getFirstSessionOnGrid(config.driver_host)
+                            .then(async _=>{
+                                driver = await _
+                                let sessionid = await _.session_
+                                config.web_gui_sessionid = sessionid
+
+                                // set download directory
+                                try { config.download_directory = await core.importParameter(config.driver_host+'_download_path');
+                                    log(`Browser download directory set to [${config.download_directory}]`)
+                                 } catch(e){}
+
+                                log(`Driver Up [sessionid: ${sessionid}]`)
+                                resolve();
+                            })
+                            .catch(e=>{
+                                log.warn(e);
+                                opt.generate_new_session = true;
+                            })
+    
+            }
+            else opt.generate_new_session = true;
+
+            if(opt.generate_new_session){
+
+                    // kill all sessions on grid
+                    await killAllSessionsOnGrid(config.driver_host)
+
+            
+                    // set download path
+                    if(config.download_path){
+                        await core.cleanEmptyFoldersRecursively(config.download_path);
+                        await wait_(1);
+                        config.download_directory = await core.generateRandomNamedDirectory(config.download_path);
+                        try { core.exportParameter(config.driver_host+'_download_path' ,config.download_directory ) } catch(e){}
+
+                    }
+
+                // select build function by browse type
+                let buildFunc;
+                switch (config.browser_type) {
+                    case 'firefox'      : 
+
+                        if(helper.buildFirefox && typeof helper.buildFirefox === 'function') buildFunc = helper.buildFirefox
+                        else buildFunc = buildFirefox;
+
+                        break;
+
+                    // case 'chrome'       : await buildChrome();    break;
+
+                    default             : reject('browser_type invalid');
+                }
+
+                // build driver
+                await buildFunc()
+                .then(async _=> { 
+                            driver = await _
+                            let sessionData = await _.session_
+                            config.web_gui_sessionid = sessionData.id_
+                            log(`Driver Up [sessionid: ${sessionData.id_}]`)
+                            resolve(); 
+                        } );
+
+
+            }
+
+
+        }
+
+        catch (e) {
+            reject(e);
+        }
+
+
+                
+    })
+
+}
+/**
+ * Builds a Firefox WebDriver instance with specified options and configurations.
+ * 
+ * @returns {Promise<webdriver.WebDriver>} A promise that resolves to a configured Firefox WebDriver instance.
+ * 
+ * @throws {Error} If there is an issue building the Firefox WebDriver instance.
+ * 
+ * @example
+ * buildFirefox().then(driver => {
+ *     // Use the driver instance
+ * }).catch(error => {
+ *     console.error('Error building Firefox WebDriver:', error);
+ * });
+ * 
+ * @see {@link https://www.selenium.dev/selenium/docs/api/javascript/module/selenium-webdriver/firefox.html|Selenium Firefox Options}
+ * @see {@link https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types|Common MIME Types}
+ */
+let buildFirefox = async () => {
+
+    return new Promise (async (resolve,reject)=>{
+
+        try {
+           
+            log(`Building driver on [${config.browser_type} - ${config.driver_host}]`)
+
+            const options = new webdriver.firefox.Options(); //More Info: https://www.selenium.dev/selenium/docs/api/javascript/module/selenium-webdriver/firefox.html
+    
+            if(config.download_path) {
+                options.setPreference("browser.download.dir", config.download_directory)
+                options.setPreference("browser.download.folderList", 2) // 0: download to the desktop, 1: download to the default "Downloads" directory, 2: use the directory you specify in "browser.download.dir"
+                options.setPreference("browser.download.panel.showing", false)
+                options.setPreference("browser.download.manager.showWhenStarting", false)
+                options.setPreference("browser.helperApps.neverAsk.saveToDisk", "multipart/x-zip,application/zip,application/x-zip-compressed,application/x-compressed,application/msword,application/csv,text/csv,image/png ,image/jpeg, application/pdf, text/html,text/plain,  application/excel, application/vnd.ms-excel, application/x-excel, application/x-msexcel, application/octet-stream") //More Info: https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types
+                options.setPreference("browser.helperApps.alwaysAsk.force", false)
+            }    
+                options.setPreference("security.OCSP.enabled", 0);
+        
+        
+            await new webdriver.Builder()
+                         .forBrowser(config.browser_type)
+                         .setFirefoxOptions(options)        
+                         .usingServer(config.driver_host)
+                         .withCapabilities(webdriver.Capabilities.firefox()
+                         .set("acceptInsecureCerts", true)
+                         .set("acceptSslCerts", true))            
+                         .build()
+                         .then( async driver_=> {
+                                                        
+                            if( config.download_directory )log(`Browser download directory set to [${config.download_directory}]`)
+
+                            await driver_.manage().deleteAllCookies();
+                            await driver_.manage().window().maximize();
+
+                            resolve(driver_);
+                        })
+                        .catch( e => reject(e))
+    
+
+
+        }
+        catch (e) {
+            reject(e);
+
+        }
+
+    }).timeout(senteConfig.defaultTimeout*1000,'[buildFirefox] [Timeout] Build  firefox driver')
+
+ 
+    
+
+
+
+};
+/**
+ * Builds a Chrome WebDriver instance with specified options and configurations.
+ * 
+ * @returns {Promise<webdriver.WebDriver>} A promise that resolves to a configured Chrome WebDriver instance.
+ * 
+ * @throws {Error} If there is an issue building the Chrome WebDriver instance.
+ * 
+ * @example
+ * buildChrome().then(driver => {
+ *     // Use the driver instance
+ * }).catch(error => {
+ *     console.error('Error building Chrome WebDriver:', error);
+ * });
+ * 
+ * @see {@link https://www.selenium.dev/selenium/docs/api/javascript/module/selenium-webdriver/chrome.html|Selenium Chrome Options}
+ */
+let buildChrome = async () => {
+
+    return new Promise (async (resolve,reject)=>{
+
+        try {
+           
+            log(`Building driver on [${config.browser_type} - ${config.driver_host}]`)
+
+            const options = new webdriver.chrome.Options(); //More Info: https://www.selenium.dev/selenium/docs/api/javascript/module/selenium-webdriver/chrome.html
+    
+            if(config.download_path) {
+                options.setUserPreferences({
+                    "download.default_directory": config.download_directory,
+                    "download.prompt_for_download": false,
+                    "profile.default_content_settings.popups": 0,
+                    "safebrowsing.enabled": true
+                });
+            }    
+        
+            await new webdriver.Builder()
+                         .forBrowser(config.browser_type)
+                         .setChromeOptions(options)        
+                         .usingServer(config.driver_host)
+                         .withCapabilities(webdriver.Capabilities.chrome()
+                         .set("acceptInsecureCerts", true)
+                         .set("acceptSslCerts", true))            
+                         .build()
+                         .then( async driver_=> {
+                                                        
+                            if( config.download_directory )log(`Browser download directory set to [${config.download_directory}]`)
+
+                            await driver_.manage().deleteAllCookies();
+                            await driver_.manage().window().maximize();
+
+                            resolve(driver_);
+                        })
+                        .catch( e => reject(e))
+    
+
+
+        }
+        catch (e) {
+            reject(e);
+
+        }
+
+    }).timeout(senteConfig.defaultTimeout*1000,'[buildChrome] [Timeout] Build chrome driver')
+
+};
 let killAllSessionsOnGrid = async(gridHost) => {
 
     log(`Clearing all sessions on grid [${gridHost}]`)
@@ -63,6 +303,14 @@ let killAllSessionsOnGrid = async(gridHost) => {
 
 }
 
+/**
+ * Connects to the active web-ui session on the specified grid host and retrieves the driver for the first active session.
+ *
+ * @param {string} gridHost - The host URL of the grid to connect to.
+ * @returns {Promise<Object>} - A promise that resolves with the driver for the first active session, or rejects with an error message if no active session is found or if an error occurs.
+ *
+ * @throws {Error} - If there is an error connecting to the grid or retrieving the session information.
+ */
 let getFirstSessionOnGrid = async(gridHost) => {
 
     log(`Connect to active web-ui session on [${gridHost}]`)
@@ -139,32 +387,46 @@ let clearQueOnGrid= async(gridHost) => {
 
 }
 
-let getDriver= async(sessionId,gridHost) => {
-    
-    return new Promise (async (resolve,reject)=> {
+/**
+     * Retrieves a WebDriver instance for the specified session ID and grid host.
+     *
+     * @param {string} sessionId - The session ID of the WebDriver instance to retrieve.
+     * @param {string} gridHost - The host URL of the grid where the session is running.
+     * @param {Object} [options={}] - Additional options for configuring the WebDriver instance.
+     * @param {boolean} [options.acceptInsecureCerts=true] - Whether to accept insecure SSL certificates.
+     * @param {boolean} [options.acceptSslCerts=true] - Whether to accept SSL certificates.
+     * @returns {Promise<webdriver.WebDriver>} - A promise that resolves with the WebDriver instance for the specified session.
+     *
+     * @throws {Error} - If there is an error retrieving the WebDriver instance.
+     */
+let getDriver = async (sessionId, gridHost, options = {}) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const defaultOptions = {
+                acceptInsecureCerts: true,
+                acceptSslCerts: true,
+            };
+            const finalOptions = { ...defaultOptions, ...options };
 
-        try{
-
-            let currentDriverForSession = new WebDriver(
+            let currentDriverForSession = new webdriver.WebDriver(
                 sessionId,
                 new _http.Executor(Promise.resolve(gridHost)
-                    .then(
-                        url => new _http.HttpClient(url, null, null))
+                    .then(url => new _http.HttpClient(url, null, null))
                 )
             );
-            
-    
+
+            if (finalOptions.acceptInsecureCerts) {
+                await currentDriverForSession
+                    .manage()
+                    .setTimeouts({ implicit: 10000 });
+            }
+
             resolve(currentDriverForSession);
+        } catch (e) {
+            reject(e);
         }
-        catch (e) {reject(e)}
-    
-
-    }).timeout(senteConfig.defaultTimeout * 1000,'[getDriver] [Timeout] Get Driver On Grid')
-    
-
-
-}
-
+    }).timeout(senteConfig.defaultTimeout * 1000, '[getDriver] [Timeout] Get Driver On Grid');
+};
 
 
 
@@ -241,6 +503,7 @@ module.exports.killAllSessionsOnGrid = killAllSessionsOnGrid;
 module.exports.getDriver = getDriver;
 module.exports.getFirstSessionOnGrid = getFirstSessionOnGrid;
 module.exports.takeScreenshot = takeScreenshot;
+module.exports.buildDriver = buildDriver;
 
 
 

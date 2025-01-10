@@ -4,7 +4,7 @@ const isObject = require('isobject');
 const argv = require('minimist')(process.argv.slice(2))
 const table = require('cli-table3');
 const colors = require('chalk');
-const { wait } = require('./logger');
+const { wait,wait_ } = require('./logger');
 const core = require('./core');
 const driver = require('./ui_services/driver');
 const figures = require('figures');
@@ -66,13 +66,13 @@ let setEnvironment = (testData) => {
                 if(!global.config.current_language) global.config.current_language = global.senteConfig.defaultLanguage;
 
                 /* This parameter determines how many times the test run will be re-run if the test case receives an error. If it is zero, the test will not be re-run in case of an error. */
-                if(!global.config.number_of_test_run_repetitions_on_error) global.config.number_of_test_run_repetitions_on_error = 0;
+                if(!global.config.number_of_test_run_repetitions_on_error) global.config.number_of_test_run_repetitions_on_error = 0;                                
 
                 /* download_path, default download directory path*/
-                if(!global.config.download_path) global.config.download_path = path.join(process.cwd(),'files','downloads') ;
-
+                if(!global.config.download_path) global.config.download_path = path.join(senteConfig.testRunProjectPath,'files','downloads') ;
+                
                 /* screenshot_directory, default screenshot download directory path fro web-gui tests*/
-                if(!global.config.screenshot_directory) global.config.screenshot_directory = path.join(process.cwd(),'files','screen_shots') ;
+                if(!global.config.screenshot_directory) global.config.screenshot_directory = path.join(senteConfig.testRunProjectPath,'files','screen_shots') ;
 
 
             
@@ -313,7 +313,6 @@ testFlow.testFlow = async(testData = {} ) => {
             // testData validations
             if (!testData.testDefinations) throw new Error('Test Definations Undefined!')
             if (!testData.testDefinations.test_name || !testData.testDefinations.test_type) throw new Error('Test Name or Test Type Undefined!')
-            if (!testData.buildDriver) throw new Error('Build Driver class Undefined!')
 
                 // replace sente keywords with space
                 testData.testDefinations.test_name = testData.testDefinations.test_name.replace('<senteTestName>','');                        
@@ -335,23 +334,31 @@ testFlow.testFlow = async(testData = {} ) => {
 
 
 
-            // generate driver for web-gui tests
-            if(config.test_type === 'web-gui') await testData.buildDriver(); 
+
 
 
             //Handle Test Run Count     
             for(let testRunCount = 1; testRunCount <= config.number_of_test_run_repetitions_on_error + 1; testRunCount++){
 
 
-                console.log('\n');
-                console.log('[' + now() + '] ' + colors.green('Test started.' + ( Number(config.number_of_test_run_repetitions_on_error) > 0  ? ` [Run Count: ${testRunCount}]`:'') ) )
 
                 try {
 
+                    /* set default */
                      sectionProperties = [];
                      currentSectionIndex = 0;
                      sectionErrors = [];
                      jumpToSectionIndex = -1;
+                     
+                     global.isFirstPage = true; // Go ile bir sayfa çağrıldığında, tüm test akışı içindeki açılan ilk safya mı olduğunu flag ler. Go ilk çağrıldıktan sonra bu değişken false olur.
+                    
+                    // generate driver for web-gui tests
+                    if(config.test_type === 'web-gui') await driver.buildDriver(); 
+
+                    // print test start info  for only first run
+                    console.log('\n');
+                    console.log('[' + now() + '] ' + colors.green('Test started.' + ( Number(config.number_of_test_run_repetitions_on_error) > 0  ? ` [Run Count: ${testRunCount}]`:'') ) )
+    
                 
                     /* Start Test Run
                     **************************************************************************************/
@@ -484,9 +491,7 @@ testFlow.testFlow = async(testData = {} ) => {
             // take screenshot for web-gui tests
             if(config.test_type === 'web-gui') await driver.takeScreenshot().catch(e => {})
                 
-            // kill drivers for web-gui tests
-            if(config.test_type === 'web-gui' && !config.attach_to_active_web_gui_session ) await driver.killAllSessionsOnGrid(config.driver_host).catch(e=>{ })
-        
+
             // test closing information            
             console.log('[' + now() + '] ' + colors.green(`Test finished success. [Test Duration: ${testDuration}] `))
             if(config.run_on_sente_cloud) console.log('<sente>test_success</sente>');
@@ -501,9 +506,6 @@ testFlow.testFlow = async(testData = {} ) => {
             
             // take screenshot for web-gui tests
             if(config.test_type === 'web-gui') await driver.takeScreenshot().catch(e => {})
-
-            // kill drivers for web-gui tests
-            if(config.test_type === 'web-gui' && !config.attach_to_active_web_gui_session ) await driver.killAllSessionsOnGrid(config.driver_host).catch(e=>{ })
 
             // test closing information for Failed test status
             console.log('[' + now() + '] ' + colors.red(`Test failed! [Test Duration: ${testDuration}]`))            

@@ -50,6 +50,7 @@ logger.now = (format = 'YYYY-MM-DD HH:mm:ss:SSS') => {
 }
 
 
+
 logger.log = (logValue,opt={boxen:false}) => {
     
 
@@ -81,7 +82,6 @@ logger.log.warn = (logValue_,source='') => {
     
     try {logValue = JSON.stringify(logValue_, Object.getOwnPropertyNames(logValue_))  } catch (e) {logValue = logValue_.toString()}    
     if(source.toString().trim() !=='') source = `[${source}]\n`
-    // console.log('[' + logger.now() + ']  ' + styles.warn('[WARN]') + ' ' + figures.warning + ' ' + colors.yellow(source) + colors.yellow(logValue))
     console.log('[' + logger.now() + '] ' + figures.warning + '  ' + styles.warn('[WARN]') + ' ' + colors.yellow(source) + colors.yellow(logValue))
 
 
@@ -94,6 +94,7 @@ logger.log.passed = () => {
     console.log('\n');
 
 };
+
 
 
 logger.log.failed = (logValue_) => {

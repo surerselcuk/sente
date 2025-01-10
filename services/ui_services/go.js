@@ -1,5 +1,5 @@
 
-const log = require('../logger').log;
+const {log,wait_,wait} = require('../logger');
 const core = require('./driver');
 const Promise = require('bluebird');
 
@@ -9,8 +9,10 @@ module.exports = {};
 
 let go = async (url, opt = {}) => {
 
-    // set timeout default
-    if(!opt.timeout) opt.timeout = senteConfig.uiClassTimeout;
+    /* set defaults */        
+        /* timeout */                           if(!opt.timeout) opt.timeout = senteConfig.uiClassTimeout;  // seconds
+
+
 
     return new Promise (async (resolve,reject)=>{        
         try {
@@ -22,6 +24,9 @@ let go = async (url, opt = {}) => {
             
             await core.takeScreenshot(`GO: ${url}`).catch(e =>  log.warn(e,'takeScreenshot'))
             resolve(true);
+        
+
+
 
         }
         catch (e) {
