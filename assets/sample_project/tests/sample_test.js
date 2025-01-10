@@ -6,7 +6,7 @@ test_type = '<senteTestType> web-gui </senteTestType>';  /* [Mandatory field] | 
 /* LIBRARIES
 ********************************************************************************************/
 const { sente, helper, repo, https, Promise } = require('#libraries');
-const { testFlow, argv, log, wait } = sente;
+const { testFlow, argv, log, wait, go } = sente;
 
 
 /* TEST FLOW
