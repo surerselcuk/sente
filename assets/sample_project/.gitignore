@@ -1,0 +1,5 @@
+/node_modules
+/files/downloads
+/files/screen_shots
+/files/sente_files
+/tests/**/.*

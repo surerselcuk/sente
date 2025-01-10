@@ -27,7 +27,7 @@ module.exports = {
     /* sente_timeout, [seconds] If the test is not completed within this period, the test will be automatically terminated as failed. */
     sente_timeout                   : 60*10,
 
-    /* browser_type, for web-gui type tests [options: 'firefox, chrome  */
+    /* browser_type, for web-gui type tests [options: 'firefox, chrome etc. */
     browser_type                    : 'firefox',
 
     /* driver_host: current driver url */

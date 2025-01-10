@@ -1,7 +1,11 @@
-module.exports = {
-
-    login : require('./login').login,
-    buildDriver : require('./build_driver').buildDriver,
+exports = {}
 
 
-}
+/* buildFirefox : require('./build_driver').buildFirefox, */    
+exports.login = require('./login').login
+
+
+
+
+
+module.exports = exports

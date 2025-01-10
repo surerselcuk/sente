@@ -523,7 +523,9 @@ exports.${environmentKey} = {
             console.log(colors.green(figures.tick + '  ' + `Index file updated.`) + '\n   ' + indexFilePath);
 
             setTimeout(_=>{
-              console.log( '\n' + colors.green('New environment generated successfully.\nEnvironment Name: ' + envName + '\nEnvironment Key: ' +environmentKey  ) );
+              console.log( '\n' + colors.green('New environment generated successfully.') );
+              console.log( 'Environment Name: ' + colors.green(envName) );
+              console.log( 'Environment Key : ' + colors.green(environmentKey) );
             },100)
 
           });
