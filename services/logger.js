@@ -28,7 +28,7 @@ let logger={};
 logger.wait = (seconds=3)=> {
     return new Promise(resolve => {
 
-        log(colors.yellow(`[Wait ${seconds}s]`));
+        logger.log(colors.yellow(`[Wait ${seconds}s]`));
         setTimeout(resolve, Number(seconds)*1000);
 
     })
