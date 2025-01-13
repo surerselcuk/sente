@@ -1,16 +1,17 @@
 /* TEST DEFINATIONS 
-********************************************************************************************/    
+********************/    
 test_name = '<senteTestName> TEST_NAME_HERE </senteTestName>';  /* [Mandatory field] */    
-test_type = '<senteTestType> TEST_TYPE_HERE </senteTestType>';  /* [Mandatory field] | options: [web-gui, backend, performance] */
+test_type = '<senteTestType> TEST_TYPE_HERE </senteTestType>';  /* [Mandatory field] | options: [web-gui, backend] */
+
 
 /* LIBRARIES
-********************************************************************************************/
+*************/
 const { sente, helper, repo, https, Promise } = require('#libraries');
 const { testFlow, argv, jump, log, wait, go } = sente;
 
 
 /* TEST FLOW
-********************************************************************************************/
+*************/
 test = async () => {
 
     /*
