@@ -114,6 +114,13 @@ let printTestInfo = (testData) => {
 
     // tabloda görünmesini istemediğimiz configleri kaldır
     delete tableData.test_name;
+    delete tableData.download_path;
+    delete tableData.download_path_on_grid;
+    delete tableData.screenshot_directory;
+    delete tableData.file_name;
+    delete tableData.file_full_path;
+    delete tableData.project_path;
+    delete file_path;
 
 
     for(row of Object.entries(tableData)) {
