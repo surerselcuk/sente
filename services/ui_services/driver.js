@@ -11,8 +11,6 @@ const Promise = require('bluebird');
 const  core = require('../core')
 const { webdriver } = require('../../index');
 
-
-
 /**
  * Asynchronously builds a driver based on the provided options.
  *
@@ -67,10 +65,13 @@ let buildDriver = async (opt = {}) => {
 
             
                     // set download path
+                    let downloadDirectory
                     if(config.download_path){
                         await core.cleanEmptyFoldersRecursively(config.download_path);
                         await wait_(1);
-                        config.download_directory = await core.generateRandomNamedDirectory(config.download_path);
+                        downloadDirectory = await core.generateRandomNamedDirectory(config.download_path);
+                        config.download_directory = downloadDirectory[0];                    
+                        config.download_path_on_grid =  path.join(config.download_path_on_grid,downloadDirectory[1]) 
                         try { core.exportParameter(config.driver_host+'_download_path' ,config.download_directory ) } catch(e){}
 
                     }
@@ -85,7 +86,12 @@ let buildDriver = async (opt = {}) => {
 
                         break;
 
-                    // case 'chrome'       : await buildChrome();    break;
+                    case 'chrome'      : 
+
+                        if(helper.buildChrome && typeof helper.buildChrome === 'function') buildFunc = helper.buildChrome
+                        else buildFunc = buildChrome;
+
+                        break;
 
                     default             : reject('browser_type invalid');
                 }
@@ -129,7 +135,7 @@ let buildDriver = async (opt = {}) => {
  *     console.error('Error building Firefox WebDriver:', error);
  * });
  * 
- * @see {@link https://www.selenium.dev/selenium/docs/api/javascript/module/selenium-webdriver/firefox.html|Selenium Firefox Options}
+ * @see {@link  https://www.selenium.dev/documentation/webdriver/browsers|Options}
  * @see {@link https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types|Common MIME Types}
  */
 let buildFirefox = async () => {
@@ -140,10 +146,10 @@ let buildFirefox = async () => {
            
             log(`Building driver on [${config.browser_type} - ${config.driver_host}]`)
 
-            const options = new webdriver.firefox.Options(); //More Info: https://www.selenium.dev/selenium/docs/api/javascript/module/selenium-webdriver/firefox.html
+            const options = new webdriver.firefox.Options(); //More Info: https://www.selenium.dev/documentation/webdriver/browsers/
     
             if(config.download_path) {
-                options.setPreference("browser.download.dir", config.download_directory)
+                options.setPreference("browser.download.dir", config.download_path_on_grid)
                 options.setPreference("browser.download.folderList", 2) // 0: download to the desktop, 1: download to the default "Downloads" directory, 2: use the directory you specify in "browser.download.dir"
                 options.setPreference("browser.download.panel.showing", false)
                 options.setPreference("browser.download.manager.showWhenStarting", false)
@@ -154,7 +160,7 @@ let buildFirefox = async () => {
         
         
             await new webdriver.Builder()
-                         .forBrowser(config.browser_type)
+                         .forBrowser(webdriver.Browser.FIREFOX)
                          .setFirefoxOptions(options)        
                          .usingServer(config.driver_host)
                          .withCapabilities(webdriver.Capabilities.firefox()
@@ -163,7 +169,10 @@ let buildFirefox = async () => {
                          .build()
                          .then( async driver_=> {
                                                         
-                            if( config.download_directory )log(`Browser download directory set to [${config.download_directory}]`)
+                            if( config.download_directory ){
+                                log(`Browser download directory on worker set to [${config.download_directory}]`)
+                                log(`Browser download directory on selenium grid set to [${config.download_path_on_grid}]`)
+                            }
 
                             await driver_.manage().deleteAllCookies();
                             await driver_.manage().window().maximize();
@@ -202,7 +211,7 @@ let buildFirefox = async () => {
  *     console.error('Error building Chrome WebDriver:', error);
  * });
  * 
- * @see {@link https://www.selenium.dev/selenium/docs/api/javascript/module/selenium-webdriver/chrome.html|Selenium Chrome Options}
+ * @see {@link  https://www.selenium.dev/documentation/webdriver/browsers|Options}
  */
 let buildChrome = async () => {
 
@@ -212,35 +221,54 @@ let buildChrome = async () => {
            
             log(`Building driver on [${config.browser_type} - ${config.driver_host}]`)
 
-            const options = new webdriver.chrome.Options(); //More Info: https://www.selenium.dev/selenium/docs/api/javascript/module/selenium-webdriver/chrome.html
+            const options = new webdriver.chrome.Options(); // More Info: https://www.selenium.dev/documentation/webdriver/browsers/
+       
     
             if(config.download_path) {
+
+                // More Info: https://chromium.googlesource.com/chromium/src/+/refs/heads/main/chrome/common/pref_names.h
                 options.setUserPreferences({
-                    "download.default_directory": config.download_directory,
+                    "download.default_directory": config.download_path_on_grid,
                     "download.prompt_for_download": false,
                     "profile.default_content_settings.popups": 0,
                     "safebrowsing.enabled": true
                 });
             }    
-        
+
+            // More Info: https://peter.sh/experiments/chromium-command-line-switches/
+            options.addArguments("--no-sandbox");
+            options.addArguments("--remote-debugging-pipe"); // Bypass OS security model
+            options.addArguments("--disable-dev-shm-usage"); // overcome limited resource problems
+            options.addArguments("--disable-infobars"); // disabling infobars
+            options.addArguments("--disable-extensions"); // disabling extensions
+            options.addArguments("--disable-gpu"); // applicable to windows os only
+            options.addArguments("--disable-search-engine-choice-screen"); // applicable to windows os only
+            options.addArguments("--disable-application-cache");
+            options.addArguments("--disable-features=DownloadBubble,DownloadBubbleV2"); // disable download popup
+            options.addArguments("--chrome.verbose = false"); //disable logging
+            options.addArguments("--w3c=false");
+            
+
             await new webdriver.Builder()
-                         .forBrowser(config.browser_type)
-                         .setChromeOptions(options)        
-                         .usingServer(config.driver_host)
-                         .withCapabilities(webdriver.Capabilities.chrome()
-                         .set("acceptInsecureCerts", true)
-                         .set("acceptSslCerts", true))            
-                         .build()
-                         .then( async driver_=> {
-                                                        
-                            if( config.download_directory )log(`Browser download directory set to [${config.download_directory}]`)
+            .forBrowser(webdriver.Browser.CHROME)
+            .usingServer(config.driver_host)
+            .setChromeOptions(options.setAcceptInsecureCerts(true))
+            .build()
+            .then( async driver_=> {
+                                            
+                if( config.download_directory ){
+                    log(`Browser download directory on worker set to [${config.download_directory}]`)
+                    log(`Browser download directory on selenium grid set to [${config.download_path_on_grid}]`)
+                }
 
-                            await driver_.manage().deleteAllCookies();
-                            await driver_.manage().window().maximize();
+               await driver_.manage().deleteAllCookies();
+               await driver_.manage().window().maximize();
 
-                            resolve(driver_);
-                        })
-                        .catch( e => reject(e))
+               resolve(driver_);
+           })
+           .catch( e => reject(e))
+
+
     
 
 
@@ -289,10 +317,11 @@ let killAllSessionsOnGrid = async(gridHost) => {
     
     
             })
-            .catch((error) => { reject(error); });
+            .catch((error) => { log.warn(error); resolve(true); });
         }
         catch (e) {
-            reject(e);
+            log.warn(error); 
+            resolve(true);
         }
 
 

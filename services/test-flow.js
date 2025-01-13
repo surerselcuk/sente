@@ -68,9 +68,12 @@ let setEnvironment = (testData) => {
                 /* This parameter determines how many times the test run will be re-run if the test case receives an error. If it is zero, the test will not be re-run in case of an error. */
                 if(!global.config.number_of_test_run_repetitions_on_error) global.config.number_of_test_run_repetitions_on_error = 0;                                
 
-                /* download_path, default download directory path*/
+                /* download_path, default download directory path on worker*/
                 if(!global.config.download_path) global.config.download_path = path.join(senteConfig.testRunProjectPath,'files','downloads') ;
-                
+
+                /* download_path_on_grid, default download directory path on Selenium Grid*/
+                if(!global.config.download_path_on_grid) global.config.download_path_on_grid = '/home/seluser/Downloads';
+               
                 /* screenshot_directory, default screenshot download directory path fro web-gui tests*/
                 if(!global.config.screenshot_directory) global.config.screenshot_directory = path.join(senteConfig.testRunProjectPath,'files','screen_shots') ;
 

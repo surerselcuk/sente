@@ -9,6 +9,7 @@ webdriver.until                                         = require('selenium-webd
 webdriver.Capabilities                                  = require('selenium-webdriver').Capabilities;
 webdriver.WebDriver                                     = require('selenium-webdriver').WebDriver;
 webdriver.firefox                                       = require('selenium-webdriver/firefox');
+webdriver.chrome                                        = require('selenium-webdriver/chrome');
 
         
 // External libraries

@@ -1,6 +1,6 @@
 {
   "name": "senteio",
-  "version": "2.0.16",
+  "version": "2.0.17",
   "description": "Sente",
   "main": "index.js",
   "bin": {
@@ -21,7 +21,7 @@
     "commander": "^12.1.0",
     "figures": "^3.2.0",
     "fs": "^0.0.1-security",
-    "inquirer": "^12.1.0",
+    "inquirer": "^8.0.0",
     "isobject": "^4.0.0",
     "jimp": "^0.22.12",
     "minimist": "^1.2.8",

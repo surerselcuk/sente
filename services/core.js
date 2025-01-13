@@ -181,12 +181,12 @@ core.generateRandomNamedDirectory = async(path_) => {
     }
     else { log.warn( fullPath + ' is exist!')}
    
-    return fullPath;
+    return [fullPath,directoryName];
 
 }
 
 core.cleanEmptyFoldersRecursively = async(folder) => {
-
+    
     try {
 
         if (!existsSync(folder)) {
@@ -209,7 +209,13 @@ core.cleanEmptyFoldersRecursively = async(folder) => {
         }
     
         if (files.length == 0) {
-          await rmdirSync(folder);
+          let stats = await statSync(folder);
+          let now = new Date().getTime();
+          let endTime = new Date(stats.ctime).getTime() + 86400000; // 24 hours in milliseconds
+
+          if (now > endTime) {
+            await rmdirSync(folder);
+          }
           return;
         }
     }
@@ -217,8 +223,6 @@ core.cleanEmptyFoldersRecursively = async(folder) => {
         log.warn('[cleanEmptyFoldersRecursively] Error')
         console.log(e)
     }
-
-
 
 }
 core.duration = (opt) => {

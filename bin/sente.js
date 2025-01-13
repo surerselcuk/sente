@@ -14,8 +14,7 @@ const colors = require('chalk');
 
 
 
-
-if (process.versions.node && process.versions.node.split('.') && process.versions.node.split('.')[0] !== '20') {
+if (process.versions.node && process.versions.node.split('.') && process.versions.node.split('.')[0] < '20') {
     console.log('NodeJS = 20 is required to run.'); 
     console.log();
     console.log('Please upgrade your NodeJS engine');
