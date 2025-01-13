@@ -124,11 +124,22 @@ program
         message: 'Select Test Type:',
         choices: ['web-gui', 'backend'],
       },
-    ]);
+    ]);    
 
     const testType = typeAnswer.testType;
 
-    await newTest(sanitizedTestName, testType);
+    const sectionAnswer = await inquirer.prompt([
+      {
+        type: 'confirm',
+        name: 'hasSections',
+        message: 'Does the test have multiple sections?',
+        default: false,
+      },
+    ]);
+
+    const hasSections = sectionAnswer.hasSections;
+
+    await newTest(sanitizedTestName, testType , hasSections);
 
 
 
@@ -244,11 +255,11 @@ let copySampleProject = async () => {
 
 }
 
-let newTest = async (testName,testType) => {
+let newTest = async (testName,testType, hasSections = false) => {
 
   console.log("Generating Test File\n");
 
-  let sourceFile =  path.join(path.resolve(__dirname, '..'),'assets','new_items','new_test.js');
+  let sourceFile =  path.join(path.resolve(__dirname, '..'),'assets','new_items', hasSections ? 'new_test_with_section.js': 'new_test.js');
 
 
 

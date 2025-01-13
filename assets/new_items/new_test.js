@@ -6,7 +6,7 @@ test_type = '<senteTestType> TEST_TYPE_HERE </senteTestType>';  /* [Mandatory fi
 /* LIBRARIES
 ********************************************************************************************/
 const { sente, helper, repo, https, Promise } = require('#libraries');
-const { testFlow, argv, log, wait } = sente;
+const { testFlow, argv, jump, log, wait, go } = sente;
 
 
 /* TEST FLOW

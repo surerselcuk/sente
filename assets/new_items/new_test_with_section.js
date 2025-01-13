@@ -1,7 +1,7 @@
 /* TEST DEFINATIONS 
 ********************************************************************************************/    
-test_name = '<senteTestName> SAMPLE TEST 2 </senteTestName>';  /* [Mandatory field] */    
-test_type = '<senteTestType> backend </senteTestType>';  /* [Mandatory field] | options: [web-gui, backend, performance] */
+test_name = '<senteTestName> TEST_NAME_HERE </senteTestName>';  /* [Mandatory field] */    
+test_type = '<senteTestType> TEST_TYPE_HERE </senteTestType>';  /* [Mandatory field] | options: [web-gui, backend, performance] */
 
 /* LIBRARIES
 ********************************************************************************************/
@@ -9,10 +9,7 @@ const { sente, helper, repo, https, Promise } = require('#libraries');
 const { testFlow, argv, jump, log, wait, go } = sente;
 
 
-
-
 /* TEST FLOW
-********************************************************************************************/
 
     /* SECTION RULE DEFINATION
     *****************************
@@ -41,46 +38,34 @@ const { testFlow, argv, jump, log, wait, go } = sente;
 
         Example:            section[' first section name | reRun:2 , jump: secondSectionName , failOptions: exitAndFailed '] 
 
-*****************************************************************************************************************************************/
+***************************************************************************************************************************************************************/
+
+section['First Section Name'] = async () => {
 
 
+    /*
+        
+        Write your test codes here.
 
-section['First Section Name | rerun:2 , jump: Third Section Name , failOptions:continueAndFailed'] = async () => {
 
-    log('this is firt section')
-    await wait(3)
-
-    throw new Error('I am a dirty bug')
+    */
 
 
 }
+
 
 section['Second Section Name' ] = async () => {
 
-    log('this is second section')
-    await wait(3)
-    
-    jump('Fourth Section Name')
+
+    /*
+        
+        Write your test codes here.
+
+
+    */
 
 
 }
-
-section['Third Section Name'] = async () => {
-
-    log('this is third section')
-    await wait(3)
-
-    jump('Second Section Name')
-
-}
-
-section['Fourth Section Name'] = async () => {
-
-    log('this is fourth section')
-
-}
-
-
 
 
 
