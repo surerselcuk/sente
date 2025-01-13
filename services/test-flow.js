@@ -112,16 +112,6 @@ let printTestInfo = (testData) => {
 
     let tableData = global.config;
 
-    // tabloda görünmesini istemediğimiz configleri kaldır
-    delete tableData.test_name;
-    delete tableData.download_path;
-    delete tableData.download_path_on_grid;
-    delete tableData.screenshot_directory;
-    delete tableData.file_name;
-    delete tableData.file_full_path;
-    delete tableData.project_path;
-    delete file_path;
-
 
     for(row of Object.entries(tableData)) {
 
@@ -132,9 +122,26 @@ let printTestInfo = (testData) => {
             else value = row [1] 
         } catch (e) {value = colors.red('cannot be shown')}
 
+        // tabloda görünmesini istemediğimiz configleri kaldır ve tablo array lerini oluştur
+        if(    !row[0].includes('file_path') 
+            && !row[0].includes('test_name') 
+            && !row[0].includes('download_path') 
+            && !row[0].includes('download_path_on_grid') 
+            && !row[0].includes('screenshot_directory') 
+            && !row[0].includes('file_name') 
+            && !row[0].includes('file_full_path') 
+            && !row[0].includes('project_path') 
+            && !(tableData.test_type !== 'web-gui'  && row[0].includes('browser_type') ) 
+            && !(tableData.test_type !== 'web-gui'  && row[0].includes('driver_host') ) 
+            && !(row[0] === 'number_of_test_run_repetitions_on_error' && Number(value) === 0) 
+        ) {
 
-        configTable.push([row[0], value.toString()])
-        configTableForSenteCloud.push([row[0], value.toString()])
+            if(row[0] ==='sente_timeout') value = value.toString() + ' seconds'            
+
+            configTable.push([row[0], value.toString()])
+            configTableForSenteCloud.push([row[0], value.toString()])
+
+        }
     }
     
     if(config.run_on_sente_cloud) {
