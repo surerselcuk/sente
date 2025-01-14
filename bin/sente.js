@@ -21,7 +21,7 @@ program
         type: 'list',
         name: 'itemType',
         message: 'What would you like to generate?',
-        choices: ['Test', 'Helper', 'Environment', 'Language'],
+        choices: ['Test', 'Helper', 'Environment', 'Language', 'Object Repository'],
       },
     ]);
 
@@ -33,8 +33,195 @@ program
       await generateNewEnvironment();
     } else if (itemType === 'Language') {
       await generateNewLanguage();
+    } else if (itemType === 'Object Repository') {
+      await generateNewObjectRepository();
     }
   });
+
+async function generateNewObjectRepository() {
+  let repoDir = path.join(process.cwd(), 'object_repository');
+
+  if (!existsSync(repoDir)) {
+    console.log(`The directory "object_repository" does not exist in the current working directory.`);
+    console.log('Searching in parent directories...');
+
+    let currentDir = process.cwd();
+    let found = false;
+
+    while (currentDir !== path.parse(currentDir).root) {
+      currentDir = path.dirname(currentDir);
+      const parentRepoDir = path.join(currentDir, 'object_repository');
+
+      if (existsSync(parentRepoDir)) {
+        console.log(`Found "object_repository" directory in parent directory: ${currentDir}`);
+        repoDir = parentRepoDir;
+        found = true;
+        break;
+      }
+    }
+
+    if (!found) {
+      console.log(colors.red(figures.cross + '  Error:') + ` The directory "object_repository" does not exist in any parent directories.`);
+      return;
+    }
+  }
+
+  const repoGroups = fs.readdirSync(repoDir).filter(name => fs.lstatSync(path.join(repoDir, name)).isDirectory());
+  repoGroups.push('New Group');
+
+  const { repoGroup } = await inquirer.prompt([
+    {
+      type: 'list',
+      name: 'repoGroup',
+      message: 'Select Repository Group:',
+      choices: repoGroups,
+    },
+  ]);
+
+  let targetGroupDir = repoGroup === 'New Group' ? await createNewRepoGroup(repoDir) : path.join(repoDir, repoGroup);
+
+  const { repoName } = await inquirer.prompt([
+    {
+      type: 'input',
+      name: 'repoName',
+      message: 'Enter Repository Name:',
+      validate: function (input) {
+        const isValid = /^[^<>:"/\\|?*\s]+$/.test(input);
+        if (!isValid) {
+          return 'Repository name cannot contain spaces or any of the following characters: < > : " / \\ | ? *';
+        }
+        return true;
+      },
+    },
+  ]);
+
+  const repoFilePath = path.join(targetGroupDir, `${repoName}.js`);
+
+  if (existsSync(repoFilePath)) {
+    console.log(colors.red(figures.cross + '  Error:') + ` Repository file with the name "${repoName}.js" already exists in this directory.`);
+    return;
+  }
+
+  const sourceFile = path.join(path.resolve(__dirname, '..'), 'assets', 'new_items', 'object_repository.js');
+  fs.copyFileSync(sourceFile, repoFilePath);
+  console.log(colors.green(figures.tick + '  ' + `Repository file generated.`) + '\n   ' + repoFilePath);
+
+  const indexFilePath = path.join(targetGroupDir, 'index.js');
+  fs.readFile(indexFilePath, 'utf8', (err, indexData) => {
+    if (err) {
+      console.error(`Error reading index file: ${err}`);
+      return;
+    }
+  
+    const lines = indexData.split('\n');
+    const exportLineIndex = lines.findIndex(line => line.includes('module.exports = exports'));
+  
+    if (exportLineIndex === -1) {
+      console.error('Error: "module.exports = exports" not found in index.js');
+      return;
+    }
+  
+    const lastNonEmptyLineIndex = (() => {
+      for (let i = exportLineIndex - 1; i >= 0; i--) {
+        if (lines[i].trim() !== '') {
+          return i;
+        }
+      }
+      return -1;
+    })();
+  
+    if (lastNonEmptyLineIndex !== -1) {
+      lines.splice(lastNonEmptyLineIndex + 1, 0, `exports.${repoName} = require('./${repoName}');`);
+    }
+    
+  
+  
+    fs.writeFile(indexFilePath, lines.join('\n'), 'utf8', (err) => {
+      if (err) {
+        console.error(`Error writing index file: ${err}`);
+        return;
+      }
+  
+      console.log(colors.green(figures.tick + '  ' + `Index file updated.`) + '\n   ' + indexFilePath);
+    });
+  });
+
+
+
+}
+
+async function createNewRepoGroup(repoDir) {
+  const { groupName } = await inquirer.prompt([
+    {
+      type: 'input',
+      name: 'groupName',
+      message: 'Enter New Group Name:',
+      validate: function (input) {
+        const isValid = /^[^<>:"/\\|?*\s]+$/.test(input);
+        if (!isValid) {
+          return 'Group name cannot contain spaces or any of the following characters: < > : " / \\ | ? *';
+        }
+        if (fs.existsSync(path.join(repoDir, input))) {
+          return 'Group name already exists. Please enter a different name.';
+        }
+        return true;
+      },
+    },
+  ]);
+
+  const newGroupDir = path.join(repoDir, groupName);
+  await fs.mkdirSync(newGroupDir);
+
+  const sourceIndexFile = path.join(path.resolve(__dirname, '..'), 'assets', 'new_items', 'object_repository_index.js');
+  const targetIndexFile = path.join(newGroupDir, 'index.js');
+  fs.copyFileSync(sourceIndexFile, targetIndexFile);
+
+  console.log(colors.green(figures.tick + '  ' + `New group directory created.`) + '\n   ' + newGroupDir);
+
+  // update index file
+  const indexFilePath = path.join(repoDir, 'index.js');
+  await fs.readFile(indexFilePath, 'utf8', async (err, indexData) => {
+    if (err) {
+      console.error(`Error reading index file: ${err}`);
+      return;
+    }
+  
+    const lines = indexData.split('\n');
+    const exportLineIndex = lines.findIndex(line => line.includes('module.exports = exports'));
+  
+    if (exportLineIndex === -1) {
+      console.error('Error: "module.exports = exports" not found in index.js');
+      return;
+    }
+  
+    const lastNonEmptyLineIndex = (() => {
+      for (let i = exportLineIndex - 1; i >= 0; i--) {
+        if (lines[i].trim() !== '') {
+          return i;
+        }
+      }
+      return -1;
+    })();
+  
+    if (lastNonEmptyLineIndex !== -1) {
+      lines.splice(lastNonEmptyLineIndex + 1, 0, `exports.${groupName} = require('./${groupName}');`);
+    }
+    
+  
+  
+    await fs.writeFileSync(indexFilePath, lines.join('\n'), 'utf8', (err) => {
+      if (err) {
+        console.error(`Error writing index file: ${err}`);
+        return;
+      }
+  
+      console.log(colors.green(figures.tick + '  ' + `Index file updated.`) + '\n   ' + indexFilePath);
+    });
+  });
+
+
+  return newGroupDir;
+}
 
 async function generateNewLanguage() {
   let languageDir = path.join(process.cwd(), 'languages');
@@ -608,6 +795,7 @@ let newHelper = async (helperName,helperFilePath) => {
 
         if (lastNonEmptyLineIndex !== -1) {
           lines.splice(lastNonEmptyLineIndex + 1, 0, `exports.${helperName} = require('./${helperName}').${helperName}`);
+lines.splice(lastNonEmptyLineIndex + 1, 0, `exports.${repoName} = require('./${repoName}');`);
         }
         
 
@@ -648,6 +836,7 @@ program
         core.startTest({fileName:file, filePath: filePath},program.opts())
 
     });
+
 
 
 

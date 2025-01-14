@@ -1,28 +1,22 @@
 module.exports = {
 
+    /*
     
+        You can write translation keywords here
 
-    FIELD: {
-
+        <Sample>    
         USERNAME:'xxxx',
         PASSWORD:'xxxxx'
 
+    */
 
-
-    },
-
-    TEXT: {
-
-        LOGIN_FAILED:'xxxxx',
-
-
-
-    },
+ 
+   
 
     
 
     
 
-    
+
 
 };

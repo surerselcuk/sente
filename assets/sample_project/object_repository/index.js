@@ -1,9 +1,8 @@
+exports = {};
+
+exports.ui = require('./ui');
 
 
-module.exports = {
 
 
-    api: require('./api'),
-    ui: require('./ui'),
-
-}
+module.exports = exports;
