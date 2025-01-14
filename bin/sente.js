@@ -61,20 +61,39 @@ async function generateNewLanguage() {
     }
   }
 
+  const validLanguageCodes = {
+    'en': 'English', 'es': 'Spanish', 'fr': 'French', 'de': 'German', 'it': 'Italian', 'pt': 'Portuguese', 'ru': 'Russian', 'zh': 'Chinese', 'ja': 'Japanese', 'ko': 'Korean', 'ar': 'Arabic', 'hi': 'Hindi', 'bn': 'Bengali', 'pa': 'Punjabi', 'jv': 'Javanese', 'ms': 'Malay', 'id': 'Indonesian', 'vi': 'Vietnamese', 'th': 'Thai', 'tr': 'Turkish', 'fa': 'Persian', 'ur': 'Urdu', 'pl': 'Polish', 'uk': 'Ukrainian', 'ro': 'Romanian', 'nl': 'Dutch', 'el': 'Greek', 'hu': 'Hungarian', 'sv': 'Swedish', 'fi': 'Finnish', 'da': 'Danish', 'no': 'Norwegian', 'cs': 'Czech', 'sk': 'Slovak', 'bg': 'Bulgarian', 'sr': 'Serbian', 'hr': 'Croatian', 'sl': 'Slovenian', 'lt': 'Lithuanian', 'lv': 'Latvian', 'et': 'Estonian', 'is': 'Icelandic', 'mt': 'Maltese', 'ga': 'Irish', 'cy': 'Welsh', 'af': 'Afrikaans', 'sw': 'Swahili', 'am': 'Amharic', 'yo': 'Yoruba', 'ig': 'Igbo', 'ha': 'Hausa', 'zu': 'Zulu', 'xh': 'Xhosa', 'st': 'Southern Sotho', 'tn': 'Tswana', 'ts': 'Tsonga', 've': 'Venda', 'nr': 'Southern Ndebele', 'ss': 'Swati', 'ny': 'Chichewa', 'rw': 'Kinyarwanda', 'ln': 'Lingala', 'kg': 'Kongo', 'lu': 'Luba-Katanga', 'to': 'Tongan', 'fj': 'Fijian', 'sm': 'Samoan', 'mi': 'Maori', 'haw': 'Hawaiian', 'ht': 'Haitian Creole', 'qu': 'Quechua', 'gn': 'Guarani', 'ay': 'Aymara', 'tt': 'Tatar', 'ba': 'Bashkir', 'cv': 'Chuvash', 'ce': 'Chechen', 'cu': 'Church Slavonic', 'kv': 'Komi', 'kj': 'Kuanyama', 'kr': 'Kanuri', 'ki': 'Kikuyu', 'rn': 'Kirundi', 'sg': 'Sango', 'sn': 'Shona', 'so': 'Somali', 'ty': 'Tahitian', 'bi': 'Bislama', 'ho': 'Hiri Motu', 'mg': 'Malagasy', 'mh': 'Marshallese', 'na': 'Nauruan', 'pi': 'Pali', 'vo': 'Volapük', 'wa': 'Walloon', 'wo': 'Wolof', 'za': 'Zhuang'
+  };
   const { languageCode } = await inquirer.prompt([
     {
       type: 'input',
       name: 'languageCode',
       message: 'Enter Language Code (e.g., "en" for English):',
       validate: function (input) {
-        const isValid = /^[a-z]{2}$/.test(input);
-        if (!isValid) {
-          return 'Language code must be exactly two lowercase letters (e.g., "en" for English).';
+
+        if (!validLanguageCodes[input]) {
+          return 'Invalid language code. Please enter a valid two-letter language code (e.g., "en" for English).';
         }
         return true;
       },
     },
   ]);
+
+  const languageName = validLanguageCodes[languageCode];
+
+  const { confirmLanguage } = await inquirer.prompt([
+    {
+      type: 'confirm',
+      name: 'confirmLanguage',
+      message: `Did you mean "${languageName}"?`,
+      default: true,
+    },
+  ]);
+
+  if (!confirmLanguage) {
+    console.log(colors.red(figures.cross + '  Error:') + ' Language confirmation failed.');
+    return;
+  }
 
   const languageFilePath = path.join(languageDir, `${languageCode}.js`);
 
@@ -84,7 +103,9 @@ async function generateNewLanguage() {
   }
 
   const sourceFile = path.join(path.resolve(__dirname, '..'), 'assets', 'new_items', 'new_language.js');
-  fs.copyFileSync(sourceFile, languageFilePath);
+  const fileHeader = `/* This file is a translation file for ${validLanguageCodes[languageCode]}.*/\n\n`;
+  const fileContent = fs.readFileSync(sourceFile, 'utf8');
+  fs.writeFileSync(languageFilePath, fileHeader + fileContent);
   console.log(colors.green(figures.tick + '  ' + `Language file generated.`) + '\n   ' + languageFilePath);
 
   const indexFilePath = path.join(languageDir, 'index.js');
@@ -127,6 +148,8 @@ async function generateNewLanguage() {
       lines[keywordsLineIndex] = `exports.keywords = [${newKeywordsArrayContent}];`;
       }
     }
+
+ 
 
     fs.writeFile(indexFilePath, lines.join('\n'), 'utf8', (err) => {
       if (err) {

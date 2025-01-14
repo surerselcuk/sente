@@ -1,3 +1,5 @@
+/* This file is a translation file for English.*/
+
 module.exports = {
 
     
