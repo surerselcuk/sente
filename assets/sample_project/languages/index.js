@@ -1,9 +1,18 @@
-module.exports = {
-
-    keywords: ['tr','en','de','it'],
-
-    tr: require('./tr'),
-    en: require('./en'),
+exports = {};
+exports.keywords = ['tr','en'];
 
 
-}
+/* Language Imports */
+exports.en=  require('./en');
+exports.tr=  require('./tr');
+
+
+
+
+
+
+
+
+
+
+module.exports = exports;

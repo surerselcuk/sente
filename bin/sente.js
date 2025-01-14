@@ -12,6 +12,132 @@ const fs = require('fs');
 const figures = require('figures');
 const colors = require('chalk');
 
+program
+  .command('new')
+  .description('Generate New Item')
+  .action(async () => {
+    const { itemType } = await inquirer.prompt([
+      {
+        type: 'list',
+        name: 'itemType',
+        message: 'What would you like to generate?',
+        choices: ['Test', 'Helper', 'Environment', 'Language'],
+      },
+    ]);
+
+    if (itemType === 'Test') {
+      await generateNewTest();
+    } else if (itemType === 'Helper') {
+      await generateNewHelper();
+    } else if (itemType === 'Environment') {
+      await generateNewEnvironment();
+    } else if (itemType === 'Language') {
+      await generateNewLanguage();
+    }
+  });
+
+async function generateNewLanguage() {
+  let languageDir = path.join(process.cwd(), 'languages');
+
+  if (!existsSync(languageDir)) {
+
+    let currentDir = process.cwd();
+    let found = false;
+
+    while (currentDir !== path.parse(currentDir).root) {
+      currentDir = path.dirname(currentDir);
+      const parentLanguageDir = path.join(currentDir, 'languages');
+
+      if (existsSync(parentLanguageDir)) {
+        languageDir = parentLanguageDir;
+        found = true;
+        break;
+      }
+    }
+
+    if (!found) {
+      console.log(colors.red(figures.cross + '  Error:') + ` The directory "languages" does not exist in any parent directories.`);
+      return;
+    }
+  }
+
+  const { languageCode } = await inquirer.prompt([
+    {
+      type: 'input',
+      name: 'languageCode',
+      message: 'Enter Language Code (e.g., "en" for English):',
+      validate: function (input) {
+        const isValid = /^[a-z]{2}$/.test(input);
+        if (!isValid) {
+          return 'Language code must be exactly two lowercase letters (e.g., "en" for English).';
+        }
+        return true;
+      },
+    },
+  ]);
+
+  const languageFilePath = path.join(languageDir, `${languageCode}.js`);
+
+  if (existsSync(languageFilePath)) {
+    console.log(colors.red(figures.cross + '  Error:') + ` Language file with the code "${languageCode}.js" already exists in this directory.`);
+    return;
+  }
+
+  const sourceFile = path.join(path.resolve(__dirname, '..'), 'assets', 'new_items', 'new_language.js');
+  fs.copyFileSync(sourceFile, languageFilePath);
+  console.log(colors.green(figures.tick + '  ' + `Language file generated.`) + '\n   ' + languageFilePath);
+
+  const indexFilePath = path.join(languageDir, 'index.js');
+  fs.readFile(indexFilePath, 'utf8', (err, indexData) => {
+    if (err) {
+      console.error(`Error reading index file: ${err}`);
+      return;
+    }
+
+    const lines = indexData.split('\n');
+    const exportLineIndex = lines.findIndex(line => line.includes('module.exports = exports'));
+
+    if (exportLineIndex === -1) {
+      console.error('Error: "module.exports = exports" not found in index.js');
+      return;
+    }
+
+    const lastNonEmptyLineIndex = (() => {
+      for (let i = exportLineIndex - 1; i >= 0; i--) {
+        if (lines[i].trim() !== '') {
+          return i;
+        }
+      }
+      return -1;
+    })();
+
+    if (lastNonEmptyLineIndex !== -1) {
+      lines.splice(lastNonEmptyLineIndex + 1, 0, `exports.${languageCode} = require('./${languageCode}');`);
+    }
+
+    const keywordsLineIndex = lines.findIndex(line => line.includes('exports.keywords ='));
+
+    if (keywordsLineIndex !== -1) {
+      const keywordsLine = lines[keywordsLineIndex];
+      const keywordsArrayMatch = keywordsLine.match(/exports\.keywords\s*=\s*\[(.*)\]/);
+
+      if (keywordsArrayMatch && keywordsArrayMatch[1] !== undefined) {
+      const keywordsArrayContent = keywordsArrayMatch[1].trim();
+      const newKeywordsArrayContent = keywordsArrayContent ? `${keywordsArrayContent}, '${languageCode}'` : `'${languageCode}'`;
+      lines[keywordsLineIndex] = `exports.keywords = [${newKeywordsArrayContent}];`;
+      }
+    }
+
+    fs.writeFile(indexFilePath, lines.join('\n'), 'utf8', (err) => {
+      if (err) {
+        console.error(`Error writing index file: ${err}`);
+        return;
+      }
+
+      console.log(colors.green(figures.tick + '  ' + `Index file updated.`) + '\n   ' + indexFilePath);
+    });
+  });
+}
 
 
 if (process.versions.node && process.versions.node.split('.') && process.versions.node.split('.')[0] < '20') {
@@ -22,27 +148,6 @@ if (process.versions.node && process.versions.node.split('.') && process.version
     process.exit(1);
 }
 
-program
-  .command('new')
-  .description('Generate New Item')
-  .action(async () => {
-    const { itemType } = await inquirer.prompt([
-      {
-        type: 'list',
-        name: 'itemType',
-        message: 'What would you like to generate?',
-        choices: ['Test', 'Helper', 'Environment'],
-      },
-    ]);
-
-    if (itemType === 'Test') {
-      await generateNewTest();
-    } else if (itemType === 'Helper') {
-      await generateNewHelper();
-    } else if (itemType === 'Environment') {
-      await generateNewEnvironment();
-    }
-  });
 
 async function generateNewTest() {
   const answers = await inquirer.prompt([
