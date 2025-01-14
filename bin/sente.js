@@ -285,7 +285,7 @@ async function generateNewLanguage() {
   const languageFilePath = path.join(languageDir, `${languageCode}.js`);
 
   if (existsSync(languageFilePath)) {
-    console.log(colors.red(figures.cross + '  Error:') + ` Language file with the code "${languageCode}.js" already exists in this directory.`);
+    console.log(colors.red(figures.cross + '  Error:') + ` Language file with the code [${validLanguageCodes[languageCode]}] "${languageCode}.js" already exists in this directory.`);
     return;
   }
 
@@ -345,6 +345,12 @@ async function generateNewLanguage() {
       }
 
       console.log(colors.green(figures.tick + '  ' + `Index file updated.`) + '\n   ' + indexFilePath);
+
+      setTimeout(() => {
+        console.log('\n' + colors.green('New language translate file generated successfully.'));
+        console.log('Language: ' + colors.green(validLanguageCodes[languageCode]));
+      }, 100);
+      
     });
   });
 }
@@ -795,7 +801,6 @@ let newHelper = async (helperName,helperFilePath) => {
 
         if (lastNonEmptyLineIndex !== -1) {
           lines.splice(lastNonEmptyLineIndex + 1, 0, `exports.${helperName} = require('./${helperName}').${helperName}`);
-lines.splice(lastNonEmptyLineIndex + 1, 0, `exports.${repoName} = require('./${repoName}');`);
         }
         
 
@@ -806,6 +811,12 @@ lines.splice(lastNonEmptyLineIndex + 1, 0, `exports.${repoName} = require('./${r
           }
 
           console.log(colors.green(figures.tick + '  ' + `Index file updated.`) + '\n   ' + indexFilePath);
+
+          setTimeout(() => {
+            console.log('\n' + colors.green('New helper generated successfully.'));
+            console.log('Helper Name: ' + colors.green(helperName));
+          }, 100);
+
         });
       });
 
