@@ -143,6 +143,12 @@ async function generateNewObjectRepository() {
       }
   
       console.log(colors.green(figures.tick + '  ' + `Index file updated.`) + '\n   ' + indexFilePath);
+
+      setTimeout(() => {
+        console.log('\n' + colors.green('New object repository file generated successfully.'));
+        console.log('Repo: ' + colors.green(repoName));
+      }, 100);
+
     });
   });
 
