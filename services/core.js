@@ -1,6 +1,4 @@
 let core={};
-module.exports = {};
-
 const { existsSync, mkdirSync, chmodSync, readdirSync, statSync, rmdirSync, readFileSync, writeFileSync} = require('fs');
 const path = require('path');
 core.random = require('random');
@@ -318,6 +316,9 @@ core.exportParameter = async(key,value) => {
 
    
 
+};
+core.isObject = (variable) => {
+    return variable && typeof variable === 'object' && !Array.isArray(variable);
 };
 
 

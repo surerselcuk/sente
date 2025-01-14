@@ -37,16 +37,23 @@ module.exports.keyboard                                = require('./services/ui_
 
 
 // Services
-module.exports.log                                     = require('./services/logger').log,
-module.exports.now                                     = require('./services/logger').now,
 module.exports.testFlow                                = require('./services/test-flow').testFlow,
 module.exports.jump                                    = require('./services/test-flow').jump,
+module.exports.log                                     = require('./services/logger').log,
+module.exports.now                                     = require('./services/logger').now,
 module.exports.wait                                    = require('./services/logger').wait,
 module.exports.wait_                                   = require('./services/logger').wait_,
 module.exports.translate                               = require('./services/core').translate,
 module.exports.generateRandomNamedDirectory            = require('./services/core').generateRandomNamedDirectory,
 module.exports.random                                  = require('./services/core').random,
-module.exports.cleanEmptyFoldersRecursively            = require('./services/core').cleanEmptyFoldersRecursively
+module.exports.cleanEmptyFoldersRecursively            = require('./services/core').cleanEmptyFoldersRecursively,
+module.exports.importParameter                         = require('./services/core').importParameter,
+module.exports.exportParameter                         = require('./services/core').exportParameter
+module.exports.overrideRepo                            = require('./services/core').overrideRepo,
+module.exports.myQuery                                 = require('./services/db').myQuery
+module.exports.pgQuery                                 = require('./services/db').pgQuery
+
+
 
 
 

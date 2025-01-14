@@ -95,6 +95,19 @@ logger.log.passed = () => {
 
 };
 
+logger.log.success = (logValue,opt={boxen:false}) => {
+    
+
+    if(logValue){
+        if(isObject(logValue))logValue=JSON.stringify(logValue);
+        else logValue=logValue.toString();
+    }
+
+    if(opt.boxen) console.log(boxen('[' + logger.now() + '] ' + styles.success(` ${figures.tick} `) + logValue))
+        else console.log('[' + logger.now() + '] ' + styles.success(` ${figures.tick} `) + logValue)
+
+}
+
 
 
 logger.log.failed = (logValue_) => {
