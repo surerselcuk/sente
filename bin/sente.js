@@ -532,7 +532,12 @@ let newTest = async (testName,testType, hasSections = false) => {
 
     const result = data.replace(/TEST_NAME_HERE/g, testName).replace(/TEST_TYPE_HERE/g, testType);
 
-    const destinationFile = path.join(process.cwd(), `${testName}.js`);
+    let targetDir = process.cwd();
+    if (existsSync(path.join(targetDir, 'package.json')) && existsSync(path.join(targetDir, 'tests'))) {
+      targetDir = path.join(targetDir, 'tests');
+    }
+
+    const destinationFile = path.join(targetDir, `${testName}.js`);
     fs.writeFile(destinationFile, result, 'utf8', (err) => {
       if (err) {
         console.error(`Error writing file: ${err}`);
