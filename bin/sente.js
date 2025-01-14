@@ -22,6 +22,289 @@ if (process.versions.node && process.versions.node.split('.') && process.version
     process.exit(1);
 }
 
+program
+  .command('new')
+  .description('Generate New Item')
+  .action(async () => {
+    const { itemType } = await inquirer.prompt([
+      {
+        type: 'list',
+        name: 'itemType',
+        message: 'What would you like to generate?',
+        choices: ['Test', 'Helper', 'Environment'],
+      },
+    ]);
+
+    if (itemType === 'Test') {
+      await generateNewTest();
+    } else if (itemType === 'Helper') {
+      await generateNewHelper();
+    } else if (itemType === 'Environment') {
+      await generateNewEnvironment();
+    }
+  });
+
+async function generateNewTest() {
+  const answers = await inquirer.prompt([
+    {
+      type: 'input',
+      name: 'testName',
+      message: 'Enter Test Name:',
+      validate: function (input) {
+        const isValid = /^[^<>:"/\\|?*\s]+$/.test(input);
+        if (!isValid) {
+          return 'Test name cannot contain spaces or any of the following characters: < > : " / \\ | ? *';
+        }
+        return true;
+      },
+    },
+  ]);
+
+  const sanitizedTestName = answers.testName
+    .toLowerCase()
+    .replace(/\s+/g, '_')
+    .replace(/[<>:"/\\|?*]+/g, '');
+
+  const testFilePath = path.join(process.cwd(), `${sanitizedTestName}.js`);
+
+  if (existsSync(testFilePath)) {
+    console.log(colors.red(figures.cross + '  Error:') + ` Test file with the name "${sanitizedTestName}.js" already exists in this directory.`);
+    return;
+  }
+
+  const typeAnswer = await inquirer.prompt([
+    {
+      type: 'list',
+      name: 'testType',
+      message: 'Select Test Type:',
+      choices: ['web-gui', 'backend'],
+    },
+  ]);
+
+  const testType = typeAnswer.testType;
+
+  const sectionAnswer = await inquirer.prompt([
+    {
+      type: 'confirm',
+      name: 'hasSections',
+      message: 'Does the test have multiple sections?',
+      default: false,
+    },
+  ]);
+
+  const hasSections = sectionAnswer.hasSections;
+
+  await newTest(sanitizedTestName, testType, hasSections);
+}
+
+async function generateNewHelper() {
+  const answers = await inquirer.prompt([
+    {
+      type: 'input',
+      name: 'helperName',
+      message: 'Enter Helper Name:',
+      validate: function (input) {
+        const isValid = /^[^<>:"/\\|?*\s]+$/.test(input);
+        if (!isValid) {
+          return 'Helper name cannot contain spaces or any of the following characters: < > : " / \\ | ? *';
+        }
+        return true;
+      },
+    },
+  ]);
+
+  let helperDir = path.join(process.cwd(), 'helpers');
+
+  if (!existsSync(helperDir)) {
+    console.log(`The directory "helpers" does not exist in the current working directory.`);
+    console.log('Searching in parent directories...');
+
+    let currentDir = process.cwd();
+    let found = false;
+
+    while (currentDir !== path.parse(currentDir).root) {
+      currentDir = path.dirname(currentDir);
+      const parentHelperDir = path.join(currentDir, 'helpers');
+
+      if (existsSync(parentHelperDir)) {
+        console.log(`Found "helpers" directory in parent directory: ${currentDir}`);
+        helperDir = path.join(currentDir, 'helpers');
+        found = true;
+        break;
+      }
+    }
+
+    if (!found) {
+      console.log(colors.red(figures.cross + '  Error:') + ` The directory "helpers" does not exist in any parent directories.`);
+      return;
+    }
+  }
+
+  const sanitizedHelperName = answers.helperName
+    .toLowerCase()
+    .replace(/\s+/g, '_')
+    .replace(/[<>:"/\\|?*]+/g, '');
+
+  const helperFilePath = path.join(helperDir, `${sanitizedHelperName}.js`);
+
+  if (existsSync(helperFilePath)) {
+    console.log(colors.red(figures.cross + '  Error:') + ` Helper file with the name "${sanitizedHelperName}.js" already exists in this directory.`);
+    return;
+  }
+
+  await newHelper(sanitizedHelperName, helperFilePath);
+}
+
+async function generateNewEnvironment() {
+  const typeAnswer = await inquirer.prompt([
+    {
+      type: 'list',
+      name: 'envType',
+      message: 'Select Environment Type:',
+      choices: ['development', 'production'],
+    },
+  ]);
+
+  const envNameAnswer = await inquirer.prompt([
+    {
+      type: 'input',
+      name: 'envName',
+      message: 'Enter Environment Name:',
+      validate: function (input) {
+        const isValid = /^[^<>:"/\\|?*\s]+$/.test(input);
+        if (!isValid) {
+          return 'Environment name cannot contain spaces or any of the following characters: < > : " / \\ | ? *';
+        }
+        return true;
+      },
+    },
+  ]);
+
+  const envName = envNameAnswer.envName;
+  const envType = typeAnswer.envType;
+  let envDir = path.join(process.cwd(), 'environments');
+
+  if (!existsSync(envDir)) {
+    console.log(`The directory "environments" does not exist in the current working directory.`);
+    console.log('Searching in parent directories...');
+
+    let currentDir = process.cwd();
+    let found = false;
+
+    while (currentDir !== path.parse(currentDir).root) {
+      currentDir = path.dirname(currentDir);
+      const parentEnvDir = path.join(currentDir, 'environments');
+
+      if (existsSync(parentEnvDir)) {
+        console.log(`Found "environments" directory in parent directory: ${currentDir}`);
+        envDir = parentEnvDir;
+        found = true;
+        break;
+      }
+    }
+
+    if (!found) {
+      console.log(colors.red(figures.cross + '  Error:') + ` The directory "environments" does not exist in any parent directories.`);
+      return;
+    }
+  }
+
+  const targetDir = path.join(envDir, envType);
+  if (!existsSync(targetDir)) {
+    console.log(colors.red(figures.cross + '  Error:') + ` The directory "${envType}" does not exist in the "environments" directory.`);
+    return;
+  }
+
+  const existingDirs = fs.readdirSync(targetDir).filter(name => name.startsWith('env')).sort();
+  const lastEnvNumber = existingDirs.length > 0 ? parseInt(existingDirs[existingDirs.length - 1].replace('env', '')) : 0;
+  const newEnvDir = path.join(targetDir, `env${lastEnvNumber + 1}`);
+  let environmentKey = 'env' + (lastEnvNumber + 1);
+
+  fs.mkdirSync(newEnvDir);
+  console.log(colors.green(figures.tick + '  ' + `Environment directory created.`) + '\n   ' + newEnvDir);
+
+  let sourceFile = path.join(path.resolve(__dirname, '..'), 'assets', 'new_items', 'configs.js');
+
+  fs.readFile(sourceFile, 'utf8', (err, data) => {
+    if (err) {
+      console.error(`Error reading file: ${err}`);
+      return;
+    }
+
+    const config1Path = path.join(newEnvDir, 'configs-1.js');
+    const config2Path = path.join(newEnvDir, 'configs-2.js');
+
+    fs.writeFile(config1Path, data, 'utf8', (err) => {
+      if (err) {
+        console.error(`Error writing file: ${err}`);
+        return;
+      }
+      console.log(colors.green(figures.tick + '  ' + `Config file generated.`) + '\n   ' + config1Path);
+    });
+
+    fs.writeFile(config2Path, data, 'utf8', (err) => {
+      if (err) {
+        console.error(`Error writing file: ${err}`);
+        return;
+      }
+      console.log(colors.green(figures.tick + '  ' + `Config file generated.`) + '\n   ' + config2Path);
+    });
+  });
+
+  const indexFilePath = path.join(path.dirname(newEnvDir), 'index.js');
+
+  fs.readFile(indexFilePath, 'utf8', (err, indexData) => {
+    if (err) {
+      console.error(`Error reading index file: ${err}`);
+      return;
+    }
+
+    const lines = indexData.split('\n');
+    const exportLineIndex = lines.findIndex(line => line.includes('module.exports = exports'));
+
+    if (exportLineIndex === -1) {
+      console.error('Error: "module.exports = exports" not found in index.js');
+      return;
+    }
+
+    const lastNonEmptyLineIndex = (() => {
+      for (let i = exportLineIndex - 1; i >= 0; i--) {
+        if (lines[i].trim() !== '') {
+          return i;
+        }
+      }
+      return -1;
+    })();
+
+    let newConfigLine = `
+exports.${environmentKey} = {
+  environment_name: '${envName}',
+  ...require('./${environmentKey}/configs-1'),
+  ...require('./${environmentKey}/configs-2'),
+  ...require('./global.configs'),    
+};
+`;
+
+    if (lastNonEmptyLineIndex !== -1) {
+      lines.splice(lastNonEmptyLineIndex + 1, 0, newConfigLine);
+    }
+
+    fs.writeFile(indexFilePath, lines.join('\n'), 'utf8', (err) => {
+      if (err) {
+        console.error(`Error writing index file: ${err}`);
+        return;
+      }
+
+      console.log(colors.green(figures.tick + '  ' + `Index file updated.`) + '\n   ' + indexFilePath);
+
+      setTimeout(() => {
+        console.log('\n' + colors.green('New environment generated successfully.'));
+        console.log('Environment Name: ' + colors.green(envName));
+        console.log('Environment Key : ' + colors.green(environmentKey));
+      }, 100);
+    });
+  });
+}
 
 program
   .name('sente')
@@ -29,16 +312,6 @@ program
   .usage('<command> [options]')
   .usage('<file> [options]')
   .version(config.senteVersion,'--version, -v', '[Current version]');
-
-// program.command('split')
-//   .description('Split a string into substrings and display as an array')
-//   .argument('<string>', 'string to split')
-//   .option('--first', 'display just the first substring')
-//   .option('-s, --separator <char>', 'separator character', ',')
-//   .action((str, options) => {
-//     const limit = options.first ? 1 : undefined;
-//     console.log(str.split(options.separator, limit));
-//   });
 
 
   program.command('init')
@@ -83,148 +356,8 @@ program
 
   });
 
-  program.command('new-test')
-  .description('Generate New Test File')
-  .action(async _=>{
-
-    const answers = await inquirer.prompt([
-      {
-        type: 'input',
-        name: 'testName',
-        message: 'Enter Test Name:',
-        validate: function (input) {
-          const isValid = /^[^<>:"/\\|?*\s]+$/.test(input);
-          if (!isValid) {
-            return 'Test name cannot contain spaces or any of the following characters: < > : " / \\ | ? *';
-          }
-          return true;
-        },
-      },
-    ]);
-
-    
-    const sanitizedTestName = await answers.testName
-      .toLowerCase()
-      .replace(/\s+/g, '_')
-      .replace(/[<>:"/\\|?*]+/g, '');
 
 
-    const testFilePath = path.join(process.cwd(), `${sanitizedTestName}.js`);
-
-    if (existsSync(testFilePath)) {
-      console.log(colors.red(figures.cross + '  Error:') +` Test file with the name "${sanitizedTestName}.js" already exists in this directory.`);
-      return;
-    }
-
-
-    const typeAnswer = await inquirer.prompt([
-      {
-        type: 'list',
-        name: 'testType',
-        message: 'Select Test Type:',
-        choices: ['web-gui', 'backend'],
-      },
-    ]);    
-
-    const testType = typeAnswer.testType;
-
-    const sectionAnswer = await inquirer.prompt([
-      {
-        type: 'confirm',
-        name: 'hasSections',
-        message: 'Does the test have multiple sections?',
-        default: false,
-      },
-    ]);
-
-    const hasSections = sectionAnswer.hasSections;
-
-    await newTest(sanitizedTestName, testType , hasSections);
-
-
-
-
-          
- 
-
-  });
-
-  program.command('new-helper')
-  .description('Generate New Helper File')
-  .action(async _=>{
-
-    const answers = await inquirer.prompt([
-      {
-        type: 'input',
-        name: 'helperName',
-        message: 'Enter Helper Name:',
-        validate: function (input) {
-          const isValid = /^[^<>:"/\\|?*\s]+$/.test(input);
-          if (!isValid) {
-            return 'Helper name cannot contain spaces or any of the following characters: < > : " / \\ | ? *';
-          }
-          return true;
-        },
-      },
-    ]);
-
-    
-    
-
-    let helperDir = path.join(process.cwd(), 'helpers');
-
-    if (!existsSync(helperDir)) {
-      console.log(`The directory "helpers" does not exist in the current working directory.`);
-      console.log('Searching in parent directories...');
-      
-      let currentDir = process.cwd();
-      let found = false;
-
-      while (currentDir !== path.parse(currentDir).root) {
-      currentDir = path.dirname(currentDir);
-      
-      const parentHelperDir = path.join(currentDir, 'helpers');
-   
-      
-      
-      if (existsSync(parentHelperDir)) {
-        console.log(`Found "helpers" directory in parent directory: ${currentDir}`);
-        helperDir = path.join(currentDir, 'helpers');
-        found = true;
-        break;
-      }
-      }
-
-      if (!found) {
-      console.log(colors.red(figures.cross + '  Error:') + ` The directory "helpers" does not exist in any parent directories.`);
-      return;
-      }
-    }
-
-    const sanitizedHelperName = await answers.helperName
-      .toLowerCase()
-      .replace(/\s+/g, '_')
-      .replace(/[<>:"/\\|?*]+/g, '');
-
-      
-
-      const helperFilePath = path.join(helperDir, `${sanitizedHelperName}.js`);
-      
-
-    if (existsSync(helperFilePath)) {
-      console.log(colors.red(figures.cross + '  Error:') + ` Helper file with the name "${sanitizedHelperName}.js" already exists in this directory.`);
-      return;
-    }
-
-    await newHelper(sanitizedHelperName,helperFilePath);
-
-
-
-
-          
- 
-
-  });
 
 let copySampleProject = async () => {
 
@@ -375,9 +508,6 @@ program
     .option('--config <value>',`[Override Config] Usage: --config=' "parameter1":"value1", "parameter2":["valueX","valueY"], "parameter3":{"parameter4":"valueZ"} '`)
     .option('-t, --take_screenshoot','Take screenshot on every step')
     .option('-s, --sente','Test run on sente cloud ')
-    // .option('-d, --debug','Test run debug mode' ,false)
-    // .option('-r, --repetition_on_error <number>','Repetition on error',0)
-    // .option('-p, --parameters <value>',`Test parameters. Usage:  '{"parameter1":"value1","paremeter2":"value2"}'  `,'{}')
     .action(async file=>{
   
         let filePath = path.join(process.cwd(),file);
@@ -386,166 +516,7 @@ program
 
     });
 
-    program.command('new-environment')
-      .description('Generate New Environment')
-      .action(async _ => {
-
-        const typeAnswer = await inquirer.prompt([
-          {
-            type: 'list',
-            name: 'envType',
-            message: 'Select Environment Type:',
-            choices: ['development', 'production'],
-          },
-        ]);
-
-        const envNameAnswer = await inquirer.prompt([
-          {
-            type: 'input',
-            name: 'envName',
-            message: 'Enter Environment Name:',
-            validate: function (input) {
-              const isValid = /^[^<>:"/\\|?*\s]+$/.test(input);
-              if (!isValid) {
-                return 'Environment name cannot contain spaces or any of the following characters: < > : " / \\ | ? *';
-              }
-              return true;
-            },
-          },
-        ]);
-
-        const envName = envNameAnswer.envName;
-
-        const envType = typeAnswer.envType;
-        let envDir = path.join(process.cwd(), 'environments');
-
-        if (!existsSync(envDir)) {
-          console.log(`The directory "environments" does not exist in the current working directory.`);
-          console.log('Searching in parent directories...');
-          
-          let currentDir = process.cwd();
-          let found = false;
-
-          while (currentDir !== path.parse(currentDir).root) {
-            currentDir = path.dirname(currentDir);
-            const parentEnvDir = path.join(currentDir, 'environments');
-            
-            if (existsSync(parentEnvDir)) {
-              console.log(`Found "environments" directory in parent directory: ${currentDir}`);
-              envDir = parentEnvDir;
-              found = true;
-              break;
-            }
-          }
-
-          if (!found) {
-            console.log(colors.red(figures.cross + '  Error:') + ` The directory "environments" does not exist in any parent directories.`);
-            return;
-          }
-        }
-
-        const targetDir = path.join(envDir, envType);
-        if (!existsSync(targetDir)) {
-          console.log(colors.red(figures.cross + '  Error:') + ` The directory "${envType}" does not exist in the "environments" directory.`);
-          return;
-        }
-
-        const existingDirs = fs.readdirSync(targetDir).filter(name => name.startsWith('env')).sort();
-        const lastEnvNumber = existingDirs.length > 0 ? parseInt(existingDirs[existingDirs.length - 1].replace('env', '')) : 0;
-        const newEnvDir = path.join(targetDir, `env${lastEnvNumber + 1}`);
-        let environmentKey = 'env'+(lastEnvNumber +1);
-
-        fs.mkdirSync(newEnvDir);
-        console.log(colors.green(figures.tick + '  ' + `Environment directory created.`) + '\n   ' + newEnvDir);
 
 
-        let sourceFile =  path.join(path.resolve(__dirname, '..'),'assets','new_items','configs.js');
-
-        fs.readFile(sourceFile, 'utf8', (err, data) => {
-          if (err) {
-            console.error(`Error reading file: ${err}`);
-            return;
-          }
-
-          const config1Path = path.join(newEnvDir, 'configs-1.js');
-          const config2Path = path.join(newEnvDir, 'configs-2.js');
-
-          fs.writeFile(config1Path, data, 'utf8', (err) => {
-            if (err) {
-              console.error(`Error writing file: ${err}`);
-              return;
-            }
-            console.log(colors.green(figures.tick + '  ' + `Config file generated.`) + '\n   ' + config1Path);
-          });
-
-          fs.writeFile(config2Path, data, 'utf8', (err) => {
-            if (err) {
-              console.error(`Error writing file: ${err}`);
-              return;
-            }
-            console.log(colors.green(figures.tick + '  ' + `Config file generated.`) + '\n   ' + config2Path);
-          });
-        });
-        
-        const indexFilePath = path.join(path.dirname(newEnvDir), 'index.js');
-
-        fs.readFile(indexFilePath, 'utf8', (err, indexData) => {
-          if (err) {
-            console.error(`Error reading index file: ${err}`);
-            return;
-          }
-
-          const lines = indexData.split('\n');
-          const exportLineIndex = lines.findIndex(line => line.includes('module.exports = exports'));
-
-          if (exportLineIndex === -1) {
-            console.error('Error: "module.exports = exports" not found in index.js');
-            return;
-          }
-
-          const lastNonEmptyLineIndex = (() => {
-            for (let i = exportLineIndex - 1; i >= 0; i--) {
-              if (lines[i].trim() !== '') {
-                return i;
-              }
-            }
-            return -1;
-          })();
-
-          let newConfigLine=`
-exports.${environmentKey} = {
-        environment_name: '${envName}',
-        ...require('./${environmentKey}/configs-1'),
-        ...require('./${environmentKey}/configs-2'),
-        ...require('./global.configs'),    
-};
-`
-          if (lastNonEmptyLineIndex !== -1) {
-            lines.splice(lastNonEmptyLineIndex + 1, 0, newConfigLine);
-          }
-
-          fs.writeFile(indexFilePath, lines.join('\n'), 'utf8', (err) => {
-            if (err) {
-              console.error(`Error writing index file: ${err}`);
-              return;
-            }
-
-            console.log(colors.green(figures.tick + '  ' + `Index file updated.`) + '\n   ' + indexFilePath);
-
-            setTimeout(_=>{
-              console.log( '\n' + colors.green('New environment generated successfully.') );
-              console.log( 'Environment Name: ' + colors.green(envName) );
-              console.log( 'Environment Key : ' + colors.green(environmentKey) );
-            },100)
-
-          });
-        });
-
-
-        
-
-      });
-
-// program.parse();
 program.parse(process.argv);
 
