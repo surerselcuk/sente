@@ -6,8 +6,9 @@ test_type = '<senteTestType> web-gui </senteTestType>';  /* [Mandatory field] | 
 
 /* LIBRARIES
 *************/
-const { sente, helper, repo, https, Promise } = require('#libraries');
-const { testFlow, argv, jump, log, now, wait, wait_, translate, random, importParameter, exportParameter, overrideRepo, myQuery, pgQuery } = sente;
+const { sente, helper, repo } = require('#libraries');
+const { webdriver, axios, Promise, https } = sente;
+const { testFlow, argv, jump, log, now, wait, wait_, translate, random, importParameter, exportParameter, overrideRepo, myQuery, pgQuery, api } = sente;
 const { go, click, rightClick, see, notSee, write, keyboard } = sente;
 
 

@@ -11,11 +11,11 @@
   "license": "ISC",
   "imports": {
     "#helpers": "./helpers/index.js",
+    "#object_repository": "./object_repository/index.js",
     "#libraries": "./library.index.js",
     "#files": "./files"
   },
   "dependencies": {
-    "bluebird": "^3.7.2",
     "senteio": "*"
   }
 }

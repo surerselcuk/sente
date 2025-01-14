@@ -15,7 +15,9 @@ webdriver.chrome                                        = require('selenium-webd
 // External libraries
 module.exports.argv                                     = require('minimist')(process.argv.slice(2));
 module.exports.webdriver                                = webdriver;
-
+module.exports.axios                                    = require('axios');
+module.exports.https                                    = require('https');
+module.exports.Promise                                  = require('bluebird');
 
 
 // UI Services
@@ -51,6 +53,7 @@ module.exports.exportParameter                         = require('./services/cor
 module.exports.overrideRepo                            = require('./services/core').overrideRepo,
 module.exports.myQuery                                 = require('./services/db').myQuery
 module.exports.pgQuery                                 = require('./services/db').pgQuery
+module.exports.api                                     = require('./services/request')
 
 
 
