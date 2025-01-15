@@ -86,11 +86,14 @@ async function generateNewObjectRepository() {
       name: 'repoName',
       message: 'Enter Repository Name:',
       validate: function (input) {
-        const isValid = /^[^<>:"/\\|?*\s]+$/.test(input);
+        const isValid = /^[a-zA-Z][a-zA-Z0-9_-]{0,29}$/.test(input);
         if (!isValid) {
-          return 'Repository name cannot contain spaces or any of the following characters: < > : " / \\ | ? *';
+          return 'Repository name must start with a letter and can only contain English letters, numbers, underscores, and hyphens, and cannot exceed 30 characters.';
         }
         return true;
+      },
+      filter: function (input) {
+        return input.toLowerCase();
       },
     },
   ]);
@@ -163,14 +166,20 @@ async function createNewRepoGroup(repoDir) {
       name: 'groupName',
       message: 'Enter New Group Name:',
       validate: function (input) {
-        const isValid = /^[^<>:"/\\|?*\s]+$/.test(input);
+        const isValid = /^[a-zA-Z][a-zA-Z0-9_-]*$/.test(input);
         if (!isValid) {
-          return 'Group name cannot contain spaces or any of the following characters: < > : " / \\ | ? *';
+          return 'Group name must start with a letter and can only contain English letters, numbers, underscores, and hyphens.';
+        }
+        if (input.length > 30) {
+          return 'Group name cannot exceed 30 characters.';
         }
         if (fs.existsSync(path.join(repoDir, input))) {
           return 'Group name already exists. Please enter a different name.';
         }
         return true;
+      },
+      filter: function (input) {
+        return input.toLowerCase();
       },
     },
   ]);
@@ -380,11 +389,14 @@ async function generateNewTest() {
       name: 'testName',
       message: 'Enter Test Name:',
       validate: function (input) {
-        const isValid = /^[^<>:"/\\|?*\s]+$/.test(input);
+        const isValid = /^[a-zA-Z][a-zA-Z0-9_-]{0,29}$/.test(input);
         if (!isValid) {
-          return 'Test name cannot contain spaces or any of the following characters: < > : " / \\ | ? *';
+          return 'Test name must start with a letter and can only contain English letters, numbers, underscores, and hyphens, and cannot exceed 30 characters.';
         }
         return true;
+      },
+      filter: function (input) {
+        return input.toLowerCase();
       },
     },
   ]);
@@ -433,11 +445,14 @@ async function generateNewHelper() {
       name: 'helperName',
       message: 'Enter Helper Name:',
       validate: function (input) {
-        const isValid = /^[^<>:"/\\|?*\s]+$/.test(input);
+        const isValid = /^[a-zA-Z][a-zA-Z0-9_-]{0,29}$/.test(input);
         if (!isValid) {
-          return 'Helper name cannot contain spaces or any of the following characters: < > : " / \\ | ? *';
+          return 'Helper name must start with a letter and can only contain English letters, numbers, underscores, and hyphens, and cannot exceed 30 characters.';
         }
         return true;
+      },
+      filter: function (input) {
+        return input.toLowerCase();
       },
     },
   ]);
@@ -445,8 +460,6 @@ async function generateNewHelper() {
   let helperDir = path.join(process.cwd(), 'helpers');
 
   if (!existsSync(helperDir)) {
-    console.log(`The directory "helpers" does not exist in the current working directory.`);
-    console.log('Searching in parent directories...');
 
     let currentDir = process.cwd();
     let found = false;
@@ -456,7 +469,6 @@ async function generateNewHelper() {
       const parentHelperDir = path.join(currentDir, 'helpers');
 
       if (existsSync(parentHelperDir)) {
-        console.log(`Found "helpers" directory in parent directory: ${currentDir}`);
         helperDir = path.join(currentDir, 'helpers');
         found = true;
         break;
@@ -500,11 +512,14 @@ async function generateNewEnvironment() {
       name: 'envName',
       message: 'Enter Environment Name:',
       validate: function (input) {
-        const isValid = /^[^<>:"/\\|?*\s]+$/.test(input);
+        const isValid = /^[a-zA-Z][a-zA-Z0-9 _-]{0,99}$/.test(input);
         if (!isValid) {
-          return 'Environment name cannot contain spaces or any of the following characters: < > : " / \\ | ? *';
+          return 'Environment name must start with a letter, can only contain English letters, numbers, spaces, underscores, and hyphens, and cannot exceed 100 characters.';
         }
         return true;
+      },
+      filter: function (input) {
+        return input.toUpperCase();
       },
     },
   ]);
