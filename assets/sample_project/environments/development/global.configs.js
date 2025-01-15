@@ -31,7 +31,7 @@ module.exports = {
     sente_timeout                   : 60*10,
 
     /* browser_type, for web-gui type tests [options: 'firefox, chrome etc. */
-    browser_type                    : 'firefox',
+    browser_type                    : 'chrome',
 
     /* driver_host: current driver url */
     driver_host                     : 'http://127.0.0.1:4101',

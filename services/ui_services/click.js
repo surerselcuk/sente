@@ -43,7 +43,7 @@ let click = async (search, opt = {}) => {
             
 
               
-
+            await wait_(1);
             resolve(element);
 
         }

@@ -44,7 +44,7 @@ let write = async (search,keys, opt = {}) => {
             
 
               
-
+            await wait_(1);
             resolve(element);
 
         }
