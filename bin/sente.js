@@ -643,8 +643,9 @@ exports.${environmentKey} = {
 
       setTimeout(() => {
         console.log('\n' + colors.green('New environment generated successfully.'));
-        console.log('Environment Name: ' + colors.green(envName));
-        console.log('Environment Key : ' + colors.green(environmentKey));
+        console.log('Name      : ' + colors.green(envName));
+        console.log('Key       : ' + colors.green(environmentKey));
+        console.log('Location  : ' + colors.green(envType.toUpperCase()));
       }, 100);
     });
   });
