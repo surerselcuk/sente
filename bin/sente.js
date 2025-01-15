@@ -86,6 +86,7 @@ async function generateNewObjectRepository() {
       name: 'repoName',
       message: 'Enter Repository Name:',
       validate: function (input) {
+        input = input.toLowerCase();
         const isValid = /^[a-zA-Z][a-zA-Z0-9_-]{0,29}$/.test(input);
         if (!isValid) {
           return 'Repository name must start with a letter and can only contain English letters, numbers, underscores, and hyphens, and cannot exceed 30 characters.';
@@ -166,6 +167,7 @@ async function createNewRepoGroup(repoDir) {
       name: 'groupName',
       message: 'Enter New Group Name:',
       validate: function (input) {
+        input = input.toLowerCase();
         const isValid = /^[a-zA-Z][a-zA-Z0-9_-]*$/.test(input);
         if (!isValid) {
           return 'Group name must start with a letter and can only contain English letters, numbers, underscores, and hyphens.';
@@ -274,11 +276,14 @@ async function generateNewLanguage() {
       name: 'languageCode',
       message: 'Enter Language Code (e.g., "en" for English):',
       validate: function (input) {
-
+        input = input.toLowerCase();
         if (!validLanguageCodes[input]) {
           return 'Invalid language code. Please enter a valid two-letter language code (e.g., "en" for English).';
         }
         return true;
+      },
+      filter: function (input) {
+        return input.toLowerCase();
       },
     },
   ]);
@@ -389,6 +394,7 @@ async function generateNewTest() {
       name: 'testName',
       message: 'Enter Test Name:',
       validate: function (input) {
+        input = input.toLowerCase();
         const isValid = /^[a-zA-Z][a-zA-Z0-9_-]{0,29}$/.test(input);
         if (!isValid) {
           return 'Test name must start with a letter and can only contain English letters, numbers, underscores, and hyphens, and cannot exceed 30 characters.';
@@ -445,6 +451,7 @@ async function generateNewHelper() {
       name: 'helperName',
       message: 'Enter Helper Name:',
       validate: function (input) {
+        input = input.toLowerCase();
         const isValid = /^[a-zA-Z][a-zA-Z0-9_-]{0,29}$/.test(input);
         if (!isValid) {
           return 'Helper name must start with a letter and can only contain English letters, numbers, underscores, and hyphens, and cannot exceed 30 characters.';
@@ -512,6 +519,7 @@ async function generateNewEnvironment() {
       name: 'envName',
       message: 'Enter Environment Name:',
       validate: function (input) {
+        input = input.toUpperCase();
         const isValid = /^[a-zA-Z][a-zA-Z0-9 _-]{0,99}$/.test(input);
         if (!isValid) {
           return 'Environment name must start with a letter, can only contain English letters, numbers, spaces, underscores, and hyphens, and cannot exceed 100 characters.';
