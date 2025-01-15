@@ -157,7 +157,7 @@ async function generateNewObjectRepository() {
 }
 
 async function createNewRepoGroup(repoDir) {
-  const { groupName } = await inquirer.prompt([
+  let { groupName } = await inquirer.prompt([
     {
       type: 'input',
       name: 'groupName',
@@ -174,6 +174,8 @@ async function createNewRepoGroup(repoDir) {
       },
     },
   ]);
+
+  groupName = groupName.toString().toLowerCase();
 
   const newGroupDir = path.join(repoDir, groupName);
   await fs.mkdirSync(newGroupDir);
