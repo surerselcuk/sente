@@ -1,7 +1,7 @@
 /*TEST DEFINATIONS 
 *******************/    
 test_name = '<senteTestName> SAMPLE TEST 1 </senteTestName>';  /* [Mandatory field] */    
-test_type = '<senteTestType> web-gui </senteTestType>';  /* [Mandatory field] | options: [web-gui, backend, performance] */
+test_type = '<senteTestType> backend </senteTestType>';  /* [Mandatory field] | options: [web-gui, backend, performance] */
 
 
 /* LIBRARIES
@@ -16,7 +16,7 @@ const { go, click, rightClick, see, notSee, write, keyboard } = sente;
 *************/
 test = async () => {
    
-    await go('https://v17.angular.io/guide')
+    log('Hello World');
 
 
 
