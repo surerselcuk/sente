@@ -25,12 +25,15 @@ To start using Sente IO, follow these steps:
 
 To run your tests, use the following command:
 ```bash
-sente ./tests/sample_test.js
+sente ./tests/sample_test_1.js
 ```
 
 ## Contributing
 
 If you would like to contribute, please send a pull request or open an issue.
+## Contact
+
+For any inquiries, please contact Selçuk SÜRER at [surerselcuk@gmail.com](mailto:surerselcuk@gmail.com).
 
 ## License
 
