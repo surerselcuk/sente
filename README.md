@@ -2,6 +2,7 @@
  
 Sente IO is a test automation framework based on Selenium WebDriver. This framework enables automated testing of web applications and accelerates the testing process.
 
+For detailed installation and usage guide, as well as sample test scripts, please visit [https://sente-1.gitbook.io/sente-docs](https://sente-1.gitbook.io/sente-docs).
 ## Features
 
 - **Ease of Use**: User-friendly interface and simple configuration.
