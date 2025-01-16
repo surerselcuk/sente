@@ -106,7 +106,7 @@ module.exports = {
                 options.addArguments("--disable-application-cache");
                 options.addArguments("--disable-features=DownloadBubble,DownloadBubbleV2"); // disable download popup
                 options.addArguments("--chrome.verbose = false"); //disable logging
-                options.addArguments("--w3c=false");
+                options.addArguments("--w3c=true");
                 
     
                 await new sente.webdriver.Builder()

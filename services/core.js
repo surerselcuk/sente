@@ -76,8 +76,11 @@ core.startTest = async (file,options) => {
             // set take-screenshoot
             if(options.take_screenshoot) defaultConfig += ' , "take_screenshoot":"true" '
 
-            // set take-screenshoot
+            // set sente cloud
             if(options.sente) defaultConfig += ' , "run_on_sente_cloud":"true" '
+
+            // set new web gui session
+            if(options.new) defaultConfig += ' , "always_new_web_gui_session":"true" '
 
             // end configs
             defaultConfig += `}'`

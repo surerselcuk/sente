@@ -872,6 +872,8 @@ program
     .option('--config <value>',`[Override Config] Usage: --config=' "parameter1":"value1", "parameter2":["valueX","valueY"], "parameter3":{"parameter4":"valueZ"} '`)
     .option('-t, --take_screenshoot','Take screenshot on every step')
     .option('-s, --sente','Test run on sente cloud ')
+    .option('-n, --new','Always open new web gui session')
+
     .action(async file=>{
   
         let filePath = path.join(process.cwd(),file);

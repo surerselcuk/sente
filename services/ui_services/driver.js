@@ -25,9 +25,11 @@ let buildDriver = async (opt = {}) => {
     return new Promise( async (resolve,reject)=> {
 
         try {
-
+            
             if(!opt.generate_new_session) opt.generate_new_session=false;
+            if(config.always_new_web_gui_session) opt.generate_new_session=true;
 
+            
             // Mandatory Config Validation
             if(!config.browser_type) throw new Error('browser_type invalid')
             if(!config.driver_host) throw new Error('driver_url invalid')
