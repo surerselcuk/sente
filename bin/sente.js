@@ -81,7 +81,7 @@ program
           {
             type: 'confirm',
             name: 'confirmChange',
-            message: `The current default environment is "${currentDefaultEnv}". Do you want to change it?`,
+            message: `The default environment is "${currentDefaultEnv}". Do you want to change it?`,
             default: true,
           },
         ]);
