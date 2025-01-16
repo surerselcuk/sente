@@ -246,7 +246,7 @@ let buildChrome = async () => {
             options.addArguments("--disable-application-cache");
             options.addArguments("--disable-features=DownloadBubble,DownloadBubbleV2"); // disable download popup
             options.addArguments("--chrome.verbose = false"); //disable logging
-            options.addArguments("--w3c=false");
+            options.addArguments("--w3c=true");
             
 
             await new webdriver.Builder()
@@ -302,13 +302,32 @@ let killAllSessionsOnGrid = async(gridHost) => {
                 if (res.data.value.nodes[0].slots.length > 0) {
                     
                     for (let i of res.data.value.nodes[0].slots) {
+
+                        try {
                         
-                        if(i.session !== null) {                        
-                            let currentDriverForSession = await getDriver(i.session.sessionId,gridHost);
-                            await currentDriverForSession.quit();
-                            await wait_(1);
-                            log(`Session killed on grid(${gridHost}), sessionId: ${i.session.sessionId}`)
-                        } 
+                            if(i.session !== null) {                        
+                                let currentDriverForSession = await getDriver(i.session.sessionId,gridHost);
+                                await currentDriverForSession.quit();
+                                await wait_(1);
+                                log(`Session killed on grid(${gridHost}), sessionId: ${i.session.sessionId}`)
+                            } 
+                        
+                        
+                        }
+                        catch (e) {
+                        
+                            axios({
+                                method: 'delete',
+                                timeout: senteConfig.defaultTimeout * 1000,
+                                url: `${gridHost}/session/${i.session.sessionId}`,
+                                headers: {"X-REGISTRATION-SECRET":""}
+                            }, {})
+                            .then(_=>{log(`Session killed on grid(${gridHost}), sessionId: ${i.session.sessionId}`)})
+                            .catch(_=>{log.warn(_,'killAllSessionsOnGrid => delete session')})
+                        
+                        }
+                        
+                        
     
     
                     }
@@ -317,7 +336,7 @@ let killAllSessionsOnGrid = async(gridHost) => {
     
     
             })
-            .catch((error) => { log.warn(error); resolve(true); });
+            .catch((error) => {log.warn('[killAllSessionsOnGrid]'); log.warn(error); resolve(true); });
         }
         catch (e) {
             log.warn(error); 
