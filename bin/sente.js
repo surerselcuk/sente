@@ -38,6 +38,120 @@ program
     }
   });
 
+  program
+    .command('set')
+    .description('Set Default Environment')
+    .action(async () => {
+      let envDir = path.join(process.cwd(), 'environments');
+
+      if (!existsSync(envDir)) {
+        let currentDir = process.cwd();
+        let found = false;
+
+        while (currentDir !== path.parse(currentDir).root) {
+          currentDir = path.dirname(currentDir);
+          const parentEnvDir = path.join(currentDir, 'environments');
+
+          if (existsSync(parentEnvDir)) {
+            envDir = parentEnvDir;
+            found = true;
+            break;
+          }
+        }
+
+        if (!found) {
+          console.log(colors.red(figures.cross + '  Error:') + ` The directory "environments" does not exist in any parent directories.`);
+          return;
+        }
+      }
+
+      const parentAppFilePath = path.join(path.dirname(envDir), 'app.js');
+
+      if (!existsSync(parentAppFilePath)) {
+        console.log(colors.red(figures.cross + '  Error:') + ` The app.js file does not exist in the parent "environments" directory.`);
+        return;
+      }
+
+      const parentAppData = await fs.readFileSync(parentAppFilePath, 'utf8');
+      const defaultEnvLine = parentAppData.split('\n').find(line => line.includes('global.senteConfig.defaultEnvironment'));
+
+      if (defaultEnvLine) {
+        const currentDefaultEnv = defaultEnvLine.split('=')[1].replace(/['";]/g, '').trim();
+        const { confirmChange } = await inquirer.prompt([
+          {
+            type: 'confirm',
+            name: 'confirmChange',
+            message: `The current default environment is "${currentDefaultEnv}". Do you want to change it?`,
+            default: true,
+          },
+        ]);
+
+        if (!confirmChange) {
+          console.log(colors.yellow(figures.warning + '  ' + `Default environment remains "${currentDefaultEnv}".`));
+          return;
+        }
+      } else {
+        console.log(colors.red(figures.cross + '  Error:') + ` The default environment setting was not found in the app.js file.`);
+        return;
+      }
+
+      const { envGroup } = await inquirer.prompt([
+        {
+          type: 'list',
+          name: 'envGroup',
+          message: 'Select Environment Group:',
+          choices: ['Development', 'Production'],
+        },
+      ]);
+
+      const targetDir = path.join(envDir, envGroup.toLowerCase());
+      const indexFilePath = path.join(targetDir, 'index.js');
+
+      if (!existsSync(indexFilePath)) {
+        console.log(colors.red(figures.cross + '  Error:') + ` The index.js file does not exist in the "${envGroup}" directory.`);
+        return;
+      }
+      
+
+      const indexData = await fs.readFileSync(indexFilePath, 'utf8');
+      
+      const envList = indexData
+        .split('\n')
+        .filter(line => line.trim().startsWith('exports.env'))
+        .map(line => line.match(/exports\.(env\d+)/)[1]);
+
+      const { selectedEnv } = await inquirer.prompt([
+        {
+          type: 'list',
+          name: 'selectedEnv',
+          message: 'Select Environment:',
+          choices: envList,
+        },
+      ]);
+
+
+
+      const appFilePath = path.join(path.dirname(envDir), 'app.js');
+
+      if (!existsSync(appFilePath)) {
+        console.log(colors.red(figures.cross + '  Error:') + ` The app.js file does not exist in the "environments" directory.`);
+        return;
+      }
+
+      const envPrefix = envGroup == 'Development' ? 'dev' : 'prod';
+
+      let appData = await fs.readFileSync(appFilePath, 'utf8');
+      appData = appData.replace(/global\.senteConfig\.defaultEnvironment\s*=\s*['"].*?['"];/, `global.senteConfig.defaultEnvironment = '${envPrefix}-${selectedEnv}';`);
+
+      fs.writeFileSync(appFilePath, appData, 'utf8')      
+
+      
+      console.log(colors.green(figures.tick + '  ' + `Default environment set to "${envPrefix}-${selectedEnv}".`) );
+
+
+
+    });
+
 async function generateNewObjectRepository() {
   let repoDir = path.join(process.cwd(), 'object_repository');
 
