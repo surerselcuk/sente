@@ -12,7 +12,7 @@ const { go, click, rightClick, see, notSee, write, keyboard } = sente;
 ********************************************************************************************/
 module.exports = {
 
-    HELPER_NAME : () => {        
+    HELPER_NAME : async () => {        
     
         /*
             
