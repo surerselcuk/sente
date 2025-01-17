@@ -221,7 +221,7 @@ let notSee = async (search, opt = {}) => {
             if (!isFind){
 
                 await core.takeScreenshot(`NOT SEE: ${opt.search}`).catch(e =>  log.warn(e,'takeScreenshot'))
-                resolve(); 
+                resolve(true); 
 
             }
             else {
