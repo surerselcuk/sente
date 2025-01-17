@@ -8,7 +8,7 @@ test_type = '<senteTestType> TEST_TYPE_HERE </senteTestType>';  /* [Mandatory fi
 *************/
 const { sente, helper, repo } = require('#libraries');
 const { webdriver, axios, Promise, https } = sente;
-const { testFlow, argv, jump, log, now, wait, wait_, translate, random, importParameter, exportParameter, overrideRepo, myQuery, pgQuery, api } = sente;
+const { testFlow, argv, jump, log, now, wait, wait_, translate, importParameter, exportParameter, overrideRepo, myQuery, pgQuery, api } = sente;
 const { go, click, rightClick, see, notSee, write, keyboard } = sente;
 
 
