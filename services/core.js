@@ -112,7 +112,7 @@ core.startTest = async (file,options) => {
 
 }
 
-core.overrideRepo = (ObjectRepoField,InsertItems,keyWord='XXXX') => {
+core.overrideRepo = (ObjectRepoField,InsertItems,keyWord='<sente>') => {
     try {
         if(!ObjectRepoField) throw new Error('[overrideRepo] Repo field undefined!')
         if(!InsertItems || InsertItems==='') throw new Error('[overrideRepo] InsertItems  undefined!')

@@ -192,7 +192,7 @@ async function generateNewObjectRepository() {
     },
   ]);
 
-  let targetGroupDir = repoGroup === 'New Group' ? await createNewRepoGroup(repoDir) : path.join(repoDir, repoGroup);
+  let targetGroupDir = repoGroup === 'New Group' ? await generateNewRepoGroup(repoDir) : path.join(repoDir, repoGroup);
 
   const { repoName } = await inquirer.prompt([
     {
@@ -274,7 +274,7 @@ async function generateNewObjectRepository() {
 
 }
 
-async function createNewRepoGroup(repoDir) {
+async function generateNewRepoGroup(repoDir) {
   let { groupName } = await inquirer.prompt([
     {
       type: 'input',
@@ -309,7 +309,7 @@ async function createNewRepoGroup(repoDir) {
   const targetIndexFile = path.join(newGroupDir, 'index.js');
   fs.copyFileSync(sourceIndexFile, targetIndexFile);
 
-  console.log(colors.green(figures.tick + '  ' + `New group directory created.`) + '\n   ' + newGroupDir);
+  console.log(colors.green(figures.tick + '  ' + `New group directory generated.`) + '\n   ' + newGroupDir);
 
   // update index file
   const indexFilePath = path.join(repoDir, 'index.js');
@@ -687,7 +687,7 @@ async function generateNewEnvironment() {
   let environmentKey = 'env' + (lastEnvNumber + 1);
 
   fs.mkdirSync(newEnvDir);
-  console.log(colors.green(figures.tick + '  ' + `Environment directory created.`) + '\n   ' + newEnvDir);
+  console.log(colors.green(figures.tick + '  ' + `Environment directory generated.`) + '\n   ' + newEnvDir);
 
   let sourceFile = path.join(path.resolve(__dirname, '..'), 'assets', 'new_items', 'configs.js');
 
