@@ -2,7 +2,7 @@
   "name": "senteio",
   "version": "2.0.24",
   "description": "Sente",
-  "main": "index.js",
+  "main": "index.js", 
   "bin": {
     "sente": "bin/sente.js"
   },
