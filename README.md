@@ -37,8 +37,20 @@ sente ./tests/sample_test_1.js
 You can find the source code and more details about the project on our GitHub repository: 
 [https://github.com/surerselcuk/sente](https://github.com/surerselcuk/sente)
 
-If you encounter any issues or have suggestions for improvements, please report them on our GitHub Issues page:  
+## Contributing
+
+We welcome contributions from the community! If you would like to contribute, please feel free to send a pull request or open an issue.
+
+Should you encounter any issues or have suggestions for improvements, kindly report them on our GitHub Issues page: 
 [https://github.com/surerselcuk/sente/issues](https://github.com/surerselcuk/sente/issues)
+
+## Contact
+
+For any inquiries, please contact Selçuk SÜRER at [surerselcuk@gmail.com](mailto:surerselcuk@gmail.com).
+
+## License
+
+This project is licensed under the MIT License. For more information, see the `LICENSE` file.
 
 ## Contributing
 
