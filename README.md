@@ -10,7 +10,7 @@ For detailed installation and usage guide, as well as sample test scripts, pleas
 - **Flexibility**: Compatible with different browsers and platforms.
 - **Extensibility**: Ability to create your own custom test scenarios.
 - **Selenium Integration**: Seamless integration with Selenium WebDriver for powerful test automation.
-- **Cross-Browser Testing**: Supports testing across multiple browsers including Chrome, Firefox, and Safari.
+- **Cross-Browser Testing**: Supports testing across multiple browsers including Chrome, Firefox etc.
 - **Automated Test Execution**: Automate the execution of your test cases to save time and effort.
 
 ## Installation
@@ -52,9 +52,6 @@ For any inquiries, please contact Selçuk SÜRER at [surerselcuk@gmail.com](mail
 
 This project is licensed under the MIT License. For more information, see the `LICENSE` file.
 
-## Contributing
-
-If you would like to contribute, please send a pull request or open an issue.
 
 ## Contact
 
