@@ -3,10 +3,7 @@ Sente is a test automation framework based on Selenium WebDriver. This framework
 
 For detailed installation and usage guide, as well as sample test scripts, please visit:  
 [https://sente-1.gitbook.io/sente-docs](https://sente-1.gitbook.io/sente-docs)
-## GitHub Repository
 
-You can find the source code and more details about the project on our GitHub repository: 
-[https://github.com/surerselcuk/senteio](https://github.com/surerselcuk/senteio)
 ## Features
 
 - **Ease of Use**: User-friendly interface and simple configuration.
@@ -35,7 +32,10 @@ To run your tests, use the following command:
 ```bash
 sente ./tests/sample_test_1.js
 ```
+## GitHub Repository
 
+You can find the source code and more details about the project on our GitHub repository: 
+[https://github.com/surerselcuk/sente](https://github.com/surerselcuk/sente)
 ## Contributing
 
 If you would like to contribute, please send a pull request or open an issue.
@@ -47,3 +47,7 @@ For any inquiries, please contact Selçuk SÜRER at [surerselcuk@gmail.com](mail
 ## License
 
 This project is licensed under the MIT License. For more information, see the `LICENSE` file.
+
+## Keywords
+
+Test Automation, Selenium, Webdriver
