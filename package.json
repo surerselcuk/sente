@@ -37,7 +37,11 @@
     "random": "^3.0.6",
     "selenium-webdriver": "^4.25.0"
   },
-  "homepage": "https://github.com/surerselcuk/sente",
+  "homepage": "https://sente-1.gitbook.io/sente-docs",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/surerselcuk/sente"
+  },
   "bugs": {
     "url": "https://github.com/surerselcuk/sente/issues",
     "email": "surerselcuk@gmail.com"
