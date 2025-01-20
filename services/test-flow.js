@@ -66,7 +66,9 @@ let setEnvironment = (testData) => {
                 if(!global.config.current_language) global.config.current_language = global.senteConfig.defaultLanguage;
 
                 /* This parameter determines how many times the test run will be re-run if the test case receives an error. If it is zero, the test will not be re-run in case of an error. */
-                if(!global.config.number_of_test_run_repetitions_on_error) global.config.number_of_test_run_repetitions_on_error = 0;                                
+                if(!global.config.number_of_test_run_repetitions_on_error) global.config.number_of_test_run_repetitions_on_error = 0; 
+                global.config.number_of_test_run_repetitions_on_error = Number(global.config.number_of_test_run_repetitions_on_error);
+                if(Number(global.config.number_of_test_run_repetitions_on_error) > 10) global.config.number_of_test_run_repetitions_on_error = 10;
 
                 /* download_path, default download directory path on worker*/
                 if(!global.config.download_path) global.config.download_path = path.join(senteConfig.testRunProjectPath,'files','downloads') ;
