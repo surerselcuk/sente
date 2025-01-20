@@ -52,12 +52,3 @@ For any inquiries, please contact Selçuk SÜRER at [surerselcuk@gmail.com](mail
 
 This project is licensed under the MIT License. For more information, see the `LICENSE` file.
 
-
-## Contact
-
-For any inquiries, please contact Selçuk SÜRER at [surerselcuk@gmail.com](mailto:surerselcuk@gmail.com).
-
-## License
-
-This project is licensed under the MIT License. For more information, see the `LICENSE` file.
-
