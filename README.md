@@ -2,7 +2,7 @@
 Sente is a test automation framework based on Selenium WebDriver. This framework enables automated testing of web applications and accelerates the testing process. It leverages the power of Selenium WebDriver to provide a robust and flexible solution for test automation.
 
 For detailed installation and usage guide, as well as sample test scripts, please visit:  
-[https://sente-1.gitbook.io/sente-docs](https://sente-1.gitbook.io/sente-docs)
+[https://sente-1.gitbook.io](https://sente-1.gitbook.io)
 
 ## Features
 
