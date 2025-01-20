@@ -987,6 +987,10 @@ program
     .option('-t, --take_screenshoot','Take screenshot on every step')
     .option('-s, --sente','Test run on sente cloud ')
     .option('-n, --new','Always open new web gui session')
+    .option(' ' )
+    .option(' ' , 'User guide     : ' + colors.green('https://sente-1.gitbook.io'))
+    .option(' ' , 'Git Repository : ' + colors.green('https://github.com/surerselcuk/sente'))
+    .option(' ' , 'Support        : ' + colors.blue('surerselcuk@gmail.com'))
 
     .action(async file=>{
   
@@ -995,7 +999,6 @@ program
         core.startTest({fileName:file, filePath: filePath},program.opts())
 
     });
-
 
 
 

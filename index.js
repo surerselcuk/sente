@@ -33,7 +33,7 @@ module.exports.see                                     = require('./services/ui_
 module.exports.notSee                                  = require('./services/ui_services/locator').notSee,
 module.exports.write                                   = require('./services/ui_services/write').write,
 module.exports.keyboard                                = require('./services/ui_services/write').keyboard,
-
+module.exports.scroll                                  = require('./services/ui_services/scroll').scroll,
 
 
 
