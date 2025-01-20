@@ -1,6 +1,6 @@
 {
   "name": "senteio",
-  "version": "2.0.34",
+  "version": "2.0.35",
   "description": "Sente",
   "main": "index.js",
   "bin": {
@@ -9,7 +9,13 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": ["selenium","test","automation","sente","webdriver"],
+  "keywords": [
+    "selenium",
+    "test",
+    "automation",
+    "sente",
+    "webdriver"
+  ],
   "author": "Selçuk SÜRER <surerselcuk@gmail.com>",
   "license": "ISC",
   "dependencies": {
