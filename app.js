@@ -13,7 +13,7 @@ global.config = {}; // For Test Run Config
 global.senteConfig.project_path = require('path').resolve(__dirname, '.') ;  // project directory
 
 // Test Flow GLobal Variables
-global.test; // This is test flow object
+global.test; // This is test flow  object
 global.section = {}; // This is test flow object
 global.sectionRules = {}; // This is test flow object
 
