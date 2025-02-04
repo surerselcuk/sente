@@ -508,7 +508,7 @@ testFlow.testFlow = async(testData = {} ) => {
             let testDuration = core.duration({startDate: testStartDate})
 
             // take screenshot for web-gui tests
-            if(config.test_type === 'web-gui') await driver.takeScreenshot().catch(e => {})
+            if(config.test_type === 'web-gui') await driver.takeScreenshot('TEST FINISHED SUCCESS').catch(e => {})
                 
 
             // test closing information            
@@ -524,7 +524,7 @@ testFlow.testFlow = async(testData = {} ) => {
             let testDuration = core.duration({startDate: testStartDate})
             
             // take screenshot for web-gui tests
-            if(config.test_type === 'web-gui') await driver.takeScreenshot().catch(e => {})
+            if(config.test_type === 'web-gui') await driver.takeScreenshot('TEST FAILED').catch(e => {})
 
             // test closing information for Failed test status
             console.log('[' + now() + '] ' + colors.red(`Test failed! [Test Duration: ${testDuration}]`))            
