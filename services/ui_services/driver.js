@@ -509,26 +509,46 @@ let takeScreenshot = (text='') => {
                 // take screenshot
                 await driver.takeScreenshot()
                         .then(function(data) {
+                            
                             let scrShot = Buffer.from(data, 'base64');
+
                             jimp.read(logoFile)
-                            .then(logo => {
-                                jimp.read(scrShot)
-                                    .then(function (image) {
-                                        loadedImage = image;
-                                        return jimp.loadFont(jimp.FONT_SANS_32_BLACK);        
-                                    })
-                                    .then(function (font) {
-                                        loadedImage
-                                            .blit(logo, loadedImage.bitmap.width-200, loadedImage.bitmap.height-120)
-                                            .print(font, 10, loadedImage.bitmap.height-50, text)
-                                            .resize(1400,jimp.AUTO)
-                                            .write(imgFile);
-                                            
-                                            if(config.run_on_sente_cloud) console.log(`<senteScreenshot>${imgFile}</senteScreenshot>`);
-                                        resolve();
-                                    })
-                                    .catch(err => reject(err));
-                            })
+                                .then(logo => {
+                                    jimp.read(scrShot)
+                                        .then(image => {
+                                            loadedImage = image;
+                                            return jimp.loadFont(jimp.FONT_SANS_32_WHITE); // Beyaz yazı fontu
+                                        })
+                                        .then(font => {
+                                            // Metnin genişlik ve yüksekliğini hesapla
+                                            const textWidth = jimp.measureText(font, text);
+                                            const textHeight = jimp.measureTextHeight(font, text, textWidth);
+                                            const textX = 10;
+                                            const textY = loadedImage.bitmap.height - 50;
+                            
+                                            // Siyah arka plan oluştur ve metnin altına ekle
+                                            const background = new jimp(textWidth + 20, textHeight + 10, 0x000000FF);
+                                            loadedImage.blit(background, textX - 5, textY - 5);
+                            
+                                            // Logo ve metni ekleyerek resmi güncelle
+                                            loadedImage
+                                                .blit(logo, loadedImage.bitmap.width - 200, loadedImage.bitmap.height - 120)
+                                                .print(font, textX, textY, text)
+                                                .resize(1400, jimp.AUTO)
+                                                .write(imgFile);
+                            
+                                            if (config.run_on_sente_cloud) {
+                                                console.log(`<senteScreenshot>${imgFile}</senteScreenshot>`);
+                                            }
+                                            resolve();
+                                        })
+                                        .catch(err => reject(err));
+                                })
+                                .catch(err => reject(err));
+                            
+
+
+
                         })
 
 
