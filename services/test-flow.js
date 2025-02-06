@@ -71,14 +71,13 @@ let setEnvironment = (testData) => {
                 if(Number(global.config.number_of_test_run_repetitions_on_error) > 10) global.config.number_of_test_run_repetitions_on_error = 10;
 
                 /* download_path, default download directory path on worker*/
-                if(!global.config.download_path) global.config.download_path = path.join(senteConfig.testRunProjectPath,'files','downloads') ;
-
-                /* download_path_on_grid, default download directory path on Selenium Grid*/
-                if(!global.config.download_path_on_grid) global.config.download_path_on_grid = '/home/seluser/Downloads';
+                if(!global.config.download_path && !config.run_on_sente_cloud) global.config.download_path = path.join(senteConfig.testRunProjectPath,'files','downloads') ;
                
                 /* screenshot_directory, default screenshot download directory path fro web-gui tests*/
                 if(!global.config.screenshot_directory) global.config.screenshot_directory = path.join(senteConfig.testRunProjectPath,'files','screen_shots') ;
 
+                    
+                
 
             
             /*  set default parameters - [End]*/
@@ -132,6 +131,7 @@ let printTestInfo = (testData) => {
             && !row[0].includes('screenshot_directory') 
             && !row[0].includes('file_name') 
             && !row[0].includes('file_full_path') 
+            && !row[0].includes('run_on_sente_cloud')             
             && !row[0].includes('project_path') 
             && !(tableData.test_type !== 'web-gui'  && row[0].includes('browser_type') ) 
             && !(tableData.test_type !== 'web-gui'  && row[0].includes('driver_host') ) 
@@ -178,7 +178,18 @@ let overrideConfigs = (testData) => {
 
             if(isObject(config_)){
                 config = {...config,...config_};
+
                 config.project_path = senteConfig.testRunProjectPath; // set project main directory
+
+                
+                /*DOWNLOAD PATH MEKANİZMASI
+                Workerdaki /usr/src/app/downloads dizini ile driverdaki  /home/seluser/Downloads dizini , Host makinadaki DRIVER_DOWNLOAD_DIRECTORY diziniyle bağlanmalıdır.
+                    # Çalışan test, browser download larını worker içindeki  /usr/src/app/downloads dizinine yapmalıdır.
+                    # Bu nedenle test sente üzerinde çalışırken, kullanıcının download_path değişkenini ezer ve download_path="/usr/src/app/downloads" yapar. */
+                if(global.config.run_on_sente_cloud) global.config.download_path = '/usr/src/app/downloads'                
+                global.config.download_path_on_grid = '/home/seluser/Downloads'; /* download_path_on_grid, default download directory path on Selenium Grid*/
+
+
             } else {
                 throw new Error ( '--config paremeter error' )
             }

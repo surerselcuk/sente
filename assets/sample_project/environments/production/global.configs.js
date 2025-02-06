@@ -9,9 +9,6 @@
         # screenshot_directory, default screenshot download directory path fro web-gui tests
         screenshot_directory            : path.join(senteConfig.testRunProjectPath,'files','screen_shots')
 
-        # download_path_on_grid, default download directory path on Selenium Grid
-        if(!global.config.download_path_on_grid) global.config.download_path_on_grid = '/home/seluser/Downloads'
-
         # current_language, keyword for translate languge
         current_language                : 'en'
 
