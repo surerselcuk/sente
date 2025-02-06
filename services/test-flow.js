@@ -133,6 +133,7 @@ let printTestInfo = (testData) => {
             && !row[0].includes('file_full_path') 
             && !row[0].includes('run_on_sente_cloud')             
             && !row[0].includes('project_path') 
+            && !row[0].includes('take_screenshoot')                         
             && !(tableData.test_type !== 'web-gui'  && row[0].includes('browser_type') ) 
             && !(tableData.test_type !== 'web-gui'  && row[0].includes('driver_host') ) 
             && !(row[0] === 'number_of_test_run_repetitions_on_error' && Number(value) === 0) 
