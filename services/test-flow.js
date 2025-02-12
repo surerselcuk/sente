@@ -10,6 +10,7 @@ const driver = require('./ui_services/driver');
 const figures = require('figures');
 const path = require('path');
 
+
 testFlow = {};
 
 
@@ -336,9 +337,9 @@ let runSections = async(sections) => {
 testFlow.testFlow = async(testData = {} ) => {
 
         let testStartDate = new Date().getTime();
+        let senteTimeout;
 
         try {
-            
 
 
             // testData validations
@@ -361,10 +362,8 @@ testFlow.testFlow = async(testData = {} ) => {
             await printTestInfo(testData);
             
 
-
-
-
-
+            // Set Timeout
+            if(config.sente_timeout)  senteTimeout = setTimeout(() => { throw new Error(`<< TEST TIMEOUT! >> You are getting this error because the test did not finish within ${config.sente_timeout} seconds. If you think this time is incorrect or short, check the value of the 'sente_timeout' parameter in your config file.`) }, Number(config.sente_timeout) * 1000)            
 
 
 
@@ -514,7 +513,8 @@ testFlow.testFlow = async(testData = {} ) => {
                 
             } 
             
-            
+            // Clear timeout
+            clearTimeout(senteTimeout);
 
             // set test duration
             let testDuration = core.duration({startDate: testStartDate})
@@ -532,6 +532,10 @@ testFlow.testFlow = async(testData = {} ) => {
           
         }
         catch (e) {
+
+            // Clear timeout
+            clearTimeout(senteTimeout);
+
             // set test duration
             let testDuration = core.duration({startDate: testStartDate})
             
@@ -545,13 +549,16 @@ testFlow.testFlow = async(testData = {} ) => {
 
 
             // process exit
-            setTimeout(_=>{process.exit();},3000);
+            setTimeout(_=>{process.exit();},500);
 
         }
         finally { 
 
+            // Clear timeout
+            clearTimeout(senteTimeout);
+
             // process exit
-            setTimeout(_=>{process.exit();},3000);
+            setTimeout(_=>{process.exit();},500);
             
             
         }

@@ -26,8 +26,9 @@ process
     log.error(reason,'Unhandled Rejection at Promise');
     process.exit();
   })
-  .on('uncaughtException', err => {    
-    log.error(err,'Uncaught Exception thrown');
+  .on('uncaughtException', err => {
+    if(err.message) log.error(err.message)
+    else log.error(err.message,'Uncaught Exception thrown');
     process.exit();
   });
   
