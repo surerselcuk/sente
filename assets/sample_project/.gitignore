@@ -2,3 +2,4 @@
 /files/screen_shots
 /files/sente_files
 /tests/**/.*
+/environments/development/
