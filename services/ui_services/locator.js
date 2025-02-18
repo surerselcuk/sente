@@ -70,7 +70,14 @@ let locator = (opt={}) => {
                 case 'tagName':
                     object = await driver.wait(until.elementLocated(By.tagName(opt.search)),opt.timeout * 1000);
                     break;
-                
+
+                case 'text':
+                    object = await driver.wait(until.elementLocated(By.xpath(`//*[text()='${opt.search}']`)),opt.timeout * 1000);
+                    break;
+
+                case 'partialText':
+                    object = await driver.wait(until.elementLocated(By.xpath(`//*[contains(text(),'${opt.search}')]`)),opt.timeout * 1000);
+                    break;
                        
                 default:
                     reject('Search type undefined')
@@ -178,6 +185,24 @@ see.linkText = async (search, opt = {}) => {
 see.partialLinkText = async (search, opt = {}) => {
 
     opt.type = 'partialLinkText'
+    const _ = await see(search, opt);
+    return await Promise.resolve(_);
+
+
+}
+
+see.text = async (search, opt = {}) => {
+
+    opt.type = 'text'
+    const _ = await see(search, opt);
+    return await Promise.resolve(_);
+
+
+}
+
+see.partialText = async (search, opt = {}) => {
+
+    opt.type = 'partialText'
     const _ = await see(search, opt);
     return await Promise.resolve(_);
 
@@ -301,6 +326,24 @@ notSee.linkText = async (search, opt = {}) => {
 notSee.partialLinkText = async (search, opt = {}) => {
 
     opt.type = 'partialLinkText'
+    const _ = await notSee(search, opt);
+    return await Promise.resolve(_);
+
+
+}
+
+notSee.text = async (search, opt = {}) => {
+
+    opt.type = 'text'
+    const _ = await notSee(search, opt);
+    return await Promise.resolve(_);
+
+
+}
+
+notSee.partialText = async (search, opt = {}) => {
+
+    opt.type = 'partialText'
     const _ = await notSee(search, opt);
     return await Promise.resolve(_);
 

@@ -107,6 +107,24 @@ getText.partialLinkText = async (search, opt = {}) => {
 
 }
 
+getText.text = async (search, opt = {}) => {
+
+    opt.type = 'text'
+    const _ = await click(search, opt);
+    return await Promise.resolve(_);
+
+
+}
+
+getText.partialText = async (search, opt = {}) => {
+
+    opt.type = 'partialText'
+    const _ = await click(search, opt);
+    return await Promise.resolve(_);
+
+
+}
+
 getText.tagName = async (search, opt = {}) => {
 
     opt.type = 'tagName'

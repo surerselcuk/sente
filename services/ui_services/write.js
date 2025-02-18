@@ -123,6 +123,24 @@ write.partialLinkText = async (search,keys, opt = {}) => {
 
 }
 
+write.text = async (search,keys, opt = {}) => {
+
+    opt.type = 'text'
+    const _ = await write(search,keys, opt);
+    return await Promise.resolve(_);
+
+
+}
+
+write.partialText = async (search,keys, opt = {}) => {
+
+    opt.type = 'partialText'
+    const _ = await write(search,keys, opt);
+    return await Promise.resolve(_);
+
+
+}
+
 write.tagName = async (search,keys, opt = {}) => {
 
     opt.type = 'tagName'

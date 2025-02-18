@@ -122,6 +122,24 @@ click.partialLinkText = async (search, opt = {}) => {
 
 }
 
+click.text = async (search, opt = {}) => {
+
+    opt.type = 'text'
+    const _ = await click(search, opt);
+    return await Promise.resolve(_);
+
+
+}
+
+click.partialText = async (search, opt = {}) => {
+
+    opt.type = 'partialText'
+    const _ = await click(search, opt);
+    return await Promise.resolve(_);
+
+
+}
+
 click.tagName = async (search, opt = {}) => {
 
     opt.type = 'tagName'
@@ -225,6 +243,24 @@ rightClick.partialLinkText = async (search, opt = {}) => {
 
 }
 
+rightClick.text = async (search, opt = {}) => {
+
+    opt.type = 'text'
+    const _ = await rightClick(search, opt);
+    return await Promise.resolve(_);
+
+
+}
+
+rightClick.partialText = async (search, opt = {}) => {
+
+    opt.type = 'partialText'
+    const _ = await rightClick(search, opt);
+    return await Promise.resolve(_);
+
+
+}
+
 rightClick.tagName = async (search, opt = {}) => {
 
     opt.type = 'tagName'
@@ -322,6 +358,24 @@ doubleClick.linkText = async (search, opt = {}) => {
 doubleClick.partialLinkText = async (search, opt = {}) => {
 
     opt.type = 'partialLinkText'
+    const _ = await doubleClick(search, opt);
+    return await Promise.resolve(_);
+
+
+}
+
+doubleClick.text = async (search, opt = {}) => {
+
+    opt.type = 'text'
+    const _ = await doubleClick(search, opt);
+    return await Promise.resolve(_);
+
+
+}
+
+doubleClick.partialText = async (search, opt = {}) => {
+
+    opt.type = 'partialText'
     const _ = await doubleClick(search, opt);
     return await Promise.resolve(_);
 
