@@ -164,7 +164,8 @@ let rightClick = async (search, opt = {}) => {
             
             let element = await locator(opt)
             await driver.actions().contextClick(element).perform();           
-
+            
+            await wait_(1);
             await core.takeScreenshot(`RIGHT CLICK: ${opt.search}`).catch(e =>  log.warn(e,'takeScreenshot'))
             resolve(element);
 
