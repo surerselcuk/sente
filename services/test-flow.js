@@ -85,7 +85,7 @@ let setEnvironment = (testData) => {
 
 
 }
-let printTestInfo = (testData) => {
+let printTestInfo = (testData) => { 
 
 
     // Test Info Table
