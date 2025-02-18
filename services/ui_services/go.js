@@ -35,7 +35,7 @@ let go = async (url, opt = {}) => {
             log.error(e,`Error go url  on [Url: ${url}]`);
             reject(e);
         }
-    }).timeout(opt.timeout*1000,`[Timeout] [Go: ${url}]`)
+    }).timeout((opt.timeout+1)*1000,`[Timeout] [Go: ${url}]`)
 
 
 }

@@ -53,7 +53,7 @@ let click = async (search, opt = {}) => {
             log.error(e,`CLICK [${opt.search}]`);
             reject(e);
         }
-    }).timeout(opt.timeout*1000,`[Timeout] [CLICK: ${opt.search}]`)
+    }).timeout((opt.timeout+1)*1000,`[Timeout] [CLICK: ${opt.search}]`)
 
 
 }
@@ -174,7 +174,7 @@ let rightClick = async (search, opt = {}) => {
             log.error(e,`RIGHT CLICK [${opt.search}]`);
             reject(e);
         }
-    }).timeout(opt.timeout*1000,`[Timeout] [RIGHT CLICK: ${opt.search}]`)
+    }).timeout((opt.timeout+1)*1000,`[Timeout] [RIGHT CLICK: ${opt.search}]`)
 
 
 }
@@ -295,7 +295,7 @@ let doubleClick = async (search, opt = {}) => {
             log.error(e,`DOUBLE CLICK [${opt.search}]`);
             reject(e);
         }
-    }).timeout(opt.timeout*1000,`[Timeout] [DOUBLE CLICK: ${opt.search}]`)
+    }).timeout((opt.timeout+1)*1000,`[Timeout] [DOUBLE CLICK: ${opt.search}]`)
 
 
 }

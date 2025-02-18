@@ -38,7 +38,7 @@ let getText = async (search, opt = {}) => {
             log.error(e,`CLICK [${opt.search}]`);
             reject(e);
         }
-    }).timeout(opt.timeout*1000,`[Timeout] [GET TEXT: ${opt.search}]`)
+    }).timeout((opt.timeout+1)*1000,`[Timeout] [GET TEXT: ${opt.search}]`)
 
 
 }

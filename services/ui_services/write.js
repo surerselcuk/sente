@@ -54,7 +54,7 @@ let write = async (search,keys, opt = {}) => {
             log.error(e,`WRITE [${opt.search}]`);
             reject(e);
         }
-    }).timeout(opt.timeout*1000,`[Timeout] [WRITE: ${keys.toString()}]`)
+    }).timeout((opt.timeout+1)*1000,`[Timeout] [WRITE: ${keys.toString()}]`)
 
 
 }

@@ -92,7 +92,7 @@ let locator = (opt={}) => {
 
             reject(e);
         }
-    }).timeout(opt.timeout*1000,`[Element not found! [${opt.search}]`)
+    }).timeout((opt.timeout+1)*1000,`[Element not found! [${opt.search}]`)
 
 
 }
@@ -122,7 +122,7 @@ let see = async (search, opt = {}) => {
 
             reject(e);
         }
-    }).timeout(opt.timeout*1000,`[Timeout] [SEE: ${opt.search}]`)
+    }).timeout((opt.timeout+1)*1000,`[Timeout] [SEE: ${opt.search}]`)
 
 
 }
