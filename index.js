@@ -34,7 +34,7 @@ module.exports.notSee                                  = require('./services/ui_
 module.exports.write                                   = require('./services/ui_services/write').write,
 module.exports.keyboard                                = require('./services/ui_services/write').keyboard,
 module.exports.scroll                                  = require('./services/ui_services/scroll').scroll,
-
+module.exports.getText                                 = require('./services/ui_services/get-text').getText,
 
 
 // Services
