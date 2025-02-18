@@ -27,7 +27,9 @@ let locator = (opt={}) => {
 
     // set default
     if(!opt.type) opt.type = 'xpath'
-    if(!opt.search) reject('Search word undefined!')                    
+    if(!opt.search) reject('Search word undefined!')     
+                
+        
 
     return new Promise (async (resolve,reject)=>{        
         try {
@@ -83,7 +85,7 @@ let locator = (opt={}) => {
 
             reject(e);
         }
-    }).timeout(opt.timeout,`[Element not found! [${opt.search}]`)
+    }).timeout(opt.timeout*1000,`[Element not found! [${opt.search}]`)
 
 
 }
