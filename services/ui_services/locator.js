@@ -222,7 +222,7 @@ see.tagName = async (search, opt = {}) => {
 let notSee = async (search, opt = {}) => {
 
     // set default
-    if(!opt.timeout) opt.timeout = senteConfig.uiClassTimeout;
+    if(!opt.timeout) opt.timeout = 3;
     if(!opt.type) opt.type = 'xpath'
     opt.search = search
 
@@ -263,7 +263,7 @@ let notSee = async (search, opt = {}) => {
             core.takeScreenshot('[Failed] NOT SEE: ' + opt.search).catch(e =>  log.warn(e,'takeScreenshot'))            
             log.error(e,`NOT SEE [${opt.search}]`);
         }
-    }).timeout(opt.timeout*1000,`[Timeout] [NOT SEE: ${opt.search}]`)
+    }).timeout((opt.timeout+1)*1000,`[Timeout] [NOT SEE: ${opt.search}]`)
 
 
 }
