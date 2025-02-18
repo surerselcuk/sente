@@ -22,7 +22,7 @@ scroll.scroll = async (horizontal=0,vertical=250) => {
             log.uiCommand('SCROLL', `Horizontal: ${horizontal}, Vertical: ${vertical}`)
             await driver.executeScript(`window.scrollBy(${horizontal},${vertical})`);
             
-            
+            await wait_(1);
             await core.takeScreenshot(`SCROLL (Horizontal: ${horizontal}, Vertical: ${vertical})`).catch(e =>  log.warn(e,'takeScreenshot'))
             resolve(true);
         
@@ -55,7 +55,7 @@ scroll.scroll.vertical = async (vertical=250) => {
             log.uiCommand('SCROLL', `Vertical: ${vertical}`)
             await driver.executeScript(`window.scrollBy(0,${vertical})`);
             
-            
+            await wait_(1);
             await core.takeScreenshot(`SCROLL (Vertical: ${vertical})`).catch(e =>  log.warn(e,'takeScreenshot'))
             resolve(true);
         
@@ -87,7 +87,7 @@ scroll.scroll.horizontal = async (horizontal=250) => {
             log.uiCommand('SCROLL', `Horizontal: ${horizontal}`)
             await driver.executeScript(`window.scrollBy(${horizontal},0)`);
             
-            
+            await wait_(1);
             await core.takeScreenshot(`SCROLL (Horizontal: ${horizontal})`).catch(e =>  log.warn(e,'takeScreenshot'))
             resolve(true);
         

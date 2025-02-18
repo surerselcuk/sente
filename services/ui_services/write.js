@@ -37,6 +37,7 @@ let write = async (search,keys, opt = {}) => {
             }
             else {await element.sendKeys(keys);}
             
+            await wait_(1);
             await core.takeScreenshot(`WRITE: ${keys.toString()}`).catch(e =>  log.warn(e,'takeScreenshot'))
         
 
@@ -44,7 +45,6 @@ let write = async (search,keys, opt = {}) => {
             
 
               
-            await wait_(1);
             resolve(element);
 
         }

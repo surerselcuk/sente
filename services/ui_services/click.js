@@ -30,20 +30,21 @@ let click = async (search, opt = {}) => {
             
                 
                 await element.click();
+                await wait_(1);
                 await core.takeScreenshot(`CLICK: ${opt.search}`).catch(e =>  log.warn(e,'takeScreenshot'))
             
             }
             catch (e) {
             
                 await driver.actions().click(element).perform(); 
+                await wait_(1);
                 await core.takeScreenshot(`CLICK: ${opt.search}`).catch(e =>  log.warn(e,'takeScreenshot'))
             
             }
             
             
 
-              
-            await wait_(1);
+                          
             resolve(element);
 
         }
@@ -287,6 +288,7 @@ let doubleClick = async (search, opt = {}) => {
             let element = await locator(opt)
             await driver.actions().doubleClick(element).perform();           
 
+            await wait_(1);
             await core.takeScreenshot(`DOUBLE CLICK: ${opt.search}`).catch(e =>  log.warn(e,'takeScreenshot'))
             resolve(element);
 
