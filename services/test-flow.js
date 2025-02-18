@@ -117,11 +117,21 @@ let printTestInfo = (testData) => {
 
     for(row of Object.entries(tableData)) {
 
-        let value;
+        let value = '';
         try{       
-            if(Array.isArray(row[1])) value = row[1].toString();
+            if(Array.isArray(row[1])) {
+
+                for ( let [index,value_]  of row[1].entries() ) {
+
+                    if(isObject(value_)) value += (JSON.stringify(value_)).toString();
+                    else value += value_.toString();
+
+                    if(index + 1 < row[1].length) value += ' , ';
+                }
+                
+            }
             else if(isObject(row[1])) value = JSON.stringify(row[1]).toString();
-            else value = row [1] 
+            else value = row[1] 
         } catch (e) {value = colors.red('cannot be shown')}
 
         // tabloda görünmesini istemediğimiz configleri kaldır ve tablo array lerini oluştur
