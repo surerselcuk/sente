@@ -508,7 +508,7 @@ async function generateNewTest() {
       name: 'testName',
       message: 'Enter Test Name:',
       validate: function (input) {
-        input = input.toLowerCase();
+        input = input.trim().replace(/\s+/g, '_').toLowerCase();
         const isValid = /^[a-zA-Z][a-zA-Z0-9_-]{0,29}$/.test(input);
         if (!isValid) {
           return 'Test name must start with a letter and can only contain English letters, numbers, underscores, and hyphens, and cannot exceed 30 characters.';
@@ -516,10 +516,12 @@ async function generateNewTest() {
         return true;
       },
       filter: function (input) {
-        return input.toLowerCase();
+        return input.trim().replace(/\s+/g, '_').toLowerCase();
       },
     },
   ]);
+  
+  
 
   const sanitizedTestName = answers.testName
     .toLowerCase()
@@ -559,13 +561,14 @@ async function generateNewTest() {
 }
 
 async function generateNewHelper() {
+
   const answers = await inquirer.prompt([
     {
       type: 'input',
       name: 'helperName',
       message: 'Enter Helper Name:',
       validate: function (input) {
-        input = input.toLowerCase();
+        input = input.trim().replace(/\s+/g, '_').toLowerCase();
         const isValid = /^[a-zA-Z][a-zA-Z0-9_-]{0,29}$/.test(input);
         if (!isValid) {
           return 'Helper name must start with a letter and can only contain English letters, numbers, underscores, and hyphens, and cannot exceed 30 characters.';
@@ -573,10 +576,11 @@ async function generateNewHelper() {
         return true;
       },
       filter: function (input) {
-        return input.toLowerCase();
+        return input.trim().replace(/\s+/g, '_').toLowerCase();
       },
     },
   ]);
+  
 
   let helperDir = path.join(process.cwd(), 'helpers');
 
@@ -898,6 +902,8 @@ let newHelper = async (helperName,helperFilePath) => {
 
   console.log("Generating Helper File\n");
 
+  let helperFunctionName = helperName.split('_').map((word, index) => index === 0 ? word : word.charAt(0).toUpperCase() + word.slice(1)).join('');
+
   let sourceFile =  path.join(path.resolve(__dirname, '..'),'assets','new_items','new_helper.js');
 
 
@@ -908,7 +914,7 @@ let newHelper = async (helperName,helperFilePath) => {
       return;
     }
 
-    const result = data.replace(/HELPER_NAME/g, helperName);
+    const result = data.replace(/HELPER_NAME/g, helperFunctionName);
 
     fs.writeFile(helperFilePath, result, 'utf8', (err) => {
       if (err) {
@@ -946,7 +952,7 @@ let newHelper = async (helperName,helperFilePath) => {
         })();
 
         if (lastNonEmptyLineIndex !== -1) {
-          lines.splice(lastNonEmptyLineIndex + 1, 0, `exports.${helperName} = require('./${helperName}').${helperName}`);
+          lines.splice(lastNonEmptyLineIndex + 1, 0, `exports.${helperFunctionName} = require('./${helperName}').${helperFunctionName}`);
         }
         
 
