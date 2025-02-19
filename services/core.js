@@ -265,19 +265,28 @@ core.importParameter = async(key) => {
     if(!key) throw new Error('key undefined!')
 
     if(config.run_on_sente_cloud) {
-        if(!config['exported_test_parameter_' + key]) throw new Error(`[Import Parameter] ${key} undefined!` )
-            else return config['exported_test_parameter_' + key]
+        if(!config['exported_test_parameter_' + key]) {        
+            log.warn(`[Import Parameter] ${key} undefined!` );
+            return false;
+        }
+        else return config['exported_test_parameter_' + key]
     }
     else {
 
         let parameterFile = path.join(os.tmpdir(),'sente_parameter_bus.json');
-        if( !existsSync(parameterFile)) throw new Error(`[Import Parameter] ${key} undefined!` )
+        if( !existsSync(parameterFile)) {
+            log.error(`[Import Parameter] "sente_parameter_bus.json" file undefined!` )
+            return false;
+        }
         
         let fileData = await readFileSync(parameterFile);
     
         let fileJson = JSON.parse(fileData);
     
-        if(!fileJson['exported_test_parameter_' + key]) throw new Error(`[Import Parameter] ${key} undefined!` )
+        if(!fileJson['exported_test_parameter_' + key]) {
+            log.warn(`[Import Parameter] ${key} undefined!` )
+            return false;
+        }
             else return fileJson['exported_test_parameter_' + key]
         
 

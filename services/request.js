@@ -106,7 +106,7 @@ let api = (properties = {}) => {
                 }
                 console.log();
 
-                resolve(response.data);
+                resolve(response);
             })
             .catch(error => {
                 reject(error);
