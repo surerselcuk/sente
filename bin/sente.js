@@ -502,6 +502,33 @@ if (process.versions.node && process.versions.node.split('.') && process.version
 
 
 async function generateNewTest() {
+
+  
+  let testDir = path.join(process.cwd(), 'tests');
+
+  if (!existsSync(testDir)) {
+
+    let currentDir = process.cwd();
+    let found = false;
+
+    while (currentDir !== path.parse(currentDir).root) {
+      currentDir = path.dirname(currentDir);
+      const parentTestDir = path.join(currentDir, 'tests');
+
+      if (existsSync(parentTestDir)) {
+        testDir = path.join(currentDir, 'tests');
+        found = true;
+        break;
+      }
+    }
+
+    if (!found) {
+      console.log(colors.red(figures.cross + '  Error:') + ` The directory "tests" does not exist in any parent directories.`);
+      return;
+    }
+  }
+
+
   const answers = await inquirer.prompt([
     {
       type: 'input',
@@ -528,7 +555,7 @@ async function generateNewTest() {
     .replace(/\s+/g, '_')
     .replace(/[<>:"/\\|?*]+/g, '');
 
-  const testFilePath = path.join(process.cwd(), `${sanitizedTestName}.js`);
+  const testFilePath = path.join(testDir, `${sanitizedTestName}.js`);
 
   if (existsSync(testFilePath)) {
     console.log(colors.red(figures.cross + '  Error:') + ` Test file with the name "${sanitizedTestName}.js" already exists in this directory.`);
