@@ -18,6 +18,8 @@ module.exports.webdriver                                = webdriver;
 module.exports.axios                                    = require('axios');
 module.exports.https                                    = require('https');
 module.exports.Promise                                  = require('bluebird');
+module.exports.NodeSSH                                  = require('node-ssh').NodeSSH;
+
 
 
 // UI Services
