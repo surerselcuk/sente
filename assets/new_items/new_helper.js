@@ -3,7 +3,7 @@
 const repo = require('#object_repository');
 const { sente } = require('#libraries');
 const { webdriver, axios, Promise, https, NodeSSH } = sente;
-const { log, now, wait, wait_, translate, importParameter, exportParameter, overrideRepo, myQuery, pgQuery, api } = sente;
+const { log, now, wait, wait_, translate, importParameter, exportParameter, overrideRepo, myQuery, pgQuery, api, ssh  } = sente;
 const { go, click, rightClick, see, notSee, write, keyboard, scroll, getText } = sente;
 
 

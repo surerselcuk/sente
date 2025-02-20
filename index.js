@@ -55,6 +55,7 @@ module.exports.overrideRepo                            = require('./services/cor
 module.exports.myQuery                                 = require('./services/db').myQuery
 module.exports.pgQuery                                 = require('./services/db').pgQuery
 module.exports.api                                     = require('./services/request')
+module.exports.ssh                                     = require('./services/ssh')
 
 
 
