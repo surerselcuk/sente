@@ -13,21 +13,20 @@ const { go, click, rightClick, see, notSee, write, keyboard, scroll, getText } =
 module.exports = {
 
     /**
-     * Write Helper Definations.
+     * HELPER_NAME: You can write identifying information here
      * 
      * @async
-     * @function changeConfigMap
-     * @param {Object} options - function options.
-     * @param {Object} options.parameter1 - parameter1 defination.
-     * @param {Object} options.parameter2 - parameter2 defination.
-     * @throws {Error} Throws an error when there are missing parameters.
+     * @function HELPER_NAME
+     * @param {Object} options - Helper options.
+     * @param {Object} options.parameter1 - Write properties_1 description here.
+     * @param {Object} options.parameter2 - Write properties_2 description here.
+     * @throws {Error} Throws an error when there are missing parameters or an error occurs.
      * @returns {Promise<void>} return defination
      */
-    HELPER_NAME : async (options={}) => {    
+    HELPER_NAME : async ({ properties_1, properties_2 } = {}) => {    
 
-        const {parameter1, parameter2} = options;
-        if(!parameter1 || !parameter2 ) throw new Error ('Missing Option Value')
-    
+        if (!properties_1 || !properties_2) throw new Error('Missing Required Properties!');
+        
         /*
             
             Write your helper codes here.
