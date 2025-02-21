@@ -55,7 +55,7 @@ let api = (properties = {}) => {
     if (!properties.method) throw new Error('The "method" parameter is required');
 
     // set defaults
-    if (!properties.timeout) properties.timeout = senteConfig.defaultTimeout;
+    if (!properties.timeout) properties.timeout = senteConfig.defaultTimeout * 1000;
     if (!properties.httpsAgent) properties.httpsAgent = new https.Agent({ rejectUnauthorized: false, });
 
     // generate properties For Print
@@ -111,7 +111,7 @@ let api = (properties = {}) => {
             .catch(error => {
                 reject(error);
             });
-    }).timeout(properties.timeout * 1000, '[Api] [Timeout]');
+    }).timeout(properties.timeout, '[Api] [Timeout]');
 };
 
 
