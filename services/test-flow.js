@@ -161,11 +161,10 @@ let printTestInfo = (testData) => {
     if(config.run_on_sente_cloud) {
            
         console.log('\n\n CONFIGURATION TABLE')
-        console.log('---------------------')
         for ( let element of configTableForSenteCloud ) {
             console.log(element[0] + ' : ' + element[1])
         }
-        console.log('------------------------------------------------------------------------------------\n');
+        console.log('\n\n');
 
 
     }
