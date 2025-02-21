@@ -201,9 +201,9 @@ async function generateNewObjectRepository() {
       message: 'Enter Repository Name:',
       validate: function (input) {
         input = input.toLowerCase();
-        const isValid = /^[a-zA-Z][a-zA-Z0-9_-]{0,29}$/.test(input);
+        const isValid = /^[a-zA-Z][a-zA-Z0-9_-]{0,49}$/.test(input);
         if (!isValid) {
-          return 'Repository name must start with a letter and can only contain English letters, numbers, underscores, and hyphens, and cannot exceed 30 characters.';
+          return 'Repository name must start with a letter and can only contain English letters, numbers, underscores, and hyphens, and cannot exceed 50 characters.';
         }
         return true;
       },
@@ -286,8 +286,8 @@ async function generateNewRepoGroup(repoDir) {
         if (!isValid) {
           return 'Group name must start with a letter and can only contain English letters, numbers, underscores, and hyphens.';
         }
-        if (input.length > 30) {
-          return 'Group name cannot exceed 30 characters.';
+        if (input.length > 50) {
+          return 'Group name cannot exceed 50 characters.';
         }
         if (fs.existsSync(path.join(repoDir, input))) {
           return 'Group name already exists. Please enter a different name.';
@@ -536,9 +536,9 @@ async function generateNewTest() {
       message: 'Enter Test Name:',
       validate: function (input) {
         input = input.trim().replace(/\s+/g, '_').toLowerCase();
-        const isValid = /^[a-zA-Z][a-zA-Z0-9_-]{0,29}$/.test(input);
+        const isValid = /^[a-zA-Z][a-zA-Z0-9_-]{0,49}$/.test(input);
         if (!isValid) {
-          return 'Test name must start with a letter and can only contain English letters, numbers, underscores, and hyphens, and cannot exceed 30 characters.';
+          return 'Test name must start with a letter and can only contain English letters, numbers, underscores, and hyphens, and cannot exceed 50 characters.';
         }
         return true;
       },
@@ -596,9 +596,9 @@ async function generateNewHelper() {
       message: 'Enter Helper Name:',
       validate: function (input) {
         input = input.trim().replace(/\s+/g, '_').toLowerCase();
-        const isValid = /^[a-zA-Z][a-zA-Z0-9_-]{0,29}$/.test(input);
+        const isValid = /^[a-zA-Z][a-zA-Z0-9_-]{0,49}$/.test(input);
         if (!isValid) {
-          return 'Helper name must start with a letter and can only contain English letters, numbers, underscores, and hyphens, and cannot exceed 30 characters.';
+          return 'Helper name must start with a letter and can only contain English letters, numbers, underscores, and hyphens, and cannot exceed 50 characters.';
         }
         return true;
       },
