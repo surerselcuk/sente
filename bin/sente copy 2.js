@@ -676,16 +676,8 @@ function findTestDir() {
 async function selectOrCreateFolder(baseDir) {
   const folders = await getAllFolders(baseDir);
 
+  console.log(folders);
   
-
-  const folderChoices = folders.map(folder => {
-    const folderDepth = folder.split(path.sep).length - baseDir.split(path.sep).length;
-    const indentation = ' '.repeat(folderDepth * 2); // Adjust indentation level
-    return {
-      name: `${indentation}📂 ${path.basename(folder)}`, // Indentation based on folder depth
-      value: folder
-    };
-  });
 
   const { selectedFolder } = await inquirer.prompt([
     {
@@ -697,10 +689,13 @@ async function selectOrCreateFolder(baseDir) {
           name: '📁 tests', // Icon for the tests folder
           value: 'tests'
         },
-        ...folderChoices,
+        ...folders.map(folder => ({
+          name: `   📂 ${folder}`, // Indentation for subfolders
+          value: folder
+        })),
         new inquirer.Separator(),
         {
-          name: '➕ Generate New Folder',
+          name: '➕ Create New Folder',
           value: 'Create New Folder',
         },
       ],
@@ -710,8 +705,7 @@ async function selectOrCreateFolder(baseDir) {
   let targetPath = baseDir;
 
   if (selectedFolder !== 'tests' && selectedFolder !== 'Create New Folder') {
-    // targetPath = path.join(baseDir, selectedFolder);
-    targetPath = selectedFolder;
+    targetPath = path.join(baseDir, selectedFolder);
   }
 
   if (selectedFolder === 'Create New Folder') {
@@ -727,8 +721,6 @@ async function selectOrCreateFolder(baseDir) {
     
     // Ensure the new folder is created under the 'tests' directory
     targetPath = path.join(baseDir, newFolderName);
-
-
     
     // Ensure the folder exists
     if (!fs.existsSync(targetPath)) {
@@ -736,27 +728,19 @@ async function selectOrCreateFolder(baseDir) {
     }
   }
 
-  
   return targetPath;
 }
-
-
 
 function getAllFolders(dir, folders = []) {
   fs.readdirSync(dir, { withFileTypes: true }).forEach(entry => {
     const fullPath = path.join(dir, entry.name);
-    
     if (entry.isDirectory()) {
-
-        folders.push(fullPath);  // Add full path of current folder
-        getAllFolders(fullPath, folders);  // Continue for subfolders
-
+      folders.push(entry.name);  // Only push the folder name, not the full path
+      getAllFolders(fullPath, folders);
     }
   });
   return folders;
 }
-
-
 
 
 function validateTestName(input) {
