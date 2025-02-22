@@ -712,7 +712,6 @@ async function generateNewHelper() {
 
   // Tüm alt klasörleri al ve "New Directory" seçeneğini ekle
   let directories = await getDirectoriesForHelper(helperDir);
-  console.log(directories);
   
   directories.push({ fullPath: 'New Directory', displayName: '➕ New Directory' });
   
