@@ -587,7 +587,7 @@ async function generateNewTest() {
   await newTest(sanitizedTestName, testType, hasSections);
 }
 
-async function generateNewHelper() {
+async function generateNewHelper_() {
 
   const answers = await inquirer.prompt([
     {
@@ -647,6 +647,225 @@ async function generateNewHelper() {
 
   await newHelper(sanitizedHelperName, helperFilePath);
 }
+
+
+async function getDirectories(srcPath) {
+  const entries = await fs.promises.readdir(srcPath, { withFileTypes: true });
+  let dirs = [{ fullPath: srcPath, displayName: 'helpers/' }];
+
+  for (const entry of entries) {
+    if (entry.isDirectory()) {
+      const subDirs = await getDirectories(path.join(srcPath, entry.name));
+      dirs = dirs.concat(subDirs.map(subDir => ({
+        fullPath: subDir.fullPath,
+        displayName: `helpers/ ➝ ${path.relative(srcPath, subDir.fullPath)}`
+      })));
+    }
+  }
+
+  return dirs;
+}
+
+async function generateNewHelper() {
+  let helperDir = path.join(process.cwd(), 'helpers');
+
+  if (!fs.existsSync(helperDir)) {
+    let currentDir = process.cwd();
+    let found = false;
+
+    while (currentDir !== path.parse(currentDir).root) {
+      currentDir = path.dirname(currentDir);
+      const parentHelperDir = path.join(currentDir, 'helpers');
+
+      if (fs.existsSync(parentHelperDir)) {
+        helperDir = parentHelperDir;
+        found = true;
+        break;
+      }
+    }
+
+    if (!found) {
+      console.log(colors.red(figures.cross + '  Error:') + ` The directory "helpers" does not exist in any parent directories.`);
+      return;
+    }
+  }
+
+  // Tüm alt klasörleri al ve "New Directory" seçeneğini ekle
+  let directories = await getDirectories(helperDir);
+  directories.push({ fullPath: 'New Directory', displayName: '📂 New Directory' });
+
+  const answers = await inquirer.prompt([
+    {
+      type: 'list',
+      name: 'selectedDir',
+      message: 'Select a directory to create the helper in:',
+      choices: directories.map(dir => ({ name: dir.displayName, value: dir.fullPath })),
+    },
+  ]);
+
+  let selectedDir = answers.selectedDir;
+
+  // Kullanıcı "New Directory" seçtiyse, yeni bir klasör adı sor
+  if (selectedDir === 'New Directory') {
+    const newDirAnswer = await inquirer.prompt([
+      {
+        type: 'input',
+        name: 'newDirName',
+        message: 'Enter the name for the new directory:',
+        validate: function (input) {
+          input = input.trim().replace(/\s+/g, '_').toLowerCase();
+          const isValid = /^[a-zA-Z][a-zA-Z0-9_-]{0,49}$/.test(input);
+          if (!isValid) {
+            return 'Directory name must start with a letter and can only contain English letters, numbers, underscores, and hyphens, and cannot exceed 50 characters.';
+          }
+          return true;
+        },
+        filter: function (input) {
+          return input.trim().replace(/\s+/g, '_').toLowerCase();
+        },
+      },
+    ]);
+
+    selectedDir = path.join(helperDir, newDirAnswer.newDirName);
+    if (!fs.existsSync(selectedDir)) {
+      await fs.promises.mkdir(selectedDir, { recursive: true });
+      console.log(colors.green(figures.tick + '  Success:') + ` New directory created: ${selectedDir}`);
+    }
+  }
+
+  // Helper adı sor
+  const helperAnswer = await inquirer.prompt([
+    {
+      type: 'input',
+      name: 'helperName',
+      message: 'Enter Helper Name:',
+      validate: function (input) {
+        input = input.trim().replace(/\s+/g, '_').toLowerCase();
+        const isValid = /^[a-zA-Z][a-zA-Z0-9_-]{0,49}$/.test(input);
+        if (!isValid) {
+          return 'Helper name must start with a letter and can only contain English letters, numbers, underscores, and hyphens, and cannot exceed 50 characters.';
+        }
+        return true;
+      },
+      filter: function (input) {
+        return input.trim().replace(/\s+/g, '_').toLowerCase();
+      },
+    },
+  ]);
+
+  const sanitizedHelperName = helperAnswer.helperName
+    .toLowerCase()
+    .replace(/\s+/g, '_')
+    .replace(/[<>:"/\\|?*]+/g, '');
+
+  const helperFilePath = path.join(selectedDir, `${sanitizedHelperName}.js`);
+
+  if (fs.existsSync(helperFilePath)) {
+    console.log(colors.red(figures.cross + '  Error:') + ` Helper file with the name "${sanitizedHelperName}.js" already exists in this directory.`);
+    return;
+  }
+  
+  
+  
+
+  await newHelper(sanitizedHelperName, helperFilePath, helperDir);
+}
+
+let newHelper = async (helperName,helperFilePath,helperMainDir) => {
+
+  console.log("Generating Helper File\n");
+
+  let helperFunctionName = helperName.split('_').map((word, index) => index === 0 ? word : word.charAt(0).toUpperCase() + word.slice(1)).join('');
+
+  let sourceFile =  path.join(path.resolve(__dirname, '..'),'assets','new_items','new_helper.js');
+
+
+
+  fs.readFile(sourceFile, 'utf8', (err, data) => {
+    if (err) {
+      console.error(`Error reading file: ${err}`);
+      return;
+    }
+
+    const result = data.replace(/HELPER_NAME/g, helperFunctionName);
+
+    fs.writeFile(helperFilePath, result, 'utf8', (err) => {
+      if (err) {
+        console.error(`Error writing file: ${err}`);
+        return;
+      }
+
+
+      console.log(colors.green(figures.tick + '  ' + `Helper file generated.`) + '\n   ' + helperFilePath)
+
+
+      const indexFilePath = path.join(helperMainDir, 'index.js');
+
+      fs.readFile(indexFilePath, 'utf8', (err, indexData) => {
+        if (err) {
+          console.error(`Error reading index file: ${err}`);
+          return;
+        }
+
+        const lines = indexData.split('\n');        
+        const exportLineIndex = lines.findIndex(line => line.includes('module.exports = exports'));
+
+        if (exportLineIndex === -1) {
+          console.error('Error: "module.exports = exports" not found in index.js');
+          return;
+        }
+
+        const lastNonEmptyLineIndex = (() => {
+          for (let i = exportLineIndex - 1; i >= 0; i--) {
+        if (lines[i].trim() !== '') {
+          return i;
+        }
+          }
+          return -1;
+        })();
+
+
+        let selectedHelperdirName = path.basename(path.dirname(helperFilePath));
+        let requirePath = selectedHelperdirName === 'helpers' ? helperName : selectedHelperdirName + '/' +helperName        
+  
+
+        if (lastNonEmptyLineIndex !== -1) {
+          lines.splice(lastNonEmptyLineIndex + 1, 0, `exports.${helperFunctionName} = require('./${requirePath}').${helperFunctionName}`);
+        }
+        
+
+        fs.writeFile(indexFilePath, lines.join('\n'), 'utf8', (err) => {
+          if (err) {
+        console.error(`Error writing index file: ${err}`);
+        return;
+          }
+
+          console.log(colors.green(figures.tick + '  ' + `Index file updated.`) + '\n   ' + indexFilePath);
+
+          setTimeout(() => {
+            console.log('\n' + colors.green('New helper generated successfully.'));
+            console.log('Helper Name: ' + colors.green(helperName));
+          }, 100);
+
+        });
+      });
+
+      
+
+
+      
+    });
+  });
+
+  
+  
+
+
+
+}
+
+
+
 
 async function generateNewEnvironment() {
   const typeAnswer = await inquirer.prompt([
@@ -925,93 +1144,7 @@ let newTest = async (testName,testType, hasSections = false) => {
 
 
 }
-let newHelper = async (helperName,helperFilePath) => {
 
-  console.log("Generating Helper File\n");
-
-  let helperFunctionName = helperName.split('_').map((word, index) => index === 0 ? word : word.charAt(0).toUpperCase() + word.slice(1)).join('');
-
-  let sourceFile =  path.join(path.resolve(__dirname, '..'),'assets','new_items','new_helper.js');
-
-
-
-  fs.readFile(sourceFile, 'utf8', (err, data) => {
-    if (err) {
-      console.error(`Error reading file: ${err}`);
-      return;
-    }
-
-    const result = data.replace(/HELPER_NAME/g, helperFunctionName);
-
-    fs.writeFile(helperFilePath, result, 'utf8', (err) => {
-      if (err) {
-        console.error(`Error writing file: ${err}`);
-        return;
-      }
-
-
-      console.log(colors.green(figures.tick + '  ' + `Helper file generated.`) + '\n   ' + helperFilePath)
-
-
-      const indexFilePath = path.join(path.dirname(helperFilePath), 'index.js');
-
-      fs.readFile(indexFilePath, 'utf8', (err, indexData) => {
-        if (err) {
-          console.error(`Error reading index file: ${err}`);
-          return;
-        }
-
-        const lines = indexData.split('\n');        
-        const exportLineIndex = lines.findIndex(line => line.includes('module.exports = exports'));
-
-        if (exportLineIndex === -1) {
-          console.error('Error: "module.exports = exports" not found in index.js');
-          return;
-        }
-
-        const lastNonEmptyLineIndex = (() => {
-          for (let i = exportLineIndex - 1; i >= 0; i--) {
-        if (lines[i].trim() !== '') {
-          return i;
-        }
-          }
-          return -1;
-        })();
-
-        if (lastNonEmptyLineIndex !== -1) {
-          lines.splice(lastNonEmptyLineIndex + 1, 0, `exports.${helperFunctionName} = require('./${helperName}').${helperFunctionName}`);
-        }
-        
-
-        fs.writeFile(indexFilePath, lines.join('\n'), 'utf8', (err) => {
-          if (err) {
-        console.error(`Error writing index file: ${err}`);
-        return;
-          }
-
-          console.log(colors.green(figures.tick + '  ' + `Index file updated.`) + '\n   ' + indexFilePath);
-
-          setTimeout(() => {
-            console.log('\n' + colors.green('New helper generated successfully.'));
-            console.log('Helper Name: ' + colors.green(helperName));
-          }, 100);
-
-        });
-      });
-
-      
-
-
-      
-    });
-  });
-
-  
-  
-
-
-
-}
 
 program
     .arguments('<file> [options]')
