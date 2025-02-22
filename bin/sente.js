@@ -586,6 +586,46 @@ async function generateNewTest() {
 
   await newTest(sanitizedTestName, testType, hasSections);
 }
+let newTest = async (testName,testType, hasSections = false) => {
+
+  console.log("Generating Test File\n");
+
+  let sourceFile =  path.join(path.resolve(__dirname, '..'),'assets','new_items', hasSections ? 'new_test_with_section.js': 'new_test.js');
+
+
+
+  fs.readFile(sourceFile, 'utf8', (err, data) => {
+    if (err) {
+      console.error(`Error reading file: ${err}`);
+      return;
+    }
+
+    const result = data.replace(/TEST_NAME_HERE/g, testName).replace(/TEST_TYPE_HERE/g, testType);
+
+    let targetDir = process.cwd();
+    if (existsSync(path.join(targetDir, 'package.json')) && existsSync(path.join(targetDir, 'tests'))) {
+      targetDir = path.join(targetDir, 'tests');
+    }
+
+    const destinationFile = path.join(targetDir, `${testName}.js`);
+    fs.writeFile(destinationFile, result, 'utf8', (err) => {
+      if (err) {
+        console.error(`Error writing file: ${err}`);
+        return;
+      }
+
+
+      console.log(colors.green(figures.tick + '  ' + `Test file generated.`) + '\n   ' + destinationFile)
+    });
+  });
+
+  
+  
+
+
+
+}
+
 
 async function generateNewHelper_() {
 
@@ -649,13 +689,13 @@ async function generateNewHelper_() {
 }
 
 
-async function getDirectories(srcPath) {
+async function getDirectoriesForHelper(srcPath) {
   const entries = await fs.promises.readdir(srcPath, { withFileTypes: true });
   let dirs = [{ fullPath: srcPath, displayName: 'helpers/' }];
 
   for (const entry of entries) {
     if (entry.isDirectory()) {
-      const subDirs = await getDirectories(path.join(srcPath, entry.name));
+      const subDirs = await getDirectoriesForHelper(path.join(srcPath, entry.name));
       dirs = dirs.concat(subDirs.map(subDir => ({
         fullPath: subDir.fullPath,
         displayName: `helpers/ ➝ ${path.relative(srcPath, subDir.fullPath)}`
@@ -691,7 +731,7 @@ async function generateNewHelper() {
   }
 
   // Tüm alt klasörleri al ve "New Directory" seçeneğini ekle
-  let directories = await getDirectories(helperDir);
+  let directories = await getDirectoriesForHelper(helperDir);
   directories.push({ fullPath: 'New Directory', displayName: '📂 New Directory' });
 
   const answers = await inquirer.prompt([
@@ -1105,45 +1145,6 @@ let copySampleProject = async () => {
 
 }
 
-let newTest = async (testName,testType, hasSections = false) => {
-
-  console.log("Generating Test File\n");
-
-  let sourceFile =  path.join(path.resolve(__dirname, '..'),'assets','new_items', hasSections ? 'new_test_with_section.js': 'new_test.js');
-
-
-
-  fs.readFile(sourceFile, 'utf8', (err, data) => {
-    if (err) {
-      console.error(`Error reading file: ${err}`);
-      return;
-    }
-
-    const result = data.replace(/TEST_NAME_HERE/g, testName).replace(/TEST_TYPE_HERE/g, testType);
-
-    let targetDir = process.cwd();
-    if (existsSync(path.join(targetDir, 'package.json')) && existsSync(path.join(targetDir, 'tests'))) {
-      targetDir = path.join(targetDir, 'tests');
-    }
-
-    const destinationFile = path.join(targetDir, `${testName}.js`);
-    fs.writeFile(destinationFile, result, 'utf8', (err) => {
-      if (err) {
-        console.error(`Error writing file: ${err}`);
-        return;
-      }
-
-
-      console.log(colors.green(figures.tick + '  ' + `Test file generated.`) + '\n   ' + destinationFile)
-    });
-  });
-
-  
-  
-
-
-
-}
 
 
 program
