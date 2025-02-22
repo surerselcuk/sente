@@ -501,130 +501,6 @@ if (process.versions.node && process.versions.node.split('.') && process.version
 }
 
 
-async function generateNewTest_() {
-
-  
-  let testDir = path.join(process.cwd(), 'tests');
-
-  if (!existsSync(testDir)) {
-
-    let currentDir = process.cwd();
-    let found = false;
-
-    while (currentDir !== path.parse(currentDir).root) {
-      currentDir = path.dirname(currentDir);
-      const parentTestDir = path.join(currentDir, 'tests');
-
-      if (existsSync(parentTestDir)) {
-        testDir = path.join(currentDir, 'tests');
-        found = true;
-        break;
-      }
-    }
-
-    if (!found) {
-      console.log(colors.red(figures.cross + '  Error:') + ` The directory "tests" does not exist in any parent directories.`);
-      return;
-    }
-  }
-
-
-  const answers = await inquirer.prompt([
-    {
-      type: 'input',
-      name: 'testName',
-      message: 'Enter Test Name:',
-      validate: function (input) {
-        input = input.trim().replace(/\s+/g, '_').toLowerCase();
-        const isValid = /^[a-zA-Z][a-zA-Z0-9_-]{0,49}$/.test(input);
-        if (!isValid) {
-          return 'Test name must start with a letter and can only contain English letters, numbers, underscores, and hyphens, and cannot exceed 50 characters.';
-        }
-        return true;
-      },
-      filter: function (input) {
-        return input.trim().replace(/\s+/g, '_').toLowerCase();
-      },
-    },
-  ]);
-  
-  
-
-  const sanitizedTestName = answers.testName
-    .toLowerCase()
-    .replace(/\s+/g, '_')
-    .replace(/[<>:"/\\|?*]+/g, '');
-
-  const testFilePath = path.join(testDir, `${sanitizedTestName}.js`);
-
-  if (existsSync(testFilePath)) {
-    console.log(colors.red(figures.cross + '  Error:') + ` Test file with the name "${sanitizedTestName}.js" already exists in this directory.`);
-    return;
-  }
-
-  const typeAnswer = await inquirer.prompt([
-    {
-      type: 'list',
-      name: 'testType',
-      message: 'Select Test Type:',
-      choices: ['web-gui', 'backend'],
-    },
-  ]);
-
-  const testType = typeAnswer.testType;
-
-  const sectionAnswer = await inquirer.prompt([
-    {
-      type: 'confirm',
-      name: 'hasSections',
-      message: 'Does the test have multiple sections?',
-      default: false,
-    },
-  ]);
-
-  const hasSections = sectionAnswer.hasSections;
-
-  await newTest(sanitizedTestName, testType, hasSections);
-}
-let newTest_ = async (testName,testType, hasSections = false) => {
-
-  console.log("Generating Test File\n");
-
-  let sourceFile =  path.join(path.resolve(__dirname, '..'),'assets','new_items', hasSections ? 'new_test_with_section.js': 'new_test.js');
-
-
-
-  fs.readFile(sourceFile, 'utf8', (err, data) => {
-    if (err) {
-      console.error(`Error reading file: ${err}`);
-      return;
-    }
-
-    const result = data.replace(/TEST_NAME_HERE/g, testName).replace(/TEST_TYPE_HERE/g, testType);
-
-    let targetDir = process.cwd();
-    if (existsSync(path.join(targetDir, 'package.json')) && existsSync(path.join(targetDir, 'tests'))) {
-      targetDir = path.join(targetDir, 'tests');
-    }
-
-    const destinationFile = path.join(targetDir, `${testName}.js`);
-    fs.writeFile(destinationFile, result, 'utf8', (err) => {
-      if (err) {
-        console.error(`Error writing file: ${err}`);
-        return;
-      }
-
-
-      console.log(colors.green(figures.tick + '  ' + `Test file generated.`) + '\n   ' + destinationFile)
-    });
-  });
-
-  
-  
-
-
-
-}
 
 async function generateNewTest() {
   let testDir = findTestDir();
@@ -700,7 +576,7 @@ async function selectOrCreateFolder(baseDir) {
         ...folderChoices,
         new inquirer.Separator(),
         {
-          name: '➕ Generate New Folder',
+          name: '➕ New Directory',
           value: 'Create New Folder',
         },
       ],
@@ -790,78 +666,19 @@ async function newTest(testName, testType, hasSections, targetDir) {
 }
 
 
-async function generateNewHelper_() {
-
-  const answers = await inquirer.prompt([
-    {
-      type: 'input',
-      name: 'helperName',
-      message: 'Enter Helper Name:',
-      validate: function (input) {
-        input = input.trim().replace(/\s+/g, '_').toLowerCase();
-        const isValid = /^[a-zA-Z][a-zA-Z0-9_-]{0,49}$/.test(input);
-        if (!isValid) {
-          return 'Helper name must start with a letter and can only contain English letters, numbers, underscores, and hyphens, and cannot exceed 50 characters.';
-        }
-        return true;
-      },
-      filter: function (input) {
-        return input.trim().replace(/\s+/g, '_').toLowerCase();
-      },
-    },
-  ]);
-  
-
-  let helperDir = path.join(process.cwd(), 'helpers');
-
-  if (!existsSync(helperDir)) {
-
-    let currentDir = process.cwd();
-    let found = false;
-
-    while (currentDir !== path.parse(currentDir).root) {
-      currentDir = path.dirname(currentDir);
-      const parentHelperDir = path.join(currentDir, 'helpers');
-
-      if (existsSync(parentHelperDir)) {
-        helperDir = path.join(currentDir, 'helpers');
-        found = true;
-        break;
-      }
-    }
-
-    if (!found) {
-      console.log(colors.red(figures.cross + '  Error:') + ` The directory "helpers" does not exist in any parent directories.`);
-      return;
-    }
-  }
-
-  const sanitizedHelperName = answers.helperName
-    .toLowerCase()
-    .replace(/\s+/g, '_')
-    .replace(/[<>:"/\\|?*]+/g, '');
-
-  const helperFilePath = path.join(helperDir, `${sanitizedHelperName}.js`);
-
-  if (existsSync(helperFilePath)) {
-    console.log(colors.red(figures.cross + '  Error:') + ` Helper file with the name "${sanitizedHelperName}.js" already exists in this directory.`);
-    return;
-  }
-
-  await newHelper(sanitizedHelperName, helperFilePath);
-}
 
 
 async function getDirectoriesForHelper(srcPath) {
   const entries = await fs.promises.readdir(srcPath, { withFileTypes: true });
-  let dirs = [{ fullPath: srcPath, displayName: 'helpers/' }];
+  let dirs = [{ fullPath: srcPath, displayName: '📂 helpers' }];
 
   for (const entry of entries) {
     if (entry.isDirectory()) {
       const subDirs = await getDirectoriesForHelper(path.join(srcPath, entry.name));
       dirs = dirs.concat(subDirs.map(subDir => ({
         fullPath: subDir.fullPath,
-        displayName: `helpers/ ➝ ${path.relative(srcPath, subDir.fullPath)}`
+        displayName: `  📂 ${path.relative(srcPath, subDir.fullPath)}`
+
       })));
     }
   }
@@ -895,7 +712,10 @@ async function generateNewHelper() {
 
   // Tüm alt klasörleri al ve "New Directory" seçeneğini ekle
   let directories = await getDirectoriesForHelper(helperDir);
-  directories.push({ fullPath: 'New Directory', displayName: '📂 New Directory' });
+  console.log(directories);
+  
+  directories.push({ fullPath: 'New Directory', displayName: '➕ New Directory' });
+  
 
   const answers = await inquirer.prompt([
     {
