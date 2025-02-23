@@ -12,6 +12,7 @@ const styles = {
     commandSuccess: colors.greenBright.bold,
     command: colors.cyan.bold,
     warn:colors.bgYellow.whiteBright.bold,
+    info:colors.yellowBright.bold,
     log: colors.white,
     bold: colors.bold,
     step: colors.blue.bold,
@@ -25,10 +26,14 @@ let logger={};
 
 
 
-logger.wait = (seconds=3)=> {
+logger.wait = (seconds=3,description='')=> {
     return new Promise(resolve => {
 
-        logger.log(colors.yellow(`[Wait ${seconds}s]`));
+        if(description.toString().trim() === '' ) logger.log(colors.yellow(`[Wait ${seconds}s]` ));
+        else {
+            logger.log(colors.yellow(`[Wait ${seconds}s]`) + ' ' + description.toString().trim());
+        }
+
         setTimeout(resolve, Number(seconds)*1000);
 
     })
@@ -86,6 +91,16 @@ logger.log.warn = (logValue_,source='') => {
 
 
 }
+logger.log.info = (logValue_) => {
+    
+    let logValue;
+
+    try {logValue = JSON.stringify(logValue_, Object.getOwnPropertyNames(logValue_))  } catch (e) {logValue = logValue_.toString()}    
+   
+    console.log('[' + logger.now() + '] ' + styles.info(figures.info) + ' ' + logValue )
+
+
+}
 
 logger.log.passed = () => {
     
@@ -104,7 +119,7 @@ logger.log.success = (logValue,opt={boxen:false}) => {
     }
 
     if(opt.boxen) console.log(boxen('[' + logger.now() + '] ' + styles.success(` ${figures.tick} `) + logValue))
-        else console.log('[' + logger.now() + '] ' + styles.success(` ${figures.tick} `) + logValue)
+        else console.log('[' + logger.now() + '] ' + styles.success(` ${figures.tick} `) + ' ' + logValue)
 
 }
 
