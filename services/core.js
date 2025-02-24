@@ -287,7 +287,15 @@ core.importParameter = async(key) => {
             log.warn(`[Import Parameter] ${key} undefined!` )
             return false;
         }
-            else return fileJson['exported_test_parameter_' + key]
+        else {
+            try{
+                return JSON.parse(fileJson['exported_test_parameter_' + key])
+            }
+            catch(e) {
+                return fileJson['exported_test_parameter_' + key]
+            }
+
+            }
         
 
     }
@@ -300,7 +308,9 @@ core.importParameter = async(key) => {
 core.exportParameter = async(key,value) => {
 
     if(!key || !value) throw new Error('[exportParameter] key or value undefined!')
-    value = value.toString().trim().replace(/\s+/g, '_')
+    // value = value.toString().trim().replace(/\s+/g, '_')
+
+    if(core.isObject(value) || Array.isArray(value)) value = JSON.stringify(value);
 
     
     if(config.run_on_sente_cloud) { 
