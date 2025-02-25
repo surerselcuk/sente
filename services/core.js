@@ -97,7 +97,7 @@ core.startTest = async (file,options) => {
             
         }
         else {
-            log.error(`File not found! [${file}] `);
+            log.error(`Test File Not Found! `);
             
         }
 
