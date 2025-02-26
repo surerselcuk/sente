@@ -82,7 +82,7 @@ db.myQuery =  async (query, dBConfig = global.config.dBConfig) => {
 
                     console.log('[' + now() + ']               ' + colors.green.bold(` ${figures.tick}  `) + 'Row Count: ' + colors.green.bold(result.length))
 
-                    resolve(result)
+                    resolve(Array.from(result))
                     
                     
                     
@@ -196,7 +196,7 @@ db.pgQuery =  async (query, dBConfig = global.config.dBConfig) => {
 
                     console.log('[' + now() + ']               ' + colors.green.bold(` ${figures.tick}  `) + 'Row Count: ' + colors.green.bold(result.rowCount))
 
-                    resolve(result.rows)
+                    resolve(Array.from(result.rows))
                     
                     
                     
