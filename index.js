@@ -19,6 +19,8 @@ module.exports.axios                                    = require('axios');
 module.exports.https                                    = require('https');
 module.exports.Promise                                  = require('bluebird');
 module.exports.NodeSSH                                  = require('node-ssh').NodeSSH;
+module.exports.random                                   = require('random');
+
 
 
 
@@ -37,6 +39,7 @@ module.exports.write                                   = require('./services/ui_
 module.exports.keyboard                                = require('./services/ui_services/write').keyboard,
 module.exports.scroll                                  = require('./services/ui_services/scroll').scroll,
 module.exports.getText                                 = require('./services/ui_services/get-text').getText,
+
 
 
 // Services
