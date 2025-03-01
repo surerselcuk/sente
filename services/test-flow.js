@@ -395,7 +395,7 @@ testFlow.testFlow = async(testData = {} ) => {
                     if(config.test_type === 'web-gui') await driver.buildDriver(); 
 
                     // print test start info  for only first run
-                    console.log('\n');
+                    console.log('\n\n');
                     console.log('[' + now() + '] ' + colors.green('Test started.' + ( Number(config.number_of_test_run_repetitions_on_error) > 0  ? ` [Run Count: ${testRunCount}]`:'') ) )
     
                 
