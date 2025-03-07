@@ -222,6 +222,7 @@ let printTestStepResultTable = (status='passed') => {
         
         }
 
+        console.log('SUMMARY_TABLE_END');
 
     }
     else {
