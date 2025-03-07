@@ -176,6 +176,62 @@ let printTestInfo = (testData) => {
 
 
 }
+let printTestStepResultTable = (status='passed') => { 
+
+    if(!global.steps || global.steps.length===0) return;
+
+
+    // Step Table
+    let stepTable = new table({
+        colWidths: [100,10],
+        wordWrap: true
+    });
+
+    
+    stepTable.push([{ colSpan: 2,hAlign: 'center', content: colors.cyan.bold('SUMMARY TABLE')}])
+
+    for ( let [index,value]  of global.steps.entries() ) {
+        
+
+        if(index +1 >= global.steps.length && status === 'failed') {
+            stepTable.push([colors.blue.bold(`[STEP-${index+1}] `) + value , colors.red(figures.cross + ' Failed')])                 
+        } else {
+            stepTable.push([colors.blue.bold(`[STEP-${index+1}] `) + value , colors.green(figures.tick + ' Passed')])
+        }
+        
+    
+    }
+   
+
+    
+    if(config.run_on_sente_cloud) {
+        
+        console.log('\n\n SUMMARY TABLE')
+           
+        for ( let [index,value]  of global.steps.entries() ) {                   
+
+            if(index +1 >= global.steps.length && status === 'failed') {
+                let text = colors.blue.bold(`[STEP-${index+1}] `) + colors.blue(value) + ' ' + colors.red(figures.cross + ' Failed');
+                console.log(text);                    
+            }
+            else {
+                let text = colors.blue.bold(`[STEP-${index+1}] `) + colors.blue(value) + ' ' + colors.green(figures.tick + ' Passed');
+                console.log(text);                    
+            }
+                            
+        
+        }
+
+
+    }
+    else {
+        console.log();        
+        console.log(stepTable.toString());
+    }
+    
+
+
+}
 let overrideConfigs = (testData) => {
 
 
@@ -537,18 +593,7 @@ testFlow.testFlow = async(testData = {} ) => {
             if(config.run_on_sente_cloud) console.log('<sente>test_success</sente>');
             
             // Step bilgisi doluysa, en son step bilgisini yazdır
-            if(global.steps && global.steps.length>0) {
-
-                console.log('');
-                
-                for ( let [index,value]  of global.steps.entries() ) {                            
-
-                    let text = colors.blue.bold(`[STEP-${index+1}] `) + colors.blue(value) + ' ' + colors.green(figures.tick + ' Passed');
-                    console.log(text);                    
-                
-                }
-            }
-
+            printTestStepResultTable('passed');
 
             log.passed();
           
@@ -568,24 +613,7 @@ testFlow.testFlow = async(testData = {} ) => {
             console.log('[' + now() + '] ' + colors.red(`Test failed! [Test Duration: ${testDuration}]`))       
             
             // Step bilgisi doluysa, en son step bilgisini yazdır
-            if(global.steps && global.steps.length>0) {
-
-                console.log('');
-                
-                for ( let [index,value]  of global.steps.entries() ) {                   
-
-                    if(index +1 >= global.steps.length) {
-                        let text = colors.blue.bold(`[STEP-${index+1}] `) + colors.blue(value) + ' ' + colors.red(figures.cross + ' Failed');
-                        console.log(text);                    
-                    }
-                    else {
-                        let text = colors.blue.bold(`[STEP-${index+1}] `) + colors.blue(value) + ' ' + colors.green(figures.tick + ' Passed');
-                        console.log(text);                    
-                    }
-                                    
-                
-                }
-            }
+            printTestStepResultTable('failed');
 
             log.failed(e);
 
