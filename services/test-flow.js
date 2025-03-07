@@ -536,7 +536,20 @@ testFlow.testFlow = async(testData = {} ) => {
             console.log('[' + now() + '] ' + colors.green(`Test finished success. [Test Duration: ${testDuration}] `))
             if(config.run_on_sente_cloud) console.log('<sente>test_success</sente>');
             
-            
+            // Step bilgisi doluysa, en son step bilgisini yazdır
+            if(global.steps && global.steps.length>0) {
+
+                console.log('');
+                
+                for ( let [index,value]  of global.steps.entries() ) {                            
+
+                    let text = colors.blue.bold(`[STEP-${index+1}] `) + colors.blue(value) + ' ' + colors.green(figures.tick + ' Passed');
+                    console.log(text);                    
+                
+                }
+            }
+
+
             log.passed();
           
         }
@@ -552,7 +565,27 @@ testFlow.testFlow = async(testData = {} ) => {
             if(config.test_type === 'web-gui') await driver.takeScreenshot('TEST FAILED').catch(e => {})
 
             // test closing information for Failed test status
-            console.log('[' + now() + '] ' + colors.red(`Test failed! [Test Duration: ${testDuration}]`))            
+            console.log('[' + now() + '] ' + colors.red(`Test failed! [Test Duration: ${testDuration}]`))       
+            
+            // Step bilgisi doluysa, en son step bilgisini yazdır
+            if(global.steps && global.steps.length>0) {
+
+                console.log('');
+                
+                for ( let [index,value]  of global.steps.entries() ) {                   
+
+                    if(index +1 >= global.steps.length) {
+                        let text = colors.blue.bold(`[STEP-${index+1}] `) + colors.blue(value) + ' ' + colors.red(figures.cross + ' Failed');
+                        console.log(text);                    
+                    }
+                    else {
+                        let text = colors.blue.bold(`[STEP-${index+1}] `) + colors.blue(value) + ' ' + colors.green(figures.tick + ' Passed');
+                        console.log(text);                    
+                    }
+                                    
+                
+                }
+            }
 
             log.failed(e);
 

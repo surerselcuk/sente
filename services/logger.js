@@ -110,6 +110,21 @@ logger.log.passed = () => {
 
 };
 
+logger.log.step = (stepDescription) => { 
+
+    if(!global.steps) global.steps = [stepDescription];
+    else global.steps.push(stepDescription);
+    
+    text = '\n[' + logger.now() + '] '
+    text += styles.step(`${figures.pointer}[STEP-${global.steps.length}] `) + colors.blue(stepDescription);
+
+    console.log(text);
+
+
+
+
+};
+
 logger.log.success = (logValue,opt={boxen:false}) => {
     
 
