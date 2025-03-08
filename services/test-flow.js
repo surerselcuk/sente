@@ -135,8 +135,8 @@ let printTestInfo = (testData) => {
         } catch (e) {value = colors.red('cannot be shown')}
 
         // tabloda görünmesini istemediğimiz configleri kaldır ve tablo array lerini oluştur
-        if(    !row[0].includes('file_path') 
-            && !row[0].includes('test_name') 
+        if(    
+            !row[0].includes('test_name') 
             && !row[0].includes('download_path') 
             && !row[0].includes('download_path_on_grid') 
             && !row[0].includes('screenshot_directory') 
