@@ -5,6 +5,10 @@ const Promise = require('bluebird');
 const {locator} = require('./locator')
 const core = require('./driver');
 
+const colors = require('chalk');
+const figures = require('figures');
+const { stat } = require('fs');
+
 module.exports = {};
 
 
@@ -27,7 +31,8 @@ let getText = async (search, opt = {}) => {
             let element = await locator(opt)
             let text = element.getText();                    
 
-              
+            global.steps.push({description: colors.cyan.bold(`[GET TEXT]${figures.play} `) + opt.search , status: 'Passed'})
+            
             await wait_(1);
             resolve(text);
 
@@ -36,6 +41,7 @@ let getText = async (search, opt = {}) => {
 
             core.takeScreenshot('[Failed] GET TEXT: ' + opt.search).catch(e =>  log.warn(e,'takeScreenshot'))            
             log.error(e,`CLICK [${opt.search}]`);
+            global.steps.push({description: colors.cyan.bold(`[GET TEXT]${figures.play} `) + opt.search , status: 'Failed'})
             reject(e);
         }
     }).timeout((opt.timeout+1)*1000,`[Timeout] [GET TEXT: ${opt.search}]`)

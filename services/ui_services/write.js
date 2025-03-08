@@ -4,6 +4,8 @@ const {log,wait_,wait} = require('../logger');
 const Promise = require('bluebird');
 const {locator} = require('./locator')
 const core = require('./driver');
+const colors = require('chalk');
+const figures = require('figures');
 
 module.exports = {};
 
@@ -43,6 +45,7 @@ let write = async (search,keys, opt = {}) => {
 
             
             
+            global.steps.push({description: colors.cyan.bold(`[WRITE]${figures.play} `) + opt.search, status: 'Passed'})
 
               
             resolve(element);
@@ -52,6 +55,8 @@ let write = async (search,keys, opt = {}) => {
 
             core.takeScreenshot('[Failed] WRITE: ' + keys.toString()).catch(e =>  log.warn(e,'takeScreenshot'))            
             log.error(e,`WRITE [${opt.search}]`);
+            global.steps.push({description: colors.cyan.bold(`[WRITE]${figures.play} `) + opt.search, status: 'Failed'})
+
             reject(e);
         }
     }).timeout((opt.timeout+1)*1000,`[Timeout] [WRITE: ${keys.toString()}]`)

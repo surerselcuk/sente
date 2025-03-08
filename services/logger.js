@@ -112,8 +112,9 @@ logger.log.passed = () => {
 
 logger.log.step = (stepDescription) => { 
 
+
     if(!global.steps) global.steps = [stepDescription];
-    else global.steps.push(stepDescription);
+    else global.steps.push({description:stepDescription , status:'unknown'});
     
     text = '[' + logger.now() + '] '
     text += styles.step(`${figures.pointer}[STEP-${global.steps.length}] `) + colors.blue(stepDescription);

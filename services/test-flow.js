@@ -193,10 +193,12 @@ let printTestStepResultTable = (status='passed') => {
     for ( let [index,value]  of global.steps.entries() ) {
         
 
-        if(index +1 >= global.steps.length && status === 'failed') {
-            stepTable.push([colors.blue.bold(`[STEP-${index+1}] `) + value , colors.red(figures.cross + ' Failed')])                 
+        if(index +1 >= global.steps.length && status === 'failed' && value.status==='unknown') {
+            stepTable.push([colors.blue.bold(`[STEP-${index+1}] `) + value.description , colors.red(figures.cross + ' ' + 'Failed')])                 
         } else {
-            stepTable.push([colors.blue.bold(`[STEP-${index+1}] `) + value , colors.green(figures.tick + ' Passed')])
+            
+            stepTable.push([colors.blue.bold(`[STEP-${index+1}] `) + value.description , value.status.trim().toLowerCase() === 'failed' ? colors.red(figures.cross + ' ' + value.status) : colors.green(figures.tick + ' Passed') ])
+            
         }
         
     
@@ -207,15 +209,21 @@ let printTestStepResultTable = (status='passed') => {
     if(config.run_on_sente_cloud) {
         
         console.log('\n\n SUMMARY TABLE')
-           
-        for ( let [index,value]  of global.steps.entries() ) {                   
 
-            if(index +1 >= global.steps.length && status === 'failed') {
-                let text = colors.blue.bold(`[STEP-${index+1}] `) + colors.blue(value) + ' ' + colors.red(figures.cross + ' Failed');
+
+        
+           
+        for ( let [index,value]  of global.steps.entries() ) {                               
+
+            if(index +1 >= global.steps.length && status === 'failed' && value.status==='unknown') {
+                let text = `[STEP-${index+1}] ` + value.description + ' ' + figures.cross + ' Failed';
                 console.log(text);                    
             }
             else {
-                let text = colors.blue.bold(`[STEP-${index+1}] `) + colors.blue(value) + ' ' + colors.green(figures.tick + ' Passed');
+                let text = `[STEP-${index+1}] ` + value.description
+                if(value.status.trim().toLowerCase() === 'failed') text += ' ' + figures.cross + ' ' + value.status
+                else text += ' ' + figures.tick + ' Passed';
+
                 console.log(text);                    
             }
                             
@@ -445,6 +453,7 @@ testFlow.testFlow = async(testData = {} ) => {
                      currentSectionIndex = 0;
                      sectionErrors = [];
                      jumpToSectionIndex = -1;
+                     global.steps = [];
                      
                      global.isFirstPage = true; // Go ile bir sayfa çağrıldığında, tüm test akışı içindeki açılan ilk safya mı olduğunu flag ler. Go ilk çağrıldıktan sonra bu değişken false olur.
                     
@@ -458,7 +467,7 @@ testFlow.testFlow = async(testData = {} ) => {
                 
                     /* Start Test Run
                     **************************************************************************************/
-                    
+
         
                         // Have any sections?
                         if( Object.keys(section).length === 0){

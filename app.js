@@ -17,6 +17,7 @@ global.test; // This is test flow  object
 global.section = {}; // This is test flow object
 global.sectionRules = {}; // This is test flow object
 
+
 // Test In-Progress Global Variables
 global.driver = {}; // web driver nesnesi
 

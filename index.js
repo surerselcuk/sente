@@ -33,6 +33,7 @@ module.exports.go                                      = require('./services/ui_
 module.exports.takeScreenshot                          = require('./services/ui_services/driver').takeScreenshot,
 module.exports.click                                   = require('./services/ui_services/click').click,
 module.exports.rightClick                              = require('./services/ui_services/click').rightClick,
+module.exports.doubleClick                             = require('./services/ui_services/click').doubleClick,
 module.exports.see                                     = require('./services/ui_services/locator').see,
 module.exports.notSee                                  = require('./services/ui_services/locator').notSee,
 module.exports.write                                   = require('./services/ui_services/write').write,

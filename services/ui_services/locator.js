@@ -4,6 +4,8 @@ const { webdriver } = require('../../index');
 const {until,By} = webdriver
 const Promise = require('bluebird');
 const core = require('./driver');
+const colors = require('chalk');
+const figures = require('figures');
 
 module.exports = {};
 
@@ -113,12 +115,16 @@ let see = async (search, opt = {}) => {
             let element = await locator(opt)
 
             await core.takeScreenshot(`SEE: ${opt.search}`).catch(e =>  log.warn(e,'takeScreenshot'))
+            global.steps.push({description: colors.cyan.bold(`[SEE]${figures.play} `) + opt.search, status: 'Passed'})
+
             resolve(element);
 
         }
         catch (e) {
             core.takeScreenshot('[Failed] SEE: ' + opt.search).catch(e =>  log.warn(e,'takeScreenshot'))            
             log.error(e,`SEE [${opt.search}]`);
+            global.steps.push({description: colors.cyan.bold(`[SEE]${figures.play} `) + opt.search, status: 'Failed'})
+
 
             reject(e);
         }
@@ -248,12 +254,16 @@ let notSee = async (search, opt = {}) => {
             if (!isFind){
 
                 await core.takeScreenshot(`NOT SEE: ${opt.search}`).catch(e =>  log.warn(e,'takeScreenshot'))
+                global.steps.push({description: colors.cyan.bold(`[NOT SEE]${figures.play} `) + opt.search, status: 'Passed'})
+
                 resolve(true); 
 
             }
             else {
 
                 await core.takeScreenshot(`[Failed] NOT SEE: ${opt.search}`).catch(e =>  log.warn(e,'takeScreenshot'))
+                global.steps.push({description: colors.cyan.bold(`[NOT SEE]${figures.play} `) + opt.search, status: 'Failed'})
+
                 reject(`[NOT SEE] Object found but object should not have been found [${opt.search}]`);
             }
 
