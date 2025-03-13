@@ -11,6 +11,8 @@ const path = require('path');
 const fs = require('fs');
 const figures = require('figures');
 const colors = require('chalk');
+const os = require('os');
+const platform = os.platform();
 
 program
   .command('new')
@@ -1128,11 +1130,15 @@ let copySampleProject = async () => {
 }
 
 
+// Override Config Usage String
+let overrideConfigUsageString = `[Override Config] Usage: --config=' "parameter1":"value1", "parameter2":["valueX","valueY"], "parameter3":{"parameter4":"valueZ"} '`;
+if(platform == 'win32')  overrideConfigUsageString = `[Override Config] Usage: --config=" \\"parameter1\\":\\"value1\\", \\"parameter2\\":[\\"valueX\\",\\"valueY\\"], \\"parameter3\\":{\\"parameter4\\":\\"valueZ\\"} "`
 
+platform === 'win32'
 program
     .arguments('<file> [options]')
     .option('--env <value>',`[Environment] Usage: --env=dev-env1` )
-    .option('--config <value>',`[Override Config] Usage: --config=' "parameter1":"value1", "parameter2":["valueX","valueY"], "parameter3":{"parameter4":"valueZ"} '`)
+    .option('--config <value>',overrideConfigUsageString)
     .option('-t, --take_screenshoot','Take screenshot on every step')
     .option('-s, --sente','Test run on sente cloud ')
     .option('-n, --new','Always open new web gui session')
