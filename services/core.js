@@ -63,12 +63,12 @@ core.startTest = async (file,options) => {
             let run_parameters = '';
             if(options.env) run_parameters += ' --env=' + options.env.toLowerCase();
 
-            let defaultConfig =` --config='{`
+            let defaultConfig =`{`
 
             // set default config
             let fileFullPath = require('path').resolve(file.fileName)
             let fileName = require('path').basename(file.fileName)           
-            defaultConfig += `"file_name":"${fileName}", "file_full_path":"${fileFullPath}" `   
+            defaultConfig += `"file_name":"${fileName}", "file_full_path":"${fileFullPath.replace(/\\/g, "\\\\")}" `   
 
             // set configs that come with cli 
             if(options.config) defaultConfig += ' , ' + options.config
@@ -83,9 +83,10 @@ core.startTest = async (file,options) => {
             if(options.new) defaultConfig += ' , "always_new_web_gui_session":"true" '
 
             // end configs
-            defaultConfig += `}'`
+            defaultConfig += `}`
             
-            run_parameters += defaultConfig
+            run_parameters += ' --config=' + Buffer.from(defaultConfig, 'utf-8').toString('base64');
+
 
     
     

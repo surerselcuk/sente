@@ -22,6 +22,8 @@ let jumpToSectionIndex = -1; // if jump command run, set to this index
 
 let setEnvironment = (testData) => {
 
+
+
             // Set Environments     
 
             if(testData.argv.env && (testData.argv.env).indexOf('prod-') === -1 && (testData.argv.env).indexOf('dev-') === -1 )  throw new Error (`Test Environment [${argvForEnvironment}] Undefined!`)
@@ -250,7 +252,9 @@ let overrideConfigs = (testData) => {
 
         if(testData.argv.config) {
 
-            let config_ = JSON.parse(testData.argv.config);
+            let decodedConfig = Buffer.from(testData.argv.config, 'base64').toString('utf-8');
+            
+            let config_ = JSON.parse(decodedConfig);
 
             if(isObject(config_)){
                 config = {...config,...config_};
@@ -412,6 +416,9 @@ testFlow.testFlow = async(testData = {} ) => {
 
         let testStartDate = new Date().getTime();
         let senteTimeout;
+
+ 
+        
 
         try {
 
