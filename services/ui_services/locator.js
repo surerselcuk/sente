@@ -228,7 +228,7 @@ see.tagName = async (search, opt = {}) => {
 let notSee = async (search, opt = {}) => {
 
     // set default
-    if(!opt.timeout) opt.timeout = 3;
+    if(!opt.timeout) opt.timeout = senteConfig.uiClassTimeout;
     if(!opt.type) opt.type = 'xpath'
     opt.search = search
 
