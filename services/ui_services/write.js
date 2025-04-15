@@ -18,13 +18,14 @@ let write = async (search,keys, opt = {}) => {
     // set default
     if(!opt.timeout) opt.timeout = senteConfig.uiClassTimeout;
     if(!opt.type) opt.type = 'xpath'
+    if (opt.isStepLogActive === undefined) opt.isStepLogActive = true;
     opt.search = search
-    
+  
 
     return new Promise (async (resolve,reject)=>{        
         try {
 
-            log.uiCommand('WRITE', opt.search)
+            log.uiCommand('WRITE', '"' + keys.toString() + '" to ' +opt.search)
             
             let element = await locator(opt)
             try { await element.clear(); } catch(e) {}
@@ -40,12 +41,12 @@ let write = async (search,keys, opt = {}) => {
             else {await element.sendKeys(keys);}
             
             await wait_(1);
-            await core.takeScreenshot(`WRITE: ${keys.toString()}`).catch(e =>  log.warn(e,'takeScreenshot'))
+            await core.takeScreenshot(`WRITE: "${keys.toString()}" to ${opt.search}`).catch(e =>  log.warn(e,'takeScreenshot'))
         
 
             
             
-            global.steps.push({description: colors.cyan.bold(`[WRITE]${figures.play} `) + opt.search, status: 'Passed'})
+            if(opt.isStepLogActive === true) global.steps.push({description: colors.cyan.bold(`[WRITE]${figures.play} `) + '"' + keys.toString() + '" to ' + opt.search, status: 'Passed'})
 
               
             resolve(element);
@@ -53,9 +54,9 @@ let write = async (search,keys, opt = {}) => {
         }
         catch (e) {
 
-            core.takeScreenshot('[Failed] WRITE: ' + keys.toString()).catch(e =>  log.warn(e,'takeScreenshot'))            
-            log.error(e,`WRITE [${opt.search}]`);
-            global.steps.push({description: colors.cyan.bold(`[WRITE]${figures.play} `) + opt.search, status: 'Failed'})
+            core.takeScreenshot(`[Failed] WRITE: "${keys.toString()}" to ${opt.search}`).catch(e =>  log.warn(e,'takeScreenshot'))            
+            log.error(e,`WRITE: "${keys.toString()}" to ${opt.search}`);
+            if(opt.isStepLogActive === true) global.steps.push({description: colors.cyan.bold(`[WRITE]${figures.play} `) + '"' + keys.toString() + '" to ' + opt.search, status: 'Failed'})
 
             reject(e);
         }

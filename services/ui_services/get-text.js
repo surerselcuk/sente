@@ -20,6 +20,8 @@ let getText = async (search, opt = {}) => {
     // set default
     if(!opt.timeout) opt.timeout = senteConfig.uiClassTimeout;
     if(!opt.type) opt.type = 'xpath'
+    if (opt.isStepLogActive === undefined) opt.isStepLogActive = true;
+
     opt.search = search
     
 
@@ -31,7 +33,7 @@ let getText = async (search, opt = {}) => {
             let element = await locator(opt)
             let text = element.getText();                    
 
-            global.steps.push({description: colors.cyan.bold(`[GET TEXT]${figures.play} `) + opt.search , status: 'Passed'})
+            if(opt.isStepLogActive === true) global.steps.push({description: colors.cyan.bold(`[GET TEXT]${figures.play} `) + opt.search , status: 'Passed'})
             
             await wait_(1);
             resolve(text);
@@ -41,7 +43,7 @@ let getText = async (search, opt = {}) => {
 
             core.takeScreenshot('[Failed] GET TEXT: ' + opt.search).catch(e =>  log.warn(e,'takeScreenshot'))            
             log.error(e,`CLICK [${opt.search}]`);
-            global.steps.push({description: colors.cyan.bold(`[GET TEXT]${figures.play} `) + opt.search , status: 'Failed'})
+            if(opt.isStepLogActive === true) global.steps.push({description: colors.cyan.bold(`[GET TEXT]${figures.play} `) + opt.search , status: 'Failed'})
             reject(e);
         }
     }).timeout((opt.timeout+1)*1000,`[Timeout] [GET TEXT: ${opt.search}]`)

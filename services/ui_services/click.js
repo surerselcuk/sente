@@ -19,6 +19,8 @@ let click = async (search, opt = {}) => {
     // set default
     if(!opt.timeout) opt.timeout = senteConfig.uiClassTimeout;
     if(!opt.type) opt.type = 'xpath'
+    if (opt.isStepLogActive === undefined) opt.isStepLogActive = true;
+
     opt.search = search
     
 
@@ -47,7 +49,7 @@ let click = async (search, opt = {}) => {
             
             
 
-            global.steps.push({description: colors.cyan.bold(`[CLICK]${figures.play} `) + opt.search, status: 'Passed'})
+            if(opt.isStepLogActive === true) global.steps.push({description: colors.cyan.bold(`[CLICK]${figures.play} `) + opt.search, status: 'Passed'})
               
             resolve(element);
 
@@ -56,7 +58,7 @@ let click = async (search, opt = {}) => {
 
             core.takeScreenshot('[Failed] CLICK: ' + opt.search).catch(e =>  log.warn(e,'takeScreenshot'))            
             log.error(e,`CLICK [${opt.search}]`);
-            global.steps.push({description: colors.cyan.bold(`[CLICK]${figures.play} `) + opt.search , status: 'Failed'})
+            if(opt.isStepLogActive === true) global.steps.push({description: colors.cyan.bold(`[CLICK]${figures.play} `) + opt.search , status: 'Failed'})
 
             reject(e);
         }
@@ -162,6 +164,8 @@ let rightClick = async (search, opt = {}) => {
     // set default
     if(!opt.timeout) opt.timeout = senteConfig.uiClassTimeout;
     if(!opt.type) opt.type = 'xpath'
+    if (opt.isStepLogActive === undefined) opt.isStepLogActive = true;
+
     opt.search = search
 
     return new Promise (async (resolve,reject)=>{        
@@ -175,7 +179,7 @@ let rightClick = async (search, opt = {}) => {
             await wait_(1);
             await core.takeScreenshot(`RIGHT CLICK: ${opt.search}`).catch(e =>  log.warn(e,'takeScreenshot'))
 
-            global.steps.push({description: colors.cyan.bold(`[RIGHT CLICK]${figures.play} `) + opt.search, status: 'Passed'})
+            if(opt.isStepLogActive === true)  global.steps.push({description: colors.cyan.bold(`[RIGHT CLICK]${figures.play} `) + opt.search, status: 'Passed'})
 
             resolve(element);
 
@@ -183,7 +187,7 @@ let rightClick = async (search, opt = {}) => {
         catch (e) {
             core.takeScreenshot('[Failed] RIGHT CLICK: ' + opt.search).catch(e =>  log.warn(e,'takeScreenshot'))            
             log.error(e,`RIGHT CLICK [${opt.search}]`);
-            global.steps.push({description: colors.cyan.bold(`[RIGHT CLICK]${figures.play} `) + opt.search , status: 'Failed'})
+            if(opt.isStepLogActive === true) global.steps.push({description: colors.cyan.bold(`[RIGHT CLICK]${figures.play} `) + opt.search , status: 'Failed'})
 
             reject(e);
         }
@@ -289,6 +293,8 @@ let doubleClick = async (search, opt = {}) => {
     // set default
     if(!opt.timeout) opt.timeout = senteConfig.uiClassTimeout;
     if(!opt.type) opt.type = 'xpath'
+    if (opt.isStepLogActive === undefined) opt.isStepLogActive = true;
+
     opt.search = search
 
     return new Promise (async (resolve,reject)=>{        
@@ -301,7 +307,7 @@ let doubleClick = async (search, opt = {}) => {
 
             await wait_(1);
             await core.takeScreenshot(`DOUBLE CLICK: ${opt.search}`).catch(e =>  log.warn(e,'takeScreenshot'))
-            global.steps.push({description: colors.cyan.bold(`[DOUBLE CLICK]${figures.play} `) + opt.search, status: 'Passed'})
+            if(opt.isStepLogActive === true) global.steps.push({description: colors.cyan.bold(`[DOUBLE CLICK]${figures.play} `) + opt.search, status: 'Passed'})
 
             resolve(element);
 
@@ -309,7 +315,7 @@ let doubleClick = async (search, opt = {}) => {
         catch (e) {
             core.takeScreenshot('[Failed] DOUBLE CLICK: ' + opt.search).catch(e =>  log.warn(e,'takeScreenshot'))            
             log.error(e,`DOUBLE CLICK [${opt.search}]`);
-            global.steps.push({description: colors.cyan.bold(`[DOUBLE CLICK]${figures.play} `) + opt.search , status: 'Failed'})
+            if(opt.isStepLogActive === true) global.steps.push({description: colors.cyan.bold(`[DOUBLE CLICK]${figures.play} `) + opt.search , status: 'Failed'})
 
             reject(e);
         }
