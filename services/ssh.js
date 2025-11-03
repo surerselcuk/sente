@@ -129,7 +129,7 @@ sshFunctions.execCommand = async (properties = {}) => {
 
                 await sshConnection.execCommand(command, {}).then(function(result) {
                     log(result.stdout)
-                    resolve();
+                    resolve(result);
                     if (result.stderr) throw new Error(result.stderr)
                 });
 
@@ -143,7 +143,7 @@ sshFunctions.execCommand = async (properties = {}) => {
                 reject(err);
             });
 
-    }).timeout(properties.timeout * 1000, '[uploadFilesWithSsh] [Timeout]');
+    }).timeout(properties.timeout * 1000, '[execCommand] [Timeout]');
 };
 
 
