@@ -2,7 +2,7 @@
 ********************************************************************************************/
 const repo = require('#object_repository');
 const { sente } = require('#libraries');
-const { webdriver, axios, Promise, https, NodeSSH, random } = sente;
+const { webdriver, axios, Promise, https, NodeSSH, random, moment } = sente;
 const { log, now, wait, wait_, translate, importParameter, exportParameter, overrideRepo, myQuery, pgQuery, api, ssh  } = sente;
 const { go, click, rightClick, doubleClick, see, notSee, write, keyboard, scroll, getText } = sente;
 
