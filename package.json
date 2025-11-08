@@ -46,5 +46,8 @@
   "bugs": {
     "url": "https://github.com/surerselcuk/sente/issues",
     "email": "surerselcuk@gmail.com"
+  },
+  "devDependencies": {
+    "html-dnd": "^1.2.1"
   }
 }

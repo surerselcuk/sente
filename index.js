@@ -21,6 +21,8 @@ module.exports.Promise                                  = require('bluebird');
 module.exports.NodeSSH                                  = require('node-ssh').NodeSSH;
 module.exports.random                                   = require('random');
 module.exports.moment                                   = require('moment');
+module.exports.dragAndDrop                              = require('html-dnd').code;
+
 
 
 
