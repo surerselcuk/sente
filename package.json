@@ -27,6 +27,7 @@
     "commander": "^12.1.0",
     "figures": "^3.2.0",
     "fs": "^0.0.1-security",
+    "html-dnd": "^1.2.1",
     "inquirer": "^8.0.0",
     "isobject": "^4.0.0",
     "jimp": "^0.22.12",
@@ -46,8 +47,5 @@
   "bugs": {
     "url": "https://github.com/surerselcuk/sente/issues",
     "email": "surerselcuk@gmail.com"
-  },
-  "devDependencies": {
-    "html-dnd": "^1.2.1"
   }
 }
