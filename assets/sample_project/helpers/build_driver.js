@@ -45,7 +45,7 @@ module.exports = {
                              .then( async driver_=> {
                                                             
                                 if( config.download_directory ){
-                                    log(`Browser download directory on worker set to [${config.download_directory}]`)
+                                    log(`Browser download directory on worker set to [${config.download_directory}] usage: config.download_directory`)
                                     log(`Browser download directory on selenium grid set to [${config.download_path_on_grid}]`)
                                 }
     
@@ -117,7 +117,7 @@ module.exports = {
                 .then( async driver_=> {
                                                 
                     if( config.download_directory ){
-                        log(`Browser download directory on worker set to [${config.download_directory}]`)
+                                    log(`Browser download directory on worker set to [${config.download_directory}] usage: config.download_directory`)
                         log(`Browser download directory on selenium grid set to [${config.download_path_on_grid}]`)
                     }
     
