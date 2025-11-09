@@ -367,7 +367,7 @@ core.getDownloadFiles = async() => {
 
         return files.map(file => {
         const filePath = path.join(directory, file);
-        const stats = fs.statSync(filePath);
+        const stats = statSync(filePath);
             return {
                 name: file,
                 extension: path.extname(file),
