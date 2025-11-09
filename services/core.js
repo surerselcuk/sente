@@ -5,6 +5,8 @@ core.random = require('random');
 const axios = require('axios');
 const log = require('./logger').log;
 const os = require('os');
+const moment = require('moment');
+
 
 
 
@@ -343,7 +345,45 @@ core.exportParameter = async(key,value) => {
 core.isObject = (variable) => {
     return variable && typeof variable === 'object' && !Array.isArray(variable);
 };
+core.getDownloadFiles = async() => {
+    
+    try {
 
+        let directory = config.download_directory;
+
+        if (!existsSync(directory)) {
+            log.warn(`Directory does not exist: ${directory}`);
+            return [];
+        }
+
+        const files = readdirSync(directory);
+
+        if (files.length === 0) {
+        log.warn(`No files found in directory: ${directory}`);
+        return [];
+        } else {
+        log.info(`Found ${files.length} files in directory: ${directory}`);
+        }
+
+        return files.map(file => {
+        const filePath = path.join(directory, file);
+        const stats = fs.statSync(filePath);
+            return {
+                name: file,
+                extension: path.extname(file),
+                fullPath: filePath,
+                modifiedDate: moment(stats.mtime).format('YYYY-MM-DD HH:mm:ss'), // Format the date
+                size: `${stats.size} bytes` // Specify the unit for size
+            };
+        }).sort((a, b) => b.modifiedDate - a.modifiedDate);
+
+    }
+    catch (e) {
+        log.warn('[getDownloadFiles] Error')
+        console.log(e)
+    }
+
+}
 
 
 

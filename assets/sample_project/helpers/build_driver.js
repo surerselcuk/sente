@@ -1,7 +1,7 @@
 const repo = require('#object_repository');
 const { sente } = require('#libraries');
 const { webdriver, axios, Promise, https, NodeSSH, random, moment, dragAndDrop } = sente;
-const { log, now, wait, wait_, translate, importParameter, exportParameter, overrideRepo, myQuery, pgQuery, api, ssh  } = sente;
+const { log, now, wait, wait_, translate, importParameter, exportParameter, overrideRepo, myQuery, pgQuery, api, ssh, getDownloadFiles } = sente;
 const { go, click, rightClick, doubleClick, see, notSee, write, keyboard, scroll, getText } = sente;
 const {firefox} =  sente.webdriver
 const {chrome} =  sente.webdriver

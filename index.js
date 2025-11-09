@@ -60,10 +60,12 @@ module.exports.cleanEmptyFoldersRecursively            = require('./services/cor
 module.exports.importParameter                         = require('./services/core').importParameter,
 module.exports.exportParameter                         = require('./services/core').exportParameter
 module.exports.overrideRepo                            = require('./services/core').overrideRepo,
+module.exports.getDownloadFiles                        = require('./services/core').getDownloadFiles,
 module.exports.myQuery                                 = require('./services/db').myQuery
 module.exports.pgQuery                                 = require('./services/db').pgQuery
 module.exports.api                                     = require('./services/request')
 module.exports.ssh                                     = require('./services/ssh')
+
 
 
 
