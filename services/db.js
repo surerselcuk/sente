@@ -89,10 +89,19 @@ db.myQuery =  async (query, dBConfig = global.config.dBConfig) => {
                     // Exec query
                     const [result, fields] = await connection.query(query);
                     try { connection.end(); } catch (e) {}
+                    
+                    if (result && result.constructor && result.constructor.name === 'ResultSetHeader') { 
 
-                    console.log('[' + now() + ']               ' + colors.green.bold(` ${figures.tick}  `) + 'Row Count: ' + colors.green.bold(result.length))
+                        console.log('[' + now() + ']               ' + colors.green.bold(` ${figures.tick}  `) + 'Return Data: ' + colors.green.bold(JSON.stringify(result)))
+                        resolve(result);
 
-                    resolve(Array.from(result))
+                    } else {
+
+                        console.log('[' + now() + ']               ' + colors.green.bold(` ${figures.tick}  `) + 'Row Count: ' + colors.green.bold(result.length))
+                        resolve(Array.from(result));
+                    }
+
+                
                     
                     
                     
