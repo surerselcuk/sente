@@ -28,7 +28,7 @@ const Promise = require('bluebird');
  * @throws {Error} - Throws an error if the query string or connection parameters are missing or invalid.
  * @see {@link https://sidorares.github.io/node-mysql2/docs/examples/connections/create-connection#createconnectionconfig|Options}
  */
-db.myQuery =  async (query, dBConfig_ = global.config.dBConfig) => {
+db.myQuery =  async (query, dBConfig = global.config.dBConfig) => {
   
     /* 
     *  Mysql db query function
@@ -36,7 +36,7 @@ db.myQuery =  async (query, dBConfig_ = global.config.dBConfig) => {
     *
     *             query: [string] db select, update, insert etc. 
     *
-    *             dBConfig_={ 
+    *             dBConfig={ 
     *                 host: [string] db host or Ip,
     *                 port: [string] db port number
     *                 database: [string] db name
@@ -54,25 +54,26 @@ db.myQuery =  async (query, dBConfig_ = global.config.dBConfig) => {
         try {
         
                 // Properties validation
-                if(!dBConfig_ || !query || !core.isObject(dBConfig_)) throw new Error('Query String and Connection parameters required!')
-                    if(!dBConfig_.host || !dBConfig_.port || !dBConfig_.database || !dBConfig_.user|| !dBConfig_.password) throw new Error('host, port, database,user and password  required!')
+                if(!dBConfig || !query || !core.isObject(dBConfig)) throw new Error('Query String and Connection parameters required!')
+                    if(!dBConfig.host || !dBConfig.port || !dBConfig.database || !dBConfig.user|| !dBConfig.password) throw new Error('host, port, database,user and password  required!')
                     
                     // default values
-                    if(!dBConfig_.connectionLimit) dBConfig_.connectionLimit = 999;
-                    if(!dBConfig_.queueLimit) dBConfig_.queueLimit = 0;
-                    if(!dBConfig_.multipleStatements) dBConfig_.multipleStatements = true;
-                    if(!dBConfig_.connectTimeout) dBConfig_.connectTimeout= 1000*10;
-                    if(!dBConfig_.insecureAuth) dBConfig_.insecureAuth = true
-                    dBConfig_.port = Number(dBConfig_.port);
+                    if(!dBConfig.connectionLimit) dBConfig.connectionLimit = 999;
+                    if(!dBConfig.queueLimit) dBConfig.queueLimit = 0;
+                    if(!dBConfig.multipleStatements) dBConfig.multipleStatements = true;
+                    if(!dBConfig.connectTimeout) dBConfig.connectTimeout= 1000*10;
+                    if(!dBConfig.insecureAuth) dBConfig.insecureAuth = true
+                    
+                    dBConfig.port = Number(dBConfig.port);
 
-                    timeoutForBluebird = dBConfig_.connectTimeout + 2000;
+                    timeoutForBluebird = dBConfig.connectTimeout + 2000;
                                 
                     log.uiCommand('EXEC QUERY',query)
             
                     // Connect to db                    
                     try {
                     
-                        connection = await mysql.createConnection(dBConfig_)
+                        connection = await mysql.createConnection(dBConfig)
                                 
                     }
                     catch (e) {
@@ -119,26 +120,26 @@ db.myQuery =  async (query, dBConfig_ = global.config.dBConfig) => {
  * Executes a PostgreSQL query using the provided configuration.
  *
  * @param {string} query - The SQL query to be executed.
- * @param {Object} [dBConfig_=global.config.dBConfig_] - The database configuration object.
- * @param {string} dBConfig_.user - The database user.
- * @param {string} dBConfig_.password - The database user's password.
- * @param {string} dBConfig_.host - The database host or IP address.
- * @param {number} dBConfig_.port - The database port number.
- * @param {string} dBConfig_.database - The name of the database.
- * @param {string} [dBConfig_.connectionString] - Connection string (e.g., postgres://user:password@host:5432/database).
- * @param {any} [dBConfig_.ssl] - SSL configuration, passed directly to node.TLSSocket.
- * @param {any} [dBConfig_.types] - Custom type parsers.
- * @param {number} [dBConfig_.statement_timeout] - Statement timeout in milliseconds.
- * @param {number} [dBConfig_.query_timeout] - Query timeout in milliseconds.
- * @param {number} [dBConfig_.lock_timeout] - Lock timeout in milliseconds.
- * @param {string} [dBConfig_.application_name] - The name of the application that created this Client instance.
- * @param {number} [dBConfig_.connectionTimeoutMillis] - Connection timeout in milliseconds.
- * @param {number} [dBConfig_.idle_in_transaction_session_timeout] - Idle transaction session timeout in milliseconds.
+ * @param {Object} [dBConfig=global.config.dBConfig] - The database configuration object.
+ * @param {string} dBConfig.user - The database user.
+ * @param {string} dBConfig.password - The database user's password.
+ * @param {string} dBConfig.host - The database host or IP address.
+ * @param {number} dBConfig.port - The database port number.
+ * @param {string} dBConfig.database - The name of the database.
+ * @param {string} [dBConfig.connectionString] - Connection string (e.g., postgres://user:password@host:5432/database).
+ * @param {any} [dBConfig.ssl] - SSL configuration, passed directly to node.TLSSocket.
+ * @param {any} [dBConfig.types] - Custom type parsers.
+ * @param {number} [dBConfig.statement_timeout] - Statement timeout in milliseconds.
+ * @param {number} [dBConfig.query_timeout] - Query timeout in milliseconds.
+ * @param {number} [dBConfig.lock_timeout] - Lock timeout in milliseconds.
+ * @param {string} [dBConfig.application_name] - The name of the application that created this Client instance.
+ * @param {number} [dBConfig.connectionTimeoutMillis] - Connection timeout in milliseconds.
+ * @param {number} [dBConfig.idle_in_transaction_session_timeout] - Idle transaction session timeout in milliseconds.
  * @returns {Promise<Object>} - A promise that resolves with the query results.
  * @throws {Error} - Throws an error if the query string or connection parameters are missing or invalid.
  * @see {@link https://node-postgres.com/features/connecting#programmatic|Options}
  */
-db.pgQuery =  async (query, dBConfig_ = global.config.dBConfig_) => {
+db.pgQuery =  async (query, dBConfig = global.config.dBConfig) => {
   
     /* 
       Postgre db query function
@@ -146,7 +147,7 @@ db.pgQuery =  async (query, dBConfig_ = global.config.dBConfig_) => {
     
         query: [string] db select, update, insert etc. 
 
-        dBConfig_ = {
+        dBConfig = {
                 user?: string, // default process.env.PGUSER || process.env.USER
                 password?: string or function, //default process.env.PGPASSWORD
                 host?: string, // default process.env.PGHOST
@@ -171,16 +172,16 @@ db.pgQuery =  async (query, dBConfig_ = global.config.dBConfig_) => {
         try {
         
                 // Properties validation
-                if(!dBConfig_ || !query || !core.isObject(dBConfig_)) throw new Error('Query String and Connection parameters required!')
-                    if(!dBConfig_.host || !dBConfig_.port || !dBConfig_.database || !dBConfig_.user|| !dBConfig_.password) throw new Error('host, port, database,user and password  required!')
+                if(!dBConfig || !query || !core.isObject(dBConfig)) throw new Error('Query String and Connection parameters required!')
+                    if(!dBConfig.host || !dBConfig.port || !dBConfig.database || !dBConfig.user|| !dBConfig.password) throw new Error('host, port, database,user and password  required!')
                     
                     // default values
-                    if(!dBConfig_.connectionTimeoutMillis) dBConfig_.connectionTimeoutMillis = 1000*10;
-                    if(!dBConfig_.query_timeout) dBConfig_.query_timeout = 1000*10;
-                    dBConfig_.port = Number(dBConfig_.port);
+                    if(!dBConfig.connectionTimeoutMillis) dBConfig.connectionTimeoutMillis = 1000*10;
+                    if(!dBConfig.query_timeout) dBConfig.query_timeout = 1000*10;
+                    dBConfig.port = Number(dBConfig.port);
 
 
-                    timeoutForBluebird = dBConfig_.query_timeout + 2000;
+                    timeoutForBluebird = dBConfig.connectTimeout + 2000;
 
 
                                 
@@ -190,7 +191,7 @@ db.pgQuery =  async (query, dBConfig_ = global.config.dBConfig_) => {
                     // Connect to db                   
                     try {
                     
-                        connection = await new Client(dBConfig_);
+                        connection = await new Client(dBConfig);
                         await connection.connect();    
                     }
                     catch (e) {
