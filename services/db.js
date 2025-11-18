@@ -15,13 +15,18 @@ const Promise = require('bluebird');
  * @param {string} query - The SQL query to be executed.
  * @param {Object} [dBConfig=global.config.dBConfig] - The database configuration object.
  * @param {string} dBConfig.host - The database host or IP address.
- * @param {string} dBConfig.port - The database port number.
+ * @param {number} dBConfig.port - The database port number.
  * @param {string} dBConfig.database - The name of the database.
  * @param {string} dBConfig.user - The database user.
  * @param {string} dBConfig.password - The database user's password.
- * @returns {Promise<Object>} - A promise that resolves with the query results.
+ * @param {number} [dBConfig.connectionLimit=999] - Maximum number of connections in the pool.
+ * @param {number} [dBConfig.queueLimit=0] - Maximum number of connection requests the pool will queue.
+ * @param {boolean} [dBConfig.multipleStatements=true] - Allow multiple mysql statements per query.
+ * @param {number} [dBConfig.connectTimeout=10000] - Connection timeout in milliseconds.
+ * @param {boolean} [dBConfig.insecureAuth=true] - Allow connecting to MySQL instances that ask for the old (insecure) authentication method.
+ * @returns {Promise<Array>} - A promise that resolves with the query results as an array.
  * @throws {Error} - Throws an error if the query string or connection parameters are missing or invalid.
- * @see {@link  https://sidorares.github.io/node-mysql2/docs/examples/connections/create-connection#createconnectionconfig|Options}
+ * @see {@link https://sidorares.github.io/node-mysql2/docs/examples/connections/create-connection#createconnectionconfig|Options}
  */
 db.myQuery =  async (query, dBConfig = global.config.dBConfig) => {
   
@@ -39,6 +44,8 @@ db.myQuery =  async (query, dBConfig = global.config.dBConfig) => {
     *                 password: [string] db port number
     *               }
     */
+
+    let timeoutForBluebird = senteConfig.defaultTimeout*1000;
     
     return new Promise(async(resolve, reject) => {
 
@@ -57,6 +64,8 @@ db.myQuery =  async (query, dBConfig = global.config.dBConfig) => {
                     if(!dBConfig.connectTimeout) dBConfig.connectTimeout= 1000*10;
                     if(!dBConfig.insecureAuth) dBConfig.insecureAuth = true
                     dBConfig.port = Number(dBConfig.port);
+
+                    timeoutForBluebird = dBConfig.connectTimeout + 2000;
                                 
                     log.uiCommand('EXEC QUERY',query)
             
@@ -100,7 +109,7 @@ db.myQuery =  async (query, dBConfig = global.config.dBConfig) => {
 
 
     
-    }).timeout(senteConfig.defaultTimeout*1000,'[myQuery] [Timeout]');   
+    }).timeout(timeoutForBluebird,'[myQuery] [Timeout]');   
 
 
 }
@@ -166,9 +175,13 @@ db.pgQuery =  async (query, dBConfig = global.config.dBConfig) => {
                     if(!dBConfig.host || !dBConfig.port || !dBConfig.database || !dBConfig.user|| !dBConfig.password) throw new Error('host, port, database,user and password  required!')
                     
                     // default values
-                    if(!dBConfig.connectionTimeoutMillis) dBConfig.connectionLimit = 1000*10;
-                    if(!dBConfig.query_timeout) dBConfig.queueLimit = 1000*10;
+                    if(!dBConfig.connectionTimeoutMillis) dBConfig.connectionTimeoutMillis = 1000*10;
+                    if(!dBConfig.query_timeout) dBConfig.query_timeout = 1000*10;
                     dBConfig.port = Number(dBConfig.port);
+
+
+                    timeoutForBluebird = dBConfig.query_timeout + 2000;
+
 
                                 
                     log.uiCommand('EXEC QUERY',query)
@@ -215,7 +228,7 @@ db.pgQuery =  async (query, dBConfig = global.config.dBConfig) => {
 
 
     
-    }).timeout(senteConfig.defaultTimeout*1000,'[pgQuery] [Timeout]');   
+    }).timeout(timeoutForBluebird,'[pgQuery] [Timeout]');   
 
 
 }
