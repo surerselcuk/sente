@@ -152,7 +152,6 @@ let printTestInfo = (testData) => {
             && !row[0].includes('screenshot_directory') 
             && !row[0].includes('file_name') 
             && !row[0].includes('file_full_path') 
-            && !row[0].includes('project_path') 
             && !row[0].includes('take_screenshoot')                         
             && !(tableData.test_type !== 'web-gui'  && row[0].includes('browser_type') ) 
             && !(tableData.test_type !== 'web-gui'  && row[0].includes('driver_host') ) 
