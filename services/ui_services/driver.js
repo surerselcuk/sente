@@ -73,7 +73,7 @@ let buildDriver = async (opt = {}) => {
                         await wait_(1);
                         downloadDirectory = await core.generateRandomNamedDirectory(config.download_path);
                         config.download_directory = downloadDirectory[0];                    
-                        config.download_path_on_grid =  path.join(config.download_path_on_grid,downloadDirectory[1]) 
+                        config.download_path_on_grid = path.posix.join(config.download_path_on_grid, downloadDirectory[1])
                         try { core.exportParameter(config.driver_host+'_download_path' ,config.download_directory ) } catch(e){}
 
                     }
