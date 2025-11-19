@@ -191,8 +191,12 @@ let printTestStepResultTable = (status='passed') => {
 
 
     // Step Table
+    const terminalWidth = process.stdout.columns || 80;
+    const secondColWidth = Math.min(15, Math.floor(terminalWidth * 0.15));
+    const firstColWidth = Math.max(30, terminalWidth - secondColWidth - 4); // 4 for borders and padding
+
     let stepTable = new table({
-        colWidths: [100,10],
+        colWidths: [firstColWidth, secondColWidth],
         wordWrap: true
     });
 
