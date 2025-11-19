@@ -318,7 +318,7 @@ core.exportParameter = async(key,value, options = {isPermanent : false}) => {
     
     if(config.run_on_sente_cloud) { 
 
-        if(options.isPermanent === true)  console.log(`<senteExportTestParameterPermanent>exported_test_parameter_${key}<sente>${value}</senteExportTestParameterPermanent>`);
+        if(options.isPermanent === true)  console.log(`<senteExportTestParameter>exported_test_parameter_permanent_${key}<sente>${value}</senteExportTestParameter>`);
         else  console.log(`<senteExportTestParameter>exported_test_parameter_${key}<sente>${value}</senteExportTestParameter>`);
 
     }else {
