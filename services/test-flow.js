@@ -91,9 +91,17 @@ let printTestInfo = (testData) => {
 
 
     // Test Info Table
+    const terminalWidth = process.stdout.columns || 80;
+    const firstColumnWidth = Math.min(45, Math.floor(terminalWidth * 0.4));
+    const secondColumnWidth = Math.max(30, terminalWidth - firstColumnWidth - 4); // 4 for borders and padding
+
     let configTable = new table({
-        colWidths: [45,100],
-        wordWrap: true
+        colWidths: [firstColumnWidth, secondColumnWidth],
+        wordWrap: true,
+        style: {
+            head: [],
+            border: []
+        }
     });
 
     let configTableForSenteCloud = [];    
