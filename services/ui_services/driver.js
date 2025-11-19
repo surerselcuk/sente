@@ -74,7 +74,7 @@ let buildDriver = async (opt = {}) => {
                         downloadDirectory = await core.generateRandomNamedDirectory(config.download_path);
                         config.download_directory = downloadDirectory[0];                    
                         config.download_path_on_grid = path.posix.join(config.download_path_on_grid, downloadDirectory[1])
-                        try { core.exportParameter(config.driver_host+'_download_path' ,config.download_directory ) } catch(e){}
+                        try { if(!config.run_on_sente_cloud) core.exportParameter(config.driver_host+'_download_path' ,config.download_directory ) } catch(e){}
 
                     }
 
