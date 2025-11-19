@@ -308,7 +308,7 @@ core.importParameter = async(key) => {
 
 };
 
-core.exportParameter = async(key,value) => {
+core.exportParameter = async(key,value, options = {isPermanent : false}) => {
 
     if(!key || !value) throw new Error('[exportParameter] key or value undefined!')
     // value = value.toString().trim().replace(/\s+/g, '_')
@@ -318,7 +318,8 @@ core.exportParameter = async(key,value) => {
     
     if(config.run_on_sente_cloud) { 
 
-        console.log(`<senteExportTestParameter>exported_test_parameter_${key}<sente>${value}</senteExportTestParameter>`);
+        if(options.isPermanent === true)  console.log(`<senteExportTestParameterPermanent>exported_test_parameter_${key}<sente>${value}</senteExportTestParameterPermanent>`);
+        else  console.log(`<senteExportTestParameter>exported_test_parameter_${key}<sente>${value}</senteExportTestParameter>`);
 
     }else {
 
