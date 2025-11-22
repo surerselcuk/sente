@@ -44,6 +44,7 @@ module.exports.write                                   = require('./services/ui_
 module.exports.keyboard                                = require('./services/ui_services/write').keyboard,
 module.exports.scroll                                  = require('./services/ui_services/scroll').scroll,
 module.exports.getText                                 = require('./services/ui_services/get-text').getText,
+module.exports.switchToWindow                          = require('./services/ui_services/switch-window').switchToWindow,
 
 
 

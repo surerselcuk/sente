@@ -38,7 +38,7 @@ test_type = '<senteTestType> backend </senteTestType>';  /* [Mandatory field] | 
 const { sente, helper, repo } = require('#libraries');
 const { webdriver, axios, Promise, https, NodeSSH, random, moment, dragAndDrop } = sente;
 const { testFlow, argv, jump, log, now, wait, wait_, translate, importParameter, exportParameter, overrideRepo, myQuery, pgQuery, api, ssh,getDownloadFiles } = sente;
-const { go, click, rightClick, doubleClick, see, notSee, write, keyboard, scroll, getText } = sente;
+const { go, click, rightClick, doubleClick, see, notSee, write, keyboard, scroll, getText, switchToWindow } = sente;
 
 
 /* TEST FLOW
