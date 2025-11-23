@@ -28,12 +28,17 @@ let goWindow = async(orderNo) => {
     return window;
 };
 
-switchToWindow.switchToWindow = async (opt = {contains: false, timeout: senteConfig.uiClassTimeout, isStepLogActive: true}) => {
+switchToWindow.switchToWindow = async (opt = {}) => {
      
 
     if (!opt.winName || opt.winName.trim() === '') {
         throw new Error('switchToWindow: winName is required');
     }
+
+    // set default
+    if(!opt.timeout) opt.timeout = senteConfig.uiClassTimeout;
+    if( opt.contains || opt.contains === 'true' ) opt.contains = true; else false;
+    if (opt.isStepLogActive === undefined) opt.isStepLogActive = true;
 
 
 
@@ -82,7 +87,7 @@ switchToWindow.switchToWindow = async (opt = {contains: false, timeout: senteCon
 
             reject(e);
         }
-    }).timeout((opt.timeout+2000)*1000,`[Timeout] [Scroll]`)
+    }).timeout((opt.timeout+2)*1000,`[Timeout] [switchToWindow]`)
 
 
 }
