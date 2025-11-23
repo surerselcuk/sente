@@ -1,5 +1,5 @@
 
-const {log,wait_,wait} = require('../logger');
+const {log,wait_,wait, now} = require('../logger');
 
 const Promise = require('bluebird');
 const {locator} = require('./locator')
@@ -31,11 +31,14 @@ let getText = async (search, opt = {}) => {
             log.uiCommand('GET TEXT', opt.search)
             
             let element = await locator(opt)
-            let text = element.getText();                    
+            let text = await element.getText();                    
 
             if(opt.isStepLogActive === true) global.steps.push({description: colors.cyan.bold(`[GET TEXT]${figures.play} `) + opt.search , status: 'Passed'})
             
             await wait_(1);
+            console.log('[' + now() + ']             ' + colors.green.bold(` ${figures.tick}  `) + 'Text: ' + colors.green.bold(text))
+            
+
             resolve(text);
 
         }
