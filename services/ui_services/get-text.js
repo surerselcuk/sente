@@ -35,7 +35,6 @@ let getText = async (search, opt = {}) => {
 
             if(opt.isStepLogActive === true) global.steps.push({description: colors.cyan.bold(`[GET TEXT]${figures.play} `) + opt.search , status: 'Passed'})
             
-            await wait_(1);
             console.log('[' + now() + ']             ' + colors.green.bold(` ${figures.tick}  `) + 'Text: ' + colors.green.bold(text))
             
 
