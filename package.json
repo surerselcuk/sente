@@ -1,6 +1,6 @@
 {
   "name": "senteio",
-  "version": "2.0.101",
+  "version": "2.0.102",
   "description": "Sente",
   "main": "index.js",
   "bin": {
