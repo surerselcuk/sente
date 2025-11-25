@@ -21,10 +21,15 @@
     # driver_host: current driver URL 
 
     # This parameter specifies whether a new driver session should always be started during web-gui tests. 
-    # If true, a new driver session is always started before the test begins. 
-    # If false, the existing driver session is used.
-    # default: false
+      If true, a new driver session is always started before the test begins. 
+      If false, the existing driver session is used.
+      default: false      
     always_new_web_gui_session      : false
+
+    # When the Test Script runs, all test parameters are displayed in a configuration table at the beginning of the test log. 
+      If you have parameters that you do not want to appear in this table, specify them as a string in the hidden_config_names parameter, separated by ||.          
+      You can refer to the example below:
+    hidden_config_names : 'parameter_1 || parameter_2'
     
 */
 

@@ -152,7 +152,7 @@ let printTestInfo = (testData) => {
             && !row[0].includes('screenshot_directory') 
             && !row[0].includes('file_name') 
             && !row[0].includes('file_full_path') 
-            && !row[0].includes('take_screenshoot')                         
+            && !row[0].includes('take_screenshoot')      
             && !(tableData.test_type !== 'web-gui'  && row[0].includes('browser_type') ) 
             && !(tableData.test_type !== 'web-gui'  && row[0].includes('driver_host') ) 
             && !(row[0] === 'number_of_test_run_repetitions_on_error' && Number(value) === 0) 
@@ -167,6 +167,31 @@ let printTestInfo = (testData) => {
     }
     
     if(config.run_on_sente_cloud) {
+
+            /* hidden_config_names içindeki configleri tablodan kaldır */
+
+                //configTable içinde hidden_config_names var mı varsa, indexi getir
+                let hiddenConfigNamesIndex = configTableForSenteCloud.findIndex( row => row[0] === 'hidden_config_names' );
+                
+                // eğer hiddenConfigNamesIndex -1 den büyükse, bu index değerinin valuesundaki olan config isimlerini tablodan kaldır
+                if(hiddenConfigNamesIndex > -1) {
+                    let hiddenConfigNames = configTableForSenteCloud[hiddenConfigNamesIndex][1];
+                    
+                    hiddenConfigNames = hiddenConfigNames.split('||');
+
+                    if(Array.isArray(hiddenConfigNames)) {
+                        console.log(hiddenConfigNames);
+                        
+                        for ( let name of hiddenConfigNames ) {
+                            let removeIndex = configTableForSenteCloud.findIndex( row => row[0] === name.trim() );                                                            
+                            if(removeIndex > -1) configTableForSenteCloud.splice(removeIndex,1);
+                        }
+                    }
+                    // hiddenConfigNames satırını da tablodan kaldır
+                    hiddenConfigNamesIndex = configTableForSenteCloud.findIndex( row => row[0] === 'hidden_config_names' );
+                    configTable.splice(hiddenConfigNamesIndex,1);
+                }
+            
            
         console.log('\n\n CONFIGURATION TABLE')
         for ( let element of configTableForSenteCloud ) {
@@ -177,6 +202,33 @@ let printTestInfo = (testData) => {
 
     }
     else {
+
+        /* hidden_config_names içindeki configleri tablodan kaldır */
+
+            //configTable içinde hidden_config_names var mı varsa, indexi getir
+            let hiddenConfigNamesIndex = configTable.findIndex( row => row[0] === 'hidden_config_names' );
+            
+            // eğer hiddenConfigNamesIndex -1 den büyükse, bu index değerinin valuesundaki olan config isimlerini tablodan kaldır
+            if(hiddenConfigNamesIndex > -1) {
+                let hiddenConfigNames = configTable[hiddenConfigNamesIndex][1];
+                
+                hiddenConfigNames = hiddenConfigNames.split('||');
+
+                if(Array.isArray(hiddenConfigNames)) {
+                    console.log(hiddenConfigNames);
+                    
+                    for ( let name of hiddenConfigNames ) {
+                        let removeIndex = configTable.findIndex( row => row[0] === name.trim() );                                                            
+                        if(removeIndex > -1) configTable.splice(removeIndex,1);
+                    }
+                }
+                // hiddenConfigNames satırını da tablodan kaldır
+                hiddenConfigNamesIndex = configTable.findIndex( row => row[0] === 'hidden_config_names' );
+                configTable.splice(hiddenConfigNamesIndex,1);
+            }
+
+
+
         console.log(global.senteConfig.senteLogo)
         console.log(configTable.toString());
     }
