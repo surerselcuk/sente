@@ -180,7 +180,6 @@ let printTestInfo = (testData) => {
                     hiddenConfigNames = hiddenConfigNames.split('||');
 
                     if(Array.isArray(hiddenConfigNames)) {
-                        console.log(hiddenConfigNames);
                         
                         for ( let name of hiddenConfigNames ) {
                             let removeIndex = configTableForSenteCloud.findIndex( row => row[0] === name.trim() );                                                            
@@ -189,7 +188,7 @@ let printTestInfo = (testData) => {
                     }
                     // hiddenConfigNames satırını da tablodan kaldır
                     hiddenConfigNamesIndex = configTableForSenteCloud.findIndex( row => row[0] === 'hidden_config_names' );
-                    configTable.splice(hiddenConfigNamesIndex,1);
+                    configTableForSenteCloud.splice(hiddenConfigNamesIndex,1);
                 }
             
            
@@ -215,7 +214,6 @@ let printTestInfo = (testData) => {
                 hiddenConfigNames = hiddenConfigNames.split('||');
 
                 if(Array.isArray(hiddenConfigNames)) {
-                    console.log(hiddenConfigNames);
                     
                     for ( let name of hiddenConfigNames ) {
                         let removeIndex = configTable.findIndex( row => row[0] === name.trim() );                                                            
