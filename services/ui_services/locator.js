@@ -29,12 +29,13 @@ let locator = (opt={}) => {
 
     // set default
     if(!opt.type) opt.type = 'xpath'
-    if(!opt.search) reject('Search word undefined!')     
+
                 
         
 
     return new Promise (async (resolve,reject)=>{        
         try {
+            if(!opt.search) reject('Search word undefined!')     
             opt.index = Number(opt.index);
 
             let object;
