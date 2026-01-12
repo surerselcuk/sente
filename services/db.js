@@ -190,7 +190,7 @@ db.pgQuery =  async (query, dBConfig = global.config.dBConfig) => {
                     dBConfig.port = Number(dBConfig.port);
 
 
-                    timeoutForBluebird = dBConfig.connectTimeout + 2000;
+                    timeoutForBluebird = dBConfig.connectionTimeoutMillis + 2000;
 
 
                                 
