@@ -114,7 +114,7 @@ let printTestInfo = (testData) => {
     configTable.push([colors.blue('Configs'),colors.blue('Values')])
    
 
-    configTableForSenteCloud.push(['Test Name',testData.testDefinations.test_name])
+    // configTableForSenteCloud.push(['Test Name',testData.testDefinations.test_name])
     configTableForSenteCloud.push(['Start Date',now('YYYY/MM/DD  HH:mm:ss')])
     configTableForSenteCloud.push(['Sente Version',senteConfig.senteVersion])
 
