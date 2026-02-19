@@ -326,9 +326,9 @@ core.exportParameter = async(key,value, options = {isPermanent : false}) => {
         try {
             value = (value.trim() === '') ? value : value.trim()
             .replace(/\'/g, '"')  // tek tırnakları çift tırnağa çevir
-            .replace(/\n/g, '\\n')  // satır sonu karakterlerini escape et
-            .replace(/\r/g, '\\r')  // carriage return karakterlerini escape et
-            .replace(/\t/g, '\\t')  // tab karakterlerini escape et
+            .replace(/\n/g, '')  // satır sonu karakterlerini sil
+            .replace(/\r/g, '')  // carriage return karakterlerini sil
+            .replace(/\t/g, '')  // tab karakterlerini sil
             
             value = JSON.stringify(value);
         } catch (e) {
