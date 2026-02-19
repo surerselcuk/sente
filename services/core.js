@@ -313,7 +313,29 @@ core.exportParameter = async(key,value, options = {isPermanent : false}) => {
     if(!key || !value) throw new Error('[exportParameter] key or value undefined!')
     // value = value.toString().trim().replace(/\s+/g, '_')
 
-    if(core.isObject(value) || Array.isArray(value)) value = JSON.stringify(value);
+    if(core.isObject(value) || Array.isArray(value)) {
+        try {
+            value = JSON.stringify(value);
+        } catch (e) {
+            log.warn('An error occurred while consolidating test export data with the configuration file. This error may be caused by one of the parameters in your configuration file or exportedTest being unable to convert to proper JSON format.');
+            return;
+        }
+    }
+
+    if (typeof value === 'string') {
+        try {
+            value = (value.trim() === '') ? value : value.trim()
+            .replace(/\'/g, '"')  // tek tırnakları çift tırnağa çevir
+            .replace(/\n/g, '\\n')  // satır sonu karakterlerini escape et
+            .replace(/\r/g, '\\r')  // carriage return karakterlerini escape et
+            .replace(/\t/g, '\\t')  // tab karakterlerini escape et
+            
+            value = JSON.stringify(value);
+        } catch (e) {
+            log.warn('An error occurred while converting string value to JSON format.');
+            return;
+        }
+    }
 
     
     if(config.run_on_sente_cloud) { 

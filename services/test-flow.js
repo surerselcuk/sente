@@ -340,6 +340,7 @@ let overrideConfigs = (testData) => {
     catch (e) {
 
         log.error('[Override Test Config Error]')
+        log.error('An error occurred while consolidating test export data with the configuration file. This error may be caused by one of the parameters in your configuration file or exportedTest being unable to convert to proper JSON format.')
         log.error(e);
 
     }
