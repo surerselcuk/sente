@@ -330,7 +330,6 @@ core.exportParameter = async(key,value, options = {isPermanent : false}) => {
             .replace(/\r/g, '')  // carriage return karakterlerini sil
             .replace(/\t/g, '')  // tab karakterlerini sil
             
-            value = JSON.stringify(value);
         } catch (e) {
             log.warn('An error occurred while converting string value to JSON format.');
             return;
