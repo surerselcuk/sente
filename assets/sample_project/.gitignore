@@ -3,3 +3,4 @@
 /files/sente_files
 /tests/**/.*
 node_modules/
+/environments/local_configs.js

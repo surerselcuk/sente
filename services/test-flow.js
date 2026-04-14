@@ -61,6 +61,12 @@ let setEnvironment = (testData) => {
             else global.config = global.environments[environment_parent][environment_child];
 
 
+
+
+            
+
+
+
             
             /*  set default parameters - [Start] */
             
@@ -80,14 +86,16 @@ let setEnvironment = (testData) => {
                 if(!global.config.screenshot_directory) global.config.screenshot_directory = path.join(senteConfig.testRunProjectPath,'files','screen_shots') ;
 
                     
-                
 
             
             /*  set default parameters - [End]*/
 
 
 }
-let printTestInfo = (testData) => { 
+let printTestInfo = (testData) => {
+
+    
+
 
 
     // Test Info Table
@@ -308,6 +316,7 @@ let overrideConfigs = (testData) => {
 
 
 
+
     try{
 
         if(testData.argv.config) {
@@ -316,18 +325,24 @@ let overrideConfigs = (testData) => {
             
             let config_ = JSON.parse(decodedConfig);
 
+
             if(isObject(config_)){
                 config = {...config,...config_};
 
                 config.project_path = senteConfig.testRunProjectPath; // set project main directory
 
-                
+
+
                 /*DOWNLOAD PATH MEKANİZMASI
                 Workerdaki /usr/src/app/downloads dizini ile driverdaki  /home/seluser/Downloads dizini , Host makinadaki DRIVER_DOWNLOAD_DIRECTORY diziniyle bağlanmalıdır.
                     # Çalışan test, browser download larını worker içindeki  /usr/src/app/downloads dizinine yapmalıdır.
                     # Bu nedenle test sente üzerinde çalışırken, kullanıcının download_path değişkenini ezer ve download_path="/usr/src/app/downloads" yapar. */
                 if(global.config.run_on_sente_cloud) global.config.download_path = '/usr/src/app/downloads'                
                 global.config.download_path_on_grid = '/home/seluser/Downloads'; /* download_path_on_grid, default download directory path on Selenium Grid*/
+
+
+                // set local configs ( sente cloud da çalışırken localConfigs kullanılmaz, çünkü localConfigs genellikle local test çalıştırmalarında kullanılan configlerdir ve bu configler sente cloud ortamında geçerli olmayabilir. Bu nedenle, eğer test sente cloud üzerinde çalışıyorsa, localConfigs config objesine dahil edilmez. Ancak, test sente cloud üzerinde çalışmıyorsa, localConfigs config objesine dahil edilir ve global.config objesi ile birleştirilir. Böylece, localConfigs içindeki configler global.config içinde geçerli olur ve test akışı boyunca kullanılabilir hale gelir.)
+                if(!global.config.run_on_sente_cloud && global.localConfigs) global.config = {...global.config, ...global.localConfigs}
 
 
             } else {
