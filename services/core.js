@@ -84,6 +84,9 @@ core.startTest = async (file,options) => {
             // set new web gui session
             if(options.new) defaultConfig += ' , "always_new_web_gui_session":"true" '
 
+            // set debug mode web gui session
+            if(!options.sente && options.debug) defaultConfig += ' , "debug_mode":"true" '
+
             // end configs
             defaultConfig += `}`
             

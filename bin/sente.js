@@ -1142,6 +1142,7 @@ program
     .option('-t, --take_screenshoot','Take screenshot on every step')
     .option('-s, --sente','Test run on sente cloud ')
     .option('-n, --new','Always open new web gui session')
+    .option('-d, --debug','Enable debug mode')
     .option(' ' )
     .option(' ' , 'User guide     : ' + colors.green('https://sente-1.gitbook.io'))
     .option(' ' , 'Git Repository : ' + colors.green('https://github.com/surerselcuk/sente'))

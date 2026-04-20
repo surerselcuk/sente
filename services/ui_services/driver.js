@@ -27,7 +27,7 @@ let buildDriver = async (opt = {}) => {
         try {
             
             if(!opt.generate_new_session) opt.generate_new_session=false;
-            if(config.always_new_web_gui_session) opt.generate_new_session=true;
+            if(!config.debug_mode && config.always_new_web_gui_session) opt.generate_new_session=true;
 
             
             // Mandatory Config Validation
