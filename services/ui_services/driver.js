@@ -99,7 +99,7 @@ let buildDriver = async (opt = {}) => {
                 }
 
                 // build driver
-                await buildFunc()
+                await buildFunc(opt)
                 .then(async _=> { 
                             driver = await _
                             let sessionData = await _.session_
