@@ -140,13 +140,15 @@ let buildDriver = async (opt = {}) => {
  * @see {@link  https://www.selenium.dev/documentation/webdriver/browsers|Options}
  * @see {@link https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types|Common MIME Types}
  */
-let buildFirefox = async () => {
+let buildFirefox = async (opt = {}) => {
 
     return new Promise (async (resolve,reject)=>{
 
         try {
            
             log(`Building driver on [${config.browser_type} - ${config.driver_host}]`)
+
+            opt.deleteAllCookies = (opt.deleteAllCookies === undefined) ? true : Boolean(opt.deleteAllCookies);
 
             const options = new webdriver.firefox.Options(); //More Info: https://www.selenium.dev/documentation/webdriver/browsers/
     
@@ -176,7 +178,12 @@ let buildFirefox = async () => {
                                 log(`Browser download directory on selenium grid set to [${config.download_path_on_grid}]`)
                             }
 
-                            await driver_.manage().deleteAllCookies();
+                            if(opt.deleteAllCookies) {
+                                await driver_.manage().deleteAllCookies();
+                                log('All cookies deleted on new driver session as deleteAllCookies is set to true')
+                            }
+
+                            // await driver_.manage().deleteAllCookies();
                             await driver_.manage().window().maximize();
 
                             resolve(driver_);
@@ -215,12 +222,13 @@ let buildFirefox = async () => {
  * 
  * @see {@link  https://www.selenium.dev/documentation/webdriver/browsers|Options}
  */
-let buildChrome = async () => {
+let buildChrome = async (opt = {}) => {
 
     return new Promise (async (resolve,reject)=>{
 
         try {
-           
+            opt.deleteAllCookies = (opt.deleteAllCookies === undefined) ? true : Boolean(opt.deleteAllCookies);
+
             log(`Building driver on [${config.browser_type} - ${config.driver_host}]`)
 
             const options = new webdriver.chrome.Options(); // More Info: https://www.selenium.dev/documentation/webdriver/browsers/
@@ -263,7 +271,10 @@ let buildChrome = async () => {
                     log(`Browser download directory on selenium grid set to [${config.download_path_on_grid}]`)
                 }
 
-               await driver_.manage().deleteAllCookies();
+               if(opt.deleteAllCookies) {
+                   await driver_.manage().deleteAllCookies();
+                   log('All cookies deleted on new driver session as deleteAllCookies is set to true')
+               }
                await driver_.manage().window().maximize();
 
                resolve(driver_);
