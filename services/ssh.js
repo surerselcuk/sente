@@ -1,152 +1,106 @@
 
-const {log, now} = require('./logger');
+const { log } = require('./logger');
 const core = require('./core');
-const colors = require('chalk');
-const figures = require('figures');
 const Promise = require('bluebird');
 const { NodeSSH } = require('node-ssh');
 
+const sshFunctions = {};
 
-let sshFunctions = {};
+/**
+ * Creates and connects an SSH connection.
+ * @param {Object} sshConfig - SSH connection details.
+ * @returns {Promise<NodeSSH>} Connected SSH instance.
+ */
+const createConnection = async (sshConfig) => {
+    const ssh = new NodeSSH();
+    await ssh.connect(sshConfig);
+    return ssh;
+};
 
+/**
+ * Validates common properties and sets default timeout.
+ * @param {Object} properties
+ */
+const validateAndSetDefaults = (properties) => {
+    if (!properties || !core.isObject(properties)) throw new Error('config is required, must be a json object');
+    if (!properties.sshConfig) throw new Error('The "sshConfig" parameter is required');
+    if (!properties.timeout) properties.timeout = senteConfig.defaultTimeout;
+};
 
 /**
  * Uploads files to a remote server via SSH.
- * 
- * This function establishes an SSH connection using the provided `sshConfig` 
- * and uploads the specified files to the remote server. 
- * If any file in the `files` list is missing the `local` or `remote` parameter, an error is thrown.
- * 
- * @param {Object} properties - The required parameters for the function.
+ *
+ * @param {Object} properties
  * @param {Object} properties.sshConfig - SSH connection details.
- * @param {Array} properties.files - List of files to be uploaded.
+ * @param {Array} properties.files - List of files to upload.
  * @param {string} properties.files[].local - Local file path.
- * @param {string} properties.files[].remote - Remote file path on the server.
- * @param {number} [properties.timeout] - Maximum allowed execution time (in seconds). Default: `senteConfig.defaultTimeout`.
- * 
- * @returns {Promise<void>} Resolves when the file upload is successful, rejects if an error occurs.
- * 
- * @throws {Error} Throws an error if `sshConfig`, `files`, or `files[].local`, `files[].remote` are missing.
+ * @param {string} properties.files[].remote - Remote file path.
+ * @param {number} [properties.timeout] - Timeout in seconds. Default: `senteConfig.defaultTimeout`.
+ * @returns {Promise<void>}
  */
 sshFunctions.uploadFiles = async (properties = {}) => {
+    validateAndSetDefaults(properties);
 
-    
-
-    // validations
-    if(!properties || !core.isObject(properties)) throw new Error('config is required, must json object')
-    if (!properties.sshConfig) throw new Error('The "sshConfig" parameter is required');
-    if (!properties.files || !Array.isArray(properties.files)) throw new Error('The "files" parameter is required and must be an array');
-
-    const { files , sshConfig } = properties;
-
-    let filesForPrint ='';
-
-    for ( let file of files ) {
-        if (!file.local || !file.remote) throw new Error('The "files.local" and "files.remote" parameter is required');
-        filesForPrint += `${file.local}, `
+    if (!properties.files || !Array.isArray(properties.files)) {
+        throw new Error('The "files" parameter is required and must be an array');
     }
 
+    const { files, sshConfig, timeout } = properties;
 
-    // set defaults
-    if (!properties.timeout) properties.timeout = senteConfig.defaultTimeout;    
+    const filesForPrint = files.map((file) => {
+        if (!file.local || !file.remote) throw new Error('Each file must have "local" and "remote" properties');
+        return file.local;
+    }).join(', ');
 
+    log.uiCommand('UPLOAD FILES', `Uploading [${filesForPrint}] to ${sshConfig.host}`);
 
     return new Promise(async (resolve, reject) => {
-                
-        
-        log.uiCommand('UPLOAD FILES',`Uploading [${filesForPrint}] to ${sshConfig.host}`)        
-
-        let sshConnection = new NodeSSH();
-        await sshConnection.connect(sshConfig)
-            .then( async ()=> {
-
-                await sshConnection.putFiles(files)
-                    .then(function() {
-                        log.success("Upload Success")
-                        resolve();
-                    }, function(error) {
-                            throw new Error (error)
-                    })
-                    .catch(err => { 
-                        sshConnection.dispose(); 
-                        reject (err);
-                    });                
-                    
-            })
-            .then(_ => { 
-                sshConnection.dispose(); 
-            })
-            .catch(err => {
-                sshConnection.dispose();
-                reject(err);
-            });
-
-    }).timeout(properties.timeout * 1000, '[uploadFilesWithSsh] [Timeout]');
+        let ssh;
+        try {
+            ssh = await createConnection(sshConfig);
+            await ssh.putFiles(files);
+            log.success('Upload Success');
+            resolve();
+        } catch (err) {
+            reject(err);
+        } finally {
+            if (ssh) ssh.dispose();
+        }
+    }).timeout(timeout * 1000, '[uploadFilesWithSsh] [Timeout]');
 };
-
 
 /**
  * Executes a command on a remote server via SSH.
- * 
- * This function establishes an SSH connection using the provided `sshConfig` 
- * and executes the specified command on the remote server. 
- * If the command produces an error in `stderr`, it throws an error.
- * 
- * @param {Object} properties - The required parameters for the function.
+ *
+ * @param {Object} properties
  * @param {Object} properties.sshConfig - SSH connection details.
- * @param {string} properties.command - The command to be executed on the remote server.
- * @param {number} [properties.timeout] - Maximum allowed execution time (in seconds). Default: `senteConfig.defaultTimeout`.
- * 
- * @returns {Promise<void>} Resolves when the command execution is successful, rejects if an error occurs.
- * 
- * @throws {Error} Throws an error if `sshConfig` or `command` is missing, or if the command execution returns an error.
+ * @param {string} properties.command - Command to execute.
+ * @param {number} [properties.timeout] - Timeout in seconds. Default: `senteConfig.defaultTimeout`.
+ * @returns {Promise<Object>} Resolves with the command result.
  */
-
 sshFunctions.execCommand = async (properties = {}) => {
+    validateAndSetDefaults(properties);
 
-    
-
-    // validations
-    if(!properties || !core.isObject(properties)) throw new Error('config is required, must json object')
-    if (!properties.sshConfig) throw new Error('The "sshConfig" parameter is required');
     if (!properties.command) throw new Error('The "command" parameter is required');
 
-    const { command , sshConfig } = properties;
+    const { command, sshConfig, timeout } = properties;
 
-
-    // set defaults
-    if (!properties.timeout) properties.timeout = senteConfig.defaultTimeout;    
-
+    log.uiCommand('EXECUTES COMMAND via SSH', `${command} , Remote Server: ${sshConfig.host}`);
 
     return new Promise(async (resolve, reject) => {
-                
-        
-        log.uiCommand('EXECUTES COMMAND via SSH',`${command} , Remote Server: ${sshConfig.host}`)        
-
-        let sshConnection = new NodeSSH();
-        await sshConnection.connect(sshConfig)
-            .then( async ()=> {
-
-                await sshConnection.execCommand(command, {}).then(function(result) {
-                    log(result.stdout)
-                    resolve(result);
-                    if (result.stderr) throw new Error(result.stderr)
-                });
-
-                    
-            })
-            .then(_ => { 
-                sshConnection.dispose(); 
-            })
-            .catch(err => {
-                sshConnection.dispose();
-                reject(err);
-            });
-
-    }).timeout(properties.timeout * 1000, '[execCommand] [Timeout]');
+        let ssh;
+        try {
+            ssh = await createConnection(sshConfig);
+            const result = await ssh.execCommand(command, {});
+            if (result.stderr) throw new Error(result.stderr);
+            log(result.stdout);
+            resolve(result);
+        } catch (err) {
+            reject(err);
+        } finally {
+            if (ssh) ssh.dispose();
+        }
+    }).timeout(timeout * 1000, '[execCommand] [Timeout]');
 };
-
-
-
 
 module.exports = sshFunctions;
