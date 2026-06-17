@@ -55,16 +55,41 @@ sshFunctions.uploadFiles = async (properties = {}) => {
     log.uiCommand('UPLOAD FILES', `Uploading [${filesForPrint}] to ${sshConfig.host}`);
 
     return new Promise(async (resolve, reject) => {
-        let ssh;
-        try {
-            ssh = await createConnection(sshConfig);
-            await ssh.putFiles(files);
-            log.success('Upload Success');
-            resolve();
-        } catch (err) {
-            reject(err);
-        } finally {
-            if (ssh) ssh.dispose();
+        let lastError;
+
+        for (let attempt = 1; attempt <= 3; attempt += 1) {
+            let ssh;
+            try {
+                log.info('geldi)')
+                ssh = await createConnection(sshConfig);
+                await ssh.putFiles(files);
+                await Promise.delay(5000);
+
+                for (const file of files) {
+                    const verifyResult = await ssh.execCommand(`[ -e "${file.remote}" ] && echo File Validation OK || echo MISSING`, {});
+
+                    console.log('verifyResult', verifyResult.stdout, verifyResult.stderr);
+                    if ((verifyResult.stdout || '').trim().indexOf('File Validation OK') === -1) {
+                        throw new Error(`Remote file verification failed: ${file.remote}`);
+                    }
+                }
+
+                
+                log.success('Upload Success');
+                resolve();
+                return;
+            } catch (err) {
+                if (ssh) ssh.dispose();
+                lastError = err;
+                log(`[uploadFiles] Attempt ${attempt}/3 failed: ${err.message}`);
+                if (attempt === 3) {
+                    reject(lastError);
+                    return;
+                }
+                await Promise.delay(5000);
+            } finally {
+                if (ssh) ssh.dispose();
+            }
         }
     }).timeout(timeout * 1000, '[uploadFilesWithSsh] [Timeout]');
 };
