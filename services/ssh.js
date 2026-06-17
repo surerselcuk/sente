@@ -60,7 +60,7 @@ sshFunctions.uploadFiles = async (properties = {}) => {
         for (let attempt = 1; attempt <= 3; attempt += 1) {
             let ssh;
             try {
-                log.info('geldi)')
+
                 ssh = await createConnection(sshConfig);
                 await ssh.putFiles(files);
                 await Promise.delay(5000);
