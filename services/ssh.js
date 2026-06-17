@@ -67,8 +67,6 @@ sshFunctions.uploadFiles = async (properties = {}) => {
 
                 for (const file of files) {
                     const verifyResult = await ssh.execCommand(`[ -e "${file.remote}" ] && echo File Validation OK || echo MISSING`, {});
-
-                    console.log('verifyResult', verifyResult.stdout, verifyResult.stderr);
                     if ((verifyResult.stdout || '').trim().indexOf('File Validation OK') === -1) {
                         throw new Error(`Remote file verification failed: ${file.remote}`);
                     }
