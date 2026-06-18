@@ -61,9 +61,11 @@ sshFunctions.uploadFiles = async (properties = {}) => {
             let ssh;
             try {
 
-                ssh = await createConnection(sshConfig);
+                ssh = await createConnection(sshConfig); 
+                await Promise.delay(1000);
+                
                 await ssh.putFiles(files);
-                await Promise.delay(5000);
+                await Promise.delay(3000);
 
                 for (const file of files) {
                     const verifyResult = await ssh.execCommand(`[ -e "${file.remote}" ] && echo File Validation OK || echo MISSING`, {});
